@@ -1,0 +1,5 @@
+[virtualenvs]
+path = ".venv"
+in-project = true
+[virtualenvs.options]
+python = "3.11"

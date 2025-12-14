@@ -1,0 +1,138 @@
+[project]
+name = "hellmholtz"
+version = "0.0.1"
+description = "Helmholtz LLM Suite"
+authors = [{name = "jhe24", email = "jhe24@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[project.scripts]
+hellm = "hellmholtz.cli:main"
+
+[project.optional-dependencies]
+eval = ["lm-eval"]
+proxy = ["litellm"]
+
+[tool.poetry]
+packages = [{ include = "hellmholtz", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aisuite = {extras = ["all"], version = "^0.1.6"}
+pydantic = "^2.10.3"
+python-dotenv = "^1.0.1"
+typer = "^0.15.1"
+lm-eval = { version = "^0.4.7", optional = true }
+litellm = { version = "^1.55.2", optional = true }
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+httpx = "^0.28.1"
+isort = "^5.13.2"
+mypy = "^1.13.0"
+pre-commit = "^4.0.1"
+ruff = "^0.8.2"
+bandit = "^1.8.0"
+types-requests = "^2.32.0"
+types-PyYAML = "^6.0.12"
+types-toml = "^0.10.8"
+types-redis = "^4.6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+addopts = "-ra -q"
+testpaths = ["tests"]
+markers = [
+  "slow: mark test as slow (use '-m \"not slow\"' to skip)",
+  "integration: mark test as integration (use '-m \"not integration\"' to skip)",
+  "unit: mark test as unit (use '-m \"not unit\"' to skip)",
+  "network: mark test that requires network access (use '-m \"not network\"' to skip)",
+  "functional: mark test as functional (use '-m \"not functional\"' to skip)",
+  "model: mark tests that require ML model dependencies (sentence-transformers, rapidfuzz, etc.)",
+]
+
+[tool.ruff]
+line-length = 99
+target-version = "py310"
+exclude = [
+  ".git",
+  ".venv",
+  "dist",
+  "build",
+  "docs",
+  "__pycache__",
+  ".pytest_cache",
+  ".vscode",
+  ".github",
+  ".idea",
+  "examples",
+  "tests",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "W",   # pycodestyle warnings
+  "C90", # mccabe complexity
+  "I",   # isort
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "SIM", # flake8-simplify
+]
+ignore = ["E203", "E266", "E731"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # Allow unused imports in __init__.py
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+known-first-party = ["hellmholtz"]
+force-sort-within-sections = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
+docstring-quotes = "double"
+
+[tool.coverage.run]
+branch = true
+source = ["hellmholtz"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 50     # Set your desired test coverage threshold
+
+[tool.bandit]
+skips = ["B101", "B303"]
+exclude_dirs = [
+  "tests",
+  "docs",
+  "examples",
+  ".venv",
+  "dist",
+  "build",
+  ".git",
+  "__pycache__",
+  ".pytest_cache",
+  ".vscode",
+  ".github",
+  ".idea",
+]
+paths = ["src"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true
+exclude = "(tests/|examples/)"
+files = "src/"
+disable_error_code = ["misc", "import-untyped"]

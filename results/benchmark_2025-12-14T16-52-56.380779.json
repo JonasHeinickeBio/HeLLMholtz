@@ -1,0 +1,1052 @@
+[
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.443986025000413,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 11,
+    "output_tokens": 53,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 8.597304599999916,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 14,
+    "output_tokens": 698,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5711611999995512,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 32,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.45229319400095847,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 13,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 3.4156277279998903,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 37,
+    "output_tokens": 265,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.1888861679999536,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - GPT-OSS-120b - An open model released by OpenAI in August 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.2669961850006075,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - GPT-OSS-120b - An open model released by OpenAI in August 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.33384589799970854,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - GPT-OSS-120b - An open model released by OpenAI in August 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.25323085700074444,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - GPT-OSS-120b - An open model released by OpenAI in August 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.2529721270002483,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - GPT-OSS-120b - An open model released by OpenAI in August 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.3472569540008408,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - MiniMax-M2 - Our best model as of December 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.6751457220016164,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - MiniMax-M2 - Our best model as of December 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.23494390199994086,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - MiniMax-M2 - Our best model as of December 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.2794704960015224,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - MiniMax-M2 - Our best model as of December 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.23357630300051824,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 1 - MiniMax-M2 - Our best model as of December 2025', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7879096799988474,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 69,
+    "output_tokens": 25,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 1.9522118810000393,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 72,
+    "output_tokens": 85,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5054331020000973,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 74,
+    "output_tokens": 15,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.9215662679998786,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 71,
+    "output_tokens": 32,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 4.265669271999286,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 95,
+    "output_tokens": 201,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.149092917001326,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 2 - Qwen3 235 - A great model from Alibaba with a long context size', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.2332013140003255,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 2 - Qwen3 235 - A great model from Alibaba with a long context size', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5580088490005437,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 2 - Qwen3 235 - A great model from Alibaba with a long context size', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.2376926340002683,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 2 - Qwen3 235 - A great model from Alibaba with a long context size', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.2601703090003866,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error code: 400 - {'error': {'code': 'bad_request', 'message': 'Unsupported model or no available clients: 2 - Qwen3 235 - A great model from Alibaba with a long context size', 'param': None, 'type': 'invalid_request_error'}}"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.5425490310008172,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 39,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 4.231281443999251,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 809,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.37822822899943276,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.5231815919996734,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 26,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.4448997740000777,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 438,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.1342491380000865,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 11,
+    "output_tokens": 36,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 11.989458862000902,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 14,
+    "output_tokens": 543,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 1.0110707059993729,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 29,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.713243837999471,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 13,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 11.264040991000002,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 37,
+    "output_tokens": 533,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.6175942359986948,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 10,
+    "output_tokens": 39,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 2.8099956090009073,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 13,
+    "output_tokens": 313,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.46355327300079807,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 26,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.40979013300056977,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 12,
+    "output_tokens": 18,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 3.1744916009993176,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 36,
+    "output_tokens": 347,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7164352260006126,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 40,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 8.397732894998626,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 696,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.9224763250003889,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 58,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.5101128269998298,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 7.509785495998585,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 670,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.5016738480007916,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 47,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 17.81834727400019,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 668,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 1.6379437489995325,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 53,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.8313204040005076,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 22,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 13.196920075999515,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 490,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 3.6874068610013637,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 418,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 33.958695596000325,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 4072,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 2.1981239859997004,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 242,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 4.396457217000716,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 512,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 19.45312932500019,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 2338,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.9212192200011486,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 69,
+    "output_tokens": 25,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 2.4598297760003334,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 72,
+    "output_tokens": 109,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.7144669989993417,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 74,
+    "output_tokens": 25,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.6711115250000148,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 71,
+    "output_tokens": 25,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 8.955791213000339,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 95,
+    "output_tokens": 419,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.4084502799996699,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 39,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 4.201129177999974,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 781,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5091086960001121,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.41018767099922115,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 27,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.4281279259994335,
+    "success": false,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "An error occurred: Error: Post \"http://localhost:8000/v1/chat/completions\": dial tcp 127.0.0.1:8000: connect: connection refused"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.3361691379996046,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.20435299500059045,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.2049372260007658,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.20751697599916952,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.5664036369998939,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7625419100004365,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 11,
+    "output_tokens": 47,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 8.193257058999734,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 14,
+    "output_tokens": 661,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5632088370002748,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 34,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.460281659001339,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 13,
+    "output_tokens": 22,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 14.848252346999288,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 37,
+    "output_tokens": 1220,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.6217773739990662,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 39,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 3.988287225000022,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 745,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.3037968600001477,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.3172822950000409,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 27,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.556977972999448,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 376,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 3.0025168230004056,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 29,
+    "output_tokens": 222,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 28.019211210999856,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 32,
+    "output_tokens": 2273,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 4.406481108999287,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 35,
+    "output_tokens": 337,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 6.516746270999647,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 31,
+    "output_tokens": 521,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 25.837424094999733,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 55,
+    "output_tokens": 2100,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.9216396880001412,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 16,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 11.513043564998952,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 18,
+    "output_tokens": 838,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.3773758219995216,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.5746044839997921,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 17,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 3.202759514000718,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": 42,
+    "output_tokens": 354,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.20465684199916723,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.4087582090014621,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.21737125899926468,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.19224487000064983,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.20528904000093462,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.17949290500109782,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.22929657799977576,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.2050571569998283,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.2047989550010243,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.19242493599995214,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.21740044099897204,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.20445077400108858,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.20464860200081603,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.20556104400020558,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.20435266999993473,
+    "success": true,
+    "timestamp": "2025-12-14T16:52:56.380779",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  }
+]
