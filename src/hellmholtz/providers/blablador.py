@@ -1,7 +1,10 @@
+import logging
 import re
 
 from hellmholtz.core.config import get_settings
 from hellmholtz.providers.blablador_config import KNOWN_MODELS, BlabladorModel
+
+logger = logging.getLogger(__name__)
 
 
 def list_models() -> list[BlabladorModel]:  # noqa: C901
@@ -19,6 +22,7 @@ def list_models() -> list[BlabladorModel]:  # noqa: C901
     }
 
     url = f"{settings.blablador_base_url.rstrip('/')}/models"
+    logger.debug(f"Fetching models from {url}")
 
     try:
         response = httpx.get(url, headers=headers, timeout=settings.timeout_seconds)
@@ -100,7 +104,9 @@ def list_models() -> list[BlabladorModel]:  # noqa: C901
 
             parsed_models.append(model_obj)
 
+        logger.info(f"Successfully fetched {len(parsed_models)} models from Blablador")
         return parsed_models
 
     except Exception as e:
+        logger.error(f"Failed to fetch models: {e}")
         raise RuntimeError(f"Failed to fetch models from Blablador: {e}") from e

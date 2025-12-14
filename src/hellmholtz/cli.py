@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import typer
@@ -8,6 +9,15 @@ from hellmholtz.core.config import get_settings
 from hellmholtz.reporting import load_results, summarize_results
 
 app = typer.Typer()
+logger = logging.getLogger(__name__)
+
+
+def configure_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
 
 @app.command(name="chat")
@@ -29,7 +39,9 @@ def chat_cmd(
         )
         typer.echo(response)
     except Exception as e:
+        logger.error(f"Chat error: {e}")
         typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -49,11 +61,16 @@ def bench(models: str | None = None, prompts_file: Path | None = None, repeat: i
     else:
         prompts = ["Hello, how are you?", "What is 2+2?"]
 
-    typer.echo(f"Running benchmarks for models: {', '.join(model_list)}")
-    results = run_benchmarks(model_list, prompts, repeat=repeat)
+    try:
+        typer.echo(f"Running benchmarks for models: {', '.join(model_list)}")
+        results = run_benchmarks(model_list, prompts, repeat=repeat)
 
-    typer.echo("Benchmarks completed. Results saved to results/")
-    typer.echo(summarize_results(results))
+        typer.echo("Benchmarks completed. Results saved to results/")
+        typer.echo(summarize_results(results))
+    except Exception as e:
+        logger.error(f"Benchmark error: {e}")
+        typer.echo(f"Error running benchmarks: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -64,7 +81,9 @@ def report(results_file: Path) -> None:
         summary = summarize_results(results)
         typer.echo(summary)
     except Exception as e:
+        logger.error(f"Report error: {e}")
         typer.echo(f"Error reading results: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -74,8 +93,13 @@ def lm_eval(
     """Run LM Evaluation Harness."""
     from hellmholtz.integrations.lm_eval import run_lm_eval
 
-    task_list = [t.strip() for t in tasks.split(",")]
-    run_lm_eval(model, task_list, num_fewshot=num_fewshot, limit=limit)
+    try:
+        task_list = [t.strip() for t in tasks.split(",")]
+        run_lm_eval(model, task_list, num_fewshot=num_fewshot, limit=limit)
+    except Exception as e:
+        logger.error(f"LM Eval error: {e}")
+        typer.echo(f"Error running evaluation: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -83,7 +107,12 @@ def proxy(model: str, port: int = 4000, debug: bool = False) -> None:
     """Start LiteLLM Proxy."""
     from hellmholtz.integrations.litellm import start_proxy
 
-    start_proxy(model, port=port, debug=debug)
+    try:
+        start_proxy(model, port=port, debug=debug)
+    except Exception as e:
+        logger.error(f"Proxy error: {e}")
+        typer.echo(f"Error starting proxy: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -93,15 +122,21 @@ def bench_throughput(
     """Run throughput benchmark."""
     from hellmholtz.benchmark import run_throughput_benchmark
 
-    result = run_throughput_benchmark(model, prompt, max_tokens)
+    try:
+        result = run_throughput_benchmark(model, prompt, max_tokens)
 
-    if result["success"]:
-        typer.echo(f"Model: {result['model']}")
-        typer.echo(f"Tokens/sec: {result['tokens_per_sec']:.2f}")
-        typer.echo(f"Latency: {result['latency']:.2f}s")
-        typer.echo(f"Output Tokens: {result['output_tokens']}")
-    else:
-        typer.echo(f"Error: {result.get('error')}", err=True)
+        if result["success"]:
+            typer.echo(f"Model: {result['model']}")
+            typer.echo(f"Tokens/sec: {result['tokens_per_sec']:.2f}")
+            typer.echo(f"Latency: {result['latency']:.2f}s")
+            typer.echo(f"Output Tokens: {result['output_tokens']}")
+        else:
+            logger.error(f"Throughput benchmark failed: {result.get('error')}")
+            typer.echo(f"Error: {result.get('error')}", err=True)
+    except Exception as e:
+        logger.error(f"Throughput benchmark error: {e}")
+        typer.echo(f"Error running throughput benchmark: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 @app.command()
@@ -127,10 +162,13 @@ def models() -> None:
                     f"{model.source:<10} | {model.description}"
                 )
     except Exception as e:
+        logger.error(f"Model list error: {e}")
         typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(1) from e
 
 
 def main() -> None:
+    configure_logging()
     app()
 
 

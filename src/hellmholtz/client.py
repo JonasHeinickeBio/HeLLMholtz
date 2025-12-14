@@ -1,9 +1,12 @@
 from collections.abc import Mapping, Sequence
+import logging
 from typing import Any, cast
 
 import aisuite as ai
 
 from hellmholtz.core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class ClientManager:
@@ -59,6 +62,7 @@ class ClientManager:
                 }
             }
             cls._default_instance = ai.Client(provider_configs=config)
+            logger.info("Initialized aisuite Client with Blablador provider")
         return cls._default_instance
 
 
@@ -80,9 +84,14 @@ def chat(
     if max_tokens is not None:
         call_args["max_tokens"] = max_tokens
 
-    response = client.chat.completions.create(
-        model=effective_model, messages=messages, **call_args
-    )
+    logger.debug(f"Chat request to {model}: {messages}")
+    try:
+        response = client.chat.completions.create(
+            model=effective_model, messages=messages, **call_args
+        )
+    except Exception as e:
+        logger.error(f"Chat completion failed for {model}: {e}")
+        raise
 
     # Extract content - aisuite returns a standard response object
     content = response.choices[0].message.content
@@ -96,4 +105,9 @@ def chat_raw(
 ) -> Any:
     """Low-level call that returns the full aisuite response."""
     client, effective_model = ClientManager.get_client(model)
-    return client.chat.completions.create(model=effective_model, messages=messages, **kwargs)
+    logger.debug(f"Raw chat request to {model}")
+    try:
+        return client.chat.completions.create(model=effective_model, messages=messages, **kwargs)
+    except Exception as e:
+        logger.error(f"Raw chat completion failed for {model}: {e}")
+        raise

@@ -2,11 +2,14 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
+import logging
 from pathlib import Path
 import time
 from typing import Any
 
 from hellmholtz.client import chat_raw
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -34,15 +37,18 @@ def run_benchmarks(
     """Run benchmarks across multiple models and prompts."""
 
     results = []
+    model_list = list(models)
+    prompt_list = list(prompts)
 
     # Create results directory
     results_path = Path(results_dir)
     results_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().isoformat()
+    logger.info(f"Starting benchmarks for {len(model_list)} models and {len(prompt_list)} prompts")
 
-    for model in models:
-        for i, prompt in enumerate(prompts):
+    for model in model_list:
+        for i, prompt in enumerate(prompt_list):
             prompt_id = f"prompt_{i}"
 
             for _ in range(repeat):
@@ -67,6 +73,7 @@ def run_benchmarks(
                         out_tokens = response.usage.completion_tokens
 
                 except Exception as e:
+                    logger.error(f"Benchmark failed for {model}, prompt {i}: {e}")
                     error_msg = str(e)
 
                 end_time = time.perf_counter()
@@ -127,6 +134,7 @@ def run_throughput_benchmark(
         }
 
     except Exception as e:
+        logger.error(f"Throughput benchmark failed for {model}: {e}")
         return {"model": model, "success": False, "error": str(e)}
 
 
@@ -139,3 +147,4 @@ def save_results(results: list[BenchmarkResult], directory: Path, timestamp: str
 
     with open(filepath, "w") as f:
         json.dump(data, f, indent=2)
+    logger.info(f"Results saved to {filepath}")

@@ -1,3 +1,4 @@
+import logging
 import sys
 
 try:
@@ -5,6 +6,9 @@ try:
     from lm_eval import simple_evaluate
 except ImportError:
     lm_eval = None
+
+
+logger = logging.getLogger(__name__)
 
 
 def run_lm_eval(
@@ -18,9 +22,11 @@ def run_lm_eval(
 ) -> None:
     """Run LM Evaluation Harness."""
     if lm_eval is None:
+        logger.error("lm-eval not installed")
         print("Error: lm-eval not installed. Install with `pip install .[eval]`", file=sys.stderr)
         sys.exit(1)
 
+    logger.info(f"Running lm-eval for model: {model} on tasks: {tasks}")
     print(f"Running lm-eval for model: {model} on tasks: {tasks}")
 
     # Map helmholtz model string to lm_eval arguments if needed
@@ -56,6 +62,7 @@ def run_lm_eval(
         device=device,
         limit=limit,
     )
+    logger.info("LM Evaluation completed")
 
     # Print results table
     if results:

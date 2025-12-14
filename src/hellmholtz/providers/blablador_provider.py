@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Any
 
@@ -6,6 +7,8 @@ from aisuite.providers.message_converter import OpenAICompliantMessageConverter
 import openai
 
 from hellmholtz.providers.blablador_config import KNOWN_MODELS
+
+logger = logging.getLogger(__name__)
 
 
 class BlabladorProvider(Provider):
@@ -31,10 +34,12 @@ class BlabladorProvider(Provider):
         # Pass the config to the OpenAI client constructor
         self.client = openai.OpenAI(**config)
         self.transformer = OpenAICompliantMessageConverter()
+        logger.info("BlabladorProvider initialized")
 
     def chat_completions_create(
         self, model: str, messages: list[dict[str, Any]], **kwargs: dict[str, Any]
     ) -> object:
+        logger.debug(f"Chat completion request for {model}")
         try:
             # Resolve model name
             resolved_model = model
@@ -51,4 +56,5 @@ class BlabladorProvider(Provider):
             )
             return response
         except Exception as e:
+            logger.error(f"Chat completion failed: {e}")
             raise LLMError(f"An error occurred: {e}") from e
