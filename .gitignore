@@ -5,6 +5,14 @@ benchmark_cache/
 /aid_pais_knowledgegraph/downloaded_pdfs/
 /aid_pais_knowledgegraph/processed_jsons/
 
+# Generated benchmark results and reports
+results/*.json
+!results/.gitkeep
+reports/html/*.html
+!reports/html/.gitkeep
+*.html
+!src/**/*.html
+
 /aid_pais_knowledgegraph/SymptomData/processed_symptoms/raw_jsonld
 
 # Mac OS-specific storage files

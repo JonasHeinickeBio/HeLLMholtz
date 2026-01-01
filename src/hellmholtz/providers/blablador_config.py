@@ -13,6 +13,7 @@ class BaseModel:
 class BlabladorModel(BaseModel):
     id: str = ""
     original_api_id: str | None = None
+    description_separator: str = " - "  # Separator between name and description in API ID
 
     @property
     def display_string(self) -> str:
@@ -25,12 +26,13 @@ class BlabladorModel(BaseModel):
 
     @property
     def api_id(self) -> str:
-        """Reconstructs the ID string expected by the API."""
+        """Reconstructs the ID string expected by the API.
+
+        Uses description_separator field to handle API formatting variations.
+        Default separator is " - ", but some models (e.g., Qwen3 235) use ", ".
+        """
         if self.description:
-            # Special case for Qwen3 235 which uses comma separator
-            if self.id == "2" and "Qwen3 235" in self.name:
-                return f"{self.id} - {self.name}, {self.description}"
-            return f"{self.id} - {self.name} - {self.description}"
+            return f"{self.id} - {self.name}{self.description_separator}{self.description}"
         if self.id and self.id != self.name:
             return f"{self.id} - {self.name}"
         return self.name
@@ -67,6 +69,7 @@ KNOWN_MODELS: list[BlabladorModel] = [
         name="Qwen3 235",
         description="a great model from Alibaba with a long context size",
         source="Blablador",
+        description_separator=", ",  # API uses comma separator for this model
     ),
     BlabladorModel(
         id="7",
