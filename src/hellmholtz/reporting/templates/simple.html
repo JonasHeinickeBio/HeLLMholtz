@@ -102,19 +102,19 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value">{{total_runs}}</div>
+                <div class="stat-value">$total_runs</div>
                 <div class="stat-label">Total Tests</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value success-rate">{{success_rate}}%</div>
+                <div class="stat-value success-rate">$success_rate%</div>
                 <div class="stat-label">Success Rate</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{{models_count}}</div>
+                <div class="stat-value">$models_count</div>
                 <div class="stat-label">Models Tested</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{{temperatures_count}}</div>
+                <div class="stat-value">$temperatures_count</div>
                 <div class="stat-label">Temperature Levels</div>
             </div>
         </div>
@@ -127,7 +127,7 @@
         </div>
 
         <div class="footer">
-            <p>Report generated on {{timestamp}} | HeLLMholtz Benchmark Suite</p>
+            <p>Report generated on $timestamp | HeLLMholtz Benchmark Suite</p>
         </div>
     </div>
 
@@ -136,17 +136,17 @@
         new Chart(perfCtx, {
             type: 'bar',
             data: {
-                labels: {{model_labels|tojson}},
+                labels: $model_labels,
                 datasets: [{
                     label: 'Success Rate (%)',
-                    data: {{success_rates|tojson}},
+                    data: $success_rates,
                     backgroundColor: 'rgba(40, 167, 69, 0.8)',
                     borderColor: 'rgba(40, 167, 69, 1)',
                     borderWidth: 1,
                     yAxisID: 'y'
                 }, {
                     label: 'Avg Latency (s)',
-                    data: {{avg_latencies|tojson}},
+                    data: $avg_latencies,
                     backgroundColor: 'rgba(0, 123, 255, 0.8)',
                     borderColor: 'rgba(0, 123, 255, 1)',
                     borderWidth: 1,

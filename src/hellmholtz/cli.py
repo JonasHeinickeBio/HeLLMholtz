@@ -191,7 +191,7 @@ def bench(  # noqa: C901
             typer.echo(f"\nEvaluating results with {evaluate_with}...")
             from hellmholtz.benchmark.evaluator import evaluate_responses
 
-            results = evaluate_responses(results, evaluate_with, prompts)
+            evaluate_responses(results, evaluate_with, prompts)
 
             # Note: run_benchmarks already saved results,
             # evaluation results are not automatically saved

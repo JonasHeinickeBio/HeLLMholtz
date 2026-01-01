@@ -13,6 +13,9 @@ def calculate_confidence_interval(
     data: list[float], confidence: float = 0.95
 ) -> tuple[float, float]:
     """Calculate confidence interval for a dataset."""
+    if len(data) == 0:
+        return (float("nan"), float("nan"))
+
     if len(data) < 2:
         return (float("nan"), float("nan"))
 

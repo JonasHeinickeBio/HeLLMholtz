@@ -11,7 +11,7 @@ def export_to_csv(results: list[BenchmarkResult], filepath: str) -> None:
     """Export benchmark results to CSV format."""
     import csv
 
-    with open(filepath, "w", newline="") as csvfile:
+    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
         fieldnames = [
             "model",
             "prompt_id",
@@ -48,7 +48,7 @@ def export_to_csv(results: list[BenchmarkResult], filepath: str) -> None:
 
 def load_results(path: str) -> list[BenchmarkResult]:
     """Load benchmark results from a JSON file."""
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
 
     return [BenchmarkResult(**item) for item in data]
