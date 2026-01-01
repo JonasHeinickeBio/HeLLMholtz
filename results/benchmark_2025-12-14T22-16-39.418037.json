@@ -1,0 +1,1052 @@
+[
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.001228774999617599,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00018986800205311738,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00013986200065119192,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.0001298099996347446,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00013444000069284812,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00013178600056562573,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00011834699762403034,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00013677900278707966,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00011363599696778692,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010827900041476823,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010635299986461177,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010886900054174475,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010573400140856393,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00011168499986524694,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010363399997004308,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010249299884890206,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010332899910281412,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010253200161969289,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010408799789729528,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010439700054121204,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010277900219080038,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010430800102767535,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00011132199870189652,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010547300189500675,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.0001022809992718976,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010718100020312704,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010555200060480274,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010241099880659021,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010367199865868315,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010167599975829944,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010446699889143929,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010493700028746389,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010365600246586837,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010479499906068668,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010151599781238474,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010273100269841962,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010208200183114968,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010101999941980466,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010362899774918333,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.0001024269986373838,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010485399980098009,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010636499791871756,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.0001009719999274239,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010261100032948889,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010263399963150732,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010305999967386015,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010055199891212396,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.0001005669982987456,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010121400191565044,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010236700109089725,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010091700096381828,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010508999912417494,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.0001022709984681569,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.0001025099991238676,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010199199823546223,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010224399738945067,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010435200238134712,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010117000056197867,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010096999903908,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010228999963146634,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010645799920894206,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010251900312141515,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010320399815100245,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010076100079459138,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010419700265629217,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010973600001307204,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010277700130245648,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010195700087933801,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.0001012720022117719,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010128799840458669,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.0001049129969032947,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010076400212710723,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010274600208504125,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010217099770670757,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.0001015130001178477,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010372700126026757,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010643199857440777,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010260899944114499,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010032100180978887,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010453299910295755,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.0001020540003082715,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010196599760092795,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010607100193738006,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010323900278308429,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010439300240250304,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010272999861626886,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010331000157748349,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.0001032840009429492,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010190099783358164,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00011322199861751869,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010307699994882569,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.0001035980021697469,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010512500011827797,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010466499952599406,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010524599929340184,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010353399920859374,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.0001063189993146807,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010465000013937242,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.0001085620024241507,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010441300037200563,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.00010576500062597916,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.00010675899829948321,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.00010528100028750487,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.00010302900045644492,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.00010410799950477667,
+    "success": false,
+    "timestamp": "2025-12-14T22:16:39.418037",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "No module named 'aisuite.providers.message_converter'"
+  }
+]

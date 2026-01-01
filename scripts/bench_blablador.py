@@ -5,6 +5,7 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from hellmholtz.benchmark import run_benchmarks
+from hellmholtz.core.prompts import Message, Prompt
 from hellmholtz.providers.blablador import list_models
 from hellmholtz.reporting import summarize_results
 
@@ -41,7 +42,19 @@ def main() -> None:
             sys.exit(1)
 
     with open(prompts_file) as f:
-        prompts = [line.strip() for line in f if line.strip()]
+        prompt_strings = [line.strip() for line in f if line.strip()]
+
+    # Convert strings to Prompt objects
+    prompts = []
+    for i, prompt_text in enumerate(prompt_strings):
+        prompts.append(
+            Prompt(
+                id=f"prompt_{i + 1}",
+                category="custom",
+                messages=[Message(role="user", content=prompt_text)],
+                description=f"Custom prompt {i + 1}",
+            )
+        )
 
     print(f"Running benchmarks with {len(prompts)} prompts...")
 

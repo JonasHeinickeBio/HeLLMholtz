@@ -1,0 +1,33 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Benchmark Report</title>
+        <style>
+            body { font-family: sans-serif; margin: 2rem; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+        </style>
+    </head>
+    <body>
+        <h1>Benchmark Summary</h1>
+        <p><strong>Total Runs:</strong> 105</p>
+        <p><strong>Models:</strong> blablador:Apertus-8B-Instruct-2509, blablador:Devstral-Small-2-24B-Instruct-2512, blablador:GPT-OSS-120b, blablador:MiniMax-M2, blablador:Ministral-3-14B-Instruct-2512, blablador:Phi-4-multimodal-instruct, blablador:Qwen3 235, blablador:Qwen3-Coder-30B-A3B-Instruct, blablador:Qwen3-Next, blablador:Qwen3-VL-32B-Instruct-FP8, blablador:Tongyi-DeepResearch-30B-A3B, blablador:alias-apertus, blablador:alias-code, blablador:alias-embeddings, blablador:alias-fast, blablador:alias-function-call, blablador:alias-huge, blablador:alias-large, blablador:gpt-3.5-turbo, blablador:text-davinci-003, blablador:text-embedding-ada-002</p>
+
+        <h2>Performance by Model</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Success Rate</th>
+                    <th>Avg Latency (s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>blablador:Apertus-8B-Instruct-2509</td><td>100.0%</td><td>1.6866</td></tr><tr><td>blablador:Devstral-Small-2-24B-Instruct-2512</td><td>100.0%</td><td>5.2224</td></tr><tr><td>blablador:GPT-OSS-120b</td><td>0.0%</td><td>0.2592</td></tr><tr><td>blablador:MiniMax-M2</td><td>0.0%</td><td>0.3541</td></tr><tr><td>blablador:Ministral-3-14B-Instruct-2512</td><td>100.0%</td><td>2.8961</td></tr><tr><td>blablador:Phi-4-multimodal-instruct</td><td>100.0%</td><td>1.4951</td></tr><tr><td>blablador:Qwen3 235</td><td>0.0%</td><td>0.2876</td></tr><tr><td>blablador:Qwen3-Coder-30B-A3B-Instruct</td><td>100.0%</td><td>1.6240</td></tr><tr><td>blablador:Qwen3-Next</td><td>100.0%</td><td>3.6113</td></tr><tr><td>blablador:Qwen3-VL-32B-Instruct-FP8</td><td>100.0%</td><td>6.9972</td></tr><tr><td>blablador:Tongyi-DeepResearch-30B-A3B</td><td>100.0%</td><td>12.7388</td></tr><tr><td>blablador:alias-apertus</td><td>100.0%</td><td>2.7445</td></tr><tr><td>blablador:alias-code</td><td>80.0%</td><td>1.5914</td></tr><tr><td>blablador:alias-embeddings</td><td>100.0%</td><td>0.3039</td></tr><tr><td>blablador:alias-fast</td><td>100.0%</td><td>4.9655</td></tr><tr><td>blablador:alias-function-call</td><td>100.0%</td><td>1.5576</td></tr><tr><td>blablador:alias-huge</td><td>100.0%</td><td>13.5565</td></tr><tr><td>blablador:alias-large</td><td>100.0%</td><td>3.3179</td></tr><tr><td>blablador:gpt-3.5-turbo</td><td>100.0%</td><td>0.2457</td></tr><tr><td>blablador:text-davinci-003</td><td>100.0%</td><td>0.2022</td></tr><tr><td>blablador:text-embedding-ada-002</td><td>100.0%</td><td>0.2073</td></tr>
+            </tbody>
+        </table>
+    </body>
+    </html>

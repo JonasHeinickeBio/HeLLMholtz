@@ -1,0 +1,1052 @@
+[
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.4408360020024702,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 11,
+    "output_tokens": 49,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 12.030645908002043,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 14,
+    "output_tokens": 976,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.6634405880031409,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 32,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.6136543520042324,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 13,
+    "output_tokens": 21,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Ministral-3-14B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 7.0014644769980805,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 37,
+    "output_tokens": 561,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.47098188499512617,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 76,
+    "output_tokens": 71,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 4.173136123994482,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 79,
+    "output_tokens": 1020,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.4378294670023024,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 82,
+    "output_tokens": 45,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 1.2998360120036523,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 78,
+    "output_tokens": 296,
+    "error_message": null
+  },
+  {
+    "model": "blablador:GPT-OSS-120b",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 4.537116120998689,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 102,
+    "output_tokens": 1093,
+    "error_message": null
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 2.6967066880024504,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:36242->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 2.6791035380010726,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:36266->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 2.5822672950016567,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:35946->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 2.208845773995563,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:36000->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:MiniMax-M2",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.1506482810000307,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:36020->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.9971245449996786,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 69,
+    "output_tokens": 31,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 1.6439908789980109,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 72,
+    "output_tokens": 71,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5885452539951075,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 74,
+    "output_tokens": 20,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.6280371069951798,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 71,
+    "output_tokens": 20,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Apertus-8B-Instruct-2509",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 5.5301826979994075,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 95,
+    "output_tokens": 261,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7219991050005774,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 13.92361745400558,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 1011,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5122928010023315,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 20,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.7152085580019047,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 27,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3 235",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 6.490812317002565,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 456,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.3927693639998324,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 39,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 7.348989474005066,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 840,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.4090268120053224,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.5170746340008918,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 25,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Coder-30B-A3B-Instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 3.4776939599978505,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 376,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.334141350002028,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 11,
+    "output_tokens": 43,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 13.469522735002101,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 14,
+    "output_tokens": 638,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.7599481220022426,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 24,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 1.0244752669968875,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 13,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Devstral-Small-2-24B-Instruct-2512",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.8688285399985034,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 37,
+    "output_tokens": 126,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.6165774020046229,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 10,
+    "output_tokens": 45,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.917965043001459,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 13,
+    "output_tokens": 85,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.3898168949963292,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 26,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.42974997100100154,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 12,
+    "output_tokens": 19,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Phi-4-multimodal-instruct",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.8667142250051256,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 36,
+    "output_tokens": 312,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.5811090989955119,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 40,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 7.6106156690002535,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 873,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.4451625200017588,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 30,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.37668475399550516,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 21,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-Next",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 6.266359176996048,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 722,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.5165056330006337,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 47,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 18.84131279500434,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 705,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 1.5657952909969026,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 53,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.8102401750002173,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 24,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Qwen3-VL-32B-Instruct-FP8",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 14.517215646003024,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 523,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 3.1782459639944136,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 365,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 32.46000041800289,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 3886,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 2.7645274929964216,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 309,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 4.611511857998266,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 522,
+    "error_message": null
+  },
+  {
+    "model": "blablador:Tongyi-DeepResearch-30B-A3B",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 19.147158583997225,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 2309,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.8793544849977479,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 69,
+    "output_tokens": 31,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 2.0866315009989194,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 72,
+    "output_tokens": 93,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5953792659929604,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 74,
+    "output_tokens": 21,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.5232621629984351,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 71,
+    "output_tokens": 18,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-apertus",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 5.715405914001167,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 95,
+    "output_tokens": 271,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.39714136900147423,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 5.163949709000008,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 989,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.41135987199959345,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 1.139523725003528,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 27,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-code",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.8464506900054403,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 367,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.2059812130028149,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.20375844599766424,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.20816893099981826,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.1611756990023423,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-embeddings",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.15661331600131234,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7714435400048387,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 11,
+    "output_tokens": 50,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 7.305152394998004,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 14,
+    "output_tokens": 595,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5813411979979719,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 32,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.6528463240028941,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 13,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-fast",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 5.832695477998641,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 37,
+    "output_tokens": 468,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.4093668229979812,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 4.921694518998265,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 927,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.3215983469999628,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 23,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.38866019200213486,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 27,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-function-call",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 2.3189856250028242,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 426,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.9663627410045592,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:41440->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 2.171160821999365,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:41462->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 2.046681344996614,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:41496->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 2.115116973996919,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:38714->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:alias-huge",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 1.9704220980056562,
+    "success": false,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": "API Error (500): Error: Post \"http://localhost:8204/v1/chat/completions\": read tcp 127.0.0.1:38732->127.0.0.1:8204: read: connection reset by peer"
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.7912813369985088,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 16,
+    "output_tokens": 38,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 7.202732069003105,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 18,
+    "output_tokens": 809,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.5113099910013261,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 21,
+    "output_tokens": 20,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.7511273400014034,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 17,
+    "output_tokens": 22,
+    "error_message": null
+  },
+  {
+    "model": "blablador:alias-large",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 7.748595465003746,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": 42,
+    "output_tokens": 555,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.1751545469960547,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.1736654339983943,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.1680868709954666,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.17366422299528494,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.15870671000448056,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.1731123249992379,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.14986950800084742,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.1691288119982346,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.16046418699988862,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-davinci-003",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.18242974799795775,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 0.1614181860059034,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.20071737700345693,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.40983023199805757,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_3",
+    "latency_seconds": 0.23747674799960805,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  },
+  {
+    "model": "blablador:text-embedding-ada-002",
+    "prompt_id": "prompt_4",
+    "latency_seconds": 0.27483322699845303,
+    "success": true,
+    "timestamp": "2025-12-14T22:47:00.033483",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null
+  }
+]

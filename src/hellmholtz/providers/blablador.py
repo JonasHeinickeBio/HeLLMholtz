@@ -52,18 +52,27 @@ def list_models() -> list[BlabladorModel]:  # noqa: C901
                     name=match.group(2),
                     description=match.group(3),
                     source="Blablador",
+                    original_api_id=raw_model,
                 )
             else:
                 # Pattern: Start with digits, space hyphen space, anything (no description)
                 match = re.match(r"^(\d+)\s-\s(.*)$", raw_model)
                 if match:
                     model_obj = BlabladorModel(
-                        id=match.group(1), name=match.group(2), description="", source="Blablador"
+                        id=match.group(1),
+                        name=match.group(2),
+                        description="",
+                        source="Blablador",
+                        original_api_id=raw_model,
                     )
                 else:
                     # Fallback: Use the whole string as ID and Name
                     model_obj = BlabladorModel(
-                        id=raw_model, name=raw_model, description="", source="Blablador"
+                        id=raw_model,
+                        name=raw_model,
+                        description="",
+                        source="Blablador",
+                        original_api_id=raw_model,
                     )
 
             # Enrich with known data
