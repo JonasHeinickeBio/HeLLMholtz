@@ -3,6 +3,15 @@ from dataclasses import dataclass
 
 @dataclass
 class BaseModel:
+    """Base model class with shared attributes for Blablador models.
+
+    Attributes:
+        name: Display name of the model
+        alias: Short alias for the model (optional)
+        description: Detailed description of model capabilities
+        source: Provider source (default: 'Blablador')
+    """
+
     name: str
     alias: str | None = None
     description: str = ""
@@ -17,6 +26,14 @@ class BlabladorModel(BaseModel):
 
     @property
     def display_string(self) -> str:
+        """Generate a human-readable display string for the model.
+
+        Combines ID, name, alias, and description into a formatted string
+        suitable for user-facing display.
+
+        Returns:
+            Formatted string like '1 - GPT-OSS-120b (alias) - description'
+        """
         parts = [self.id, self.name]
         if self.alias:
             parts.append(f"({self.alias})")

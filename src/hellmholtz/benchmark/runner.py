@@ -248,7 +248,18 @@ def run_throughput_benchmark(
 
 
 def print_summary_stats(stats: dict[str, Any], results: list[BenchmarkResult]) -> None:
-    """Print comprehensive benchmark statistics."""
+    """Print comprehensive benchmark statistics to console.
+
+    Displays a formatted summary including:
+    - Total test counts and success rates
+    - Per-model performance metrics (success rate, average latency)
+    - Category coverage
+    - Overall performance statistics (min/max/avg latency)
+
+    Args:
+        stats: Dictionary with aggregate statistics from the benchmark run
+        results: List of individual benchmark results for detailed analysis
+    """
     print("\n" + "=" * 60)
     print("BENCHMARK SUMMARY")
     print("=" * 60)
@@ -281,7 +292,19 @@ def print_summary_stats(stats: dict[str, Any], results: list[BenchmarkResult]) -
 
 
 def save_results(results: list[BenchmarkResult], directory: Path, timestamp: str) -> None:
-    """Save benchmark results to JSON."""
+    """Save benchmark results to a timestamped JSON file.
+
+    Creates a JSON file with all benchmark results in the specified directory.
+    Each result is converted to a dictionary representation.
+
+    Args:
+        results: List of benchmark results to save
+        directory: Target directory for the JSON file
+        timestamp: ISO format timestamp to use in filename
+
+    Note:
+        Colons in the timestamp are replaced with hyphens for filesystem compatibility.
+    """
     filename = f"benchmark_{timestamp.replace(':', '-')}.json"
     filepath = directory / filename
 

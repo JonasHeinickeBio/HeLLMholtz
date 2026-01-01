@@ -69,13 +69,28 @@ class Prompt(BaseModel):
 
     @property
     def user_message(self) -> str:
-        """Get the primary user message content (for backward compatibility)."""
+        """Get the primary user message content.
+
+        Returns the first user message in the conversation.
+        Useful for backward compatibility with systems expecting
+        a single user prompt string.
+
+        Returns:
+            Content of the first user message, or empty string if none exists.
+        """
         user_msgs = [msg for msg in self.messages if msg.role == "user"]
         return user_msgs[0].content if user_msgs else ""
 
     @property
     def system_message(self) -> str | None:
-        """Get the system message content if present."""
+        """Get the system message content if present.
+
+        System messages provide instructions or context to the model
+        about how to behave or what role to play.
+
+        Returns:
+            Content of the first system message, or None if no system message exists.
+        """
         system_msgs = [msg for msg in self.messages if msg.role == "system"]
         return system_msgs[0].content if system_msgs else None
 

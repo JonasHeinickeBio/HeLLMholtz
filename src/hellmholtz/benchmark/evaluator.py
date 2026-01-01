@@ -28,9 +28,24 @@ CRITIQUE: <text>
 def evaluate_responses(
     results: list[BenchmarkResult], judge_model: str, prompts: list[Prompt]
 ) -> list[BenchmarkResult]:
-    """
-    Evaluate benchmark responses using an LLM judge.
-    Updates the results in-place with rating and critique.
+    """Evaluate benchmark responses using an LLM-as-a-Judge approach.
+
+    Uses a specified judge model to rate and critique the responses from
+    benchmark runs. Updates the BenchmarkResult objects in-place with
+    rating (1-10 scale) and critique text.
+
+    Args:
+        results: List of benchmark results to evaluate
+        judge_model: Model identifier to use as judge (e.g., "openai:gpt-4o")
+        prompts: List of original prompts used in the benchmark
+
+    Returns:
+        The same results list with updated rating and critique fields
+        for successful runs.
+
+    Note:
+        Only evaluates successful runs with response text. Failed runs
+        and runs without responses are skipped.
     """
     logger.info(f"Starting evaluation with judge model: {judge_model}")
 

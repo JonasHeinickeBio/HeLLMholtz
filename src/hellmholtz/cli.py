@@ -20,6 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 def configure_logging() -> None:
+    """Configure logging for the CLI application.
+
+    Sets up INFO level logging with a formatted output including
+    timestamp, logger name, level, and message.
+    """
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -333,6 +338,10 @@ def models() -> None:
 
 
 def main() -> None:
+    """Main entry point for the HeLLMholtz CLI application.
+
+    Configures logging and launches the Typer app.
+    """
     configure_logging()
     app()
 
