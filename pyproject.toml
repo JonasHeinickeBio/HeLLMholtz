@@ -23,6 +23,7 @@ aisuite = { extras = ["all"], version = "^0.1.6" }
 pydantic = "^2.10.3"
 python-dotenv = "^1.0.1"
 typer = "^0.15.1"
+jinja2 = "^3.1.0"
 lm-eval = { version = "^0.4.7", optional = true }
 litellm = { version = "^1.55.2", optional = true }
 
