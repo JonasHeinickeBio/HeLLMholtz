@@ -10,6 +10,9 @@ def select_best_model(
 ) -> dict[str, Any]:
     """Select the best model based on benchmark results."""
 
+    if criterion not in ["latency", "success_rate"]:
+        raise ValueError(f"Invalid criterion: {criterion}. Must be 'latency' or 'success_rate'")
+
     results = load_results(results_path)
     if not results:
         raise ValueError("No results found in file.")

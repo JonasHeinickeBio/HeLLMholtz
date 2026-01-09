@@ -2,6 +2,7 @@
 Core prompt structures for LLM interactions.
 """
 
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
@@ -142,3 +143,80 @@ class Prompt(BaseModel):
             raise ImportError(
                 "PyYAML is required for YAML import. Install with: pip install PyYAML"
             ) from None
+
+
+def load_prompts(
+    file_path: str | Path, category: str | None = None, file_format: str | None = None
+) -> list["Prompt"]:
+    """Load prompts from a file.
+
+    Supports both JSON and text formats. For JSON files, expects a list of
+    prompt objects or a single prompt object. For text files, treats each
+    non-empty line as a separate prompt.
+
+    Args:
+        file_path: Path to the prompts file
+        category: Optional category filter (only applies to JSON format)
+        file_format: Optional file format override ('json' or 'txt').
+                    If not provided, inferred from file extension.
+
+    Returns:
+        List of loaded Prompt objects
+
+    Raises:
+        FileNotFoundError: If the file doesn't exist
+        ValueError: If the file format is invalid or unsupported
+        json.JSONDecodeError: If JSON parsing fails
+    """
+    import json
+
+    path = Path(file_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Prompts file not found: {file_path}")
+
+    # Determine file format
+    if file_format is None:
+        if path.suffix.lower() == ".json":
+            file_format = "json"
+        elif path.suffix.lower() in [".txt", ".md"]:
+            file_format = "txt"
+        else:
+            raise ValueError(f"Unsupported file extension: {path.suffix}. Use .json, .txt, or .md")
+
+    if file_format == "json":
+        # Load structured prompts from JSON
+        try:
+            with open(path, encoding="utf-8") as f:
+                prompt_data = json.load(f)
+
+            if isinstance(prompt_data, list):
+                prompts = [Prompt(**p) for p in prompt_data]
+            else:
+                prompts = [Prompt(**prompt_data)]
+
+            # Apply category filter if specified
+            if category:
+                prompts = [p for p in prompts if p.category == category]
+
+            return prompts
+
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in prompts file {file_path}: {e}") from e
+
+    elif file_format == "txt":
+        # Load simple text prompts (one per line)
+        with open(path, encoding="utf-8") as f:
+            file_prompts = [line.strip() for line in f if line.strip()]
+
+        prompts = [
+            Prompt(
+                id=f"prompt_{i:03d}",
+                category=category or "custom",
+                messages=[Message(role="user", content=line)],
+            )
+            for i, line in enumerate(file_prompts)
+        ]
+        return prompts
+
+    else:
+        raise ValueError(f"Unsupported file format: {file_format}. Use 'json' or 'txt'")

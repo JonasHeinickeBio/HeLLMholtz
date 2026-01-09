@@ -126,6 +126,23 @@ class EvaluationAnalyzer:
         ratings = stats["ratings"]
         latencies = stats["latencies"]
 
+        if not ratings:
+            return {
+                "avg_rating": 0,
+                "min_rating": 0,
+                "max_rating": 0,
+                "median_rating": 0,
+                "rating_std": 0,
+                "success_rate": round(stats["success_count"] / stats["total_count"] * 100, 1),
+                "avg_latency": round(statistics.mean(latencies), 3) if latencies else 0,
+                "min_latency": round(min(latencies), 3) if latencies else 0,
+                "max_latency": round(max(latencies), 3) if latencies else 0,
+                "total_responses": 0,
+                "total_prompts": len(cast(set[str], stats["prompts"])),
+                "rating_distribution": self._calculate_rating_distribution(ratings),
+                "rating_percentiles": self._calculate_percentiles(ratings),
+            }
+
         return {
             "avg_rating": round(statistics.mean(ratings), 2),
             "min_rating": min(ratings),
