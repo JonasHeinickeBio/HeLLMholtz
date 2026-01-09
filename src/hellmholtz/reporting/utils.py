@@ -48,7 +48,12 @@ def export_to_csv(results: list[BenchmarkResult], filepath: str) -> None:
 
 def load_results(path: str) -> list[BenchmarkResult]:
     """Load benchmark results from a JSON file."""
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
+
+    if not isinstance(data, list):
+        raise ValueError(f"Expected a JSON list of results in {path}")
+    if not all(isinstance(item, dict) for item in data):
+        raise ValueError(f"Expected each result item to be an object in {path}")
 
     return [BenchmarkResult(**item) for item in data]
