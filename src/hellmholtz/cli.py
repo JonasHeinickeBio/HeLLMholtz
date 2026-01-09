@@ -430,6 +430,88 @@ def analyze(
         raise typer.Exit(1) from e
 
 
+@app.command()
+def agent(
+    model: str = typer.Option(..., help="Model to use (e.g., openai:gpt-4o)"),
+    question: str = typer.Argument(..., help="Question or task for the agent"),
+    max_iterations: int = typer.Option(10, help="Maximum reasoning iterations"),
+    temperature: float = typer.Option(0.1, help="Temperature for LLM"),
+    verbose: bool = typer.Option(False, help="Show detailed reasoning process"),
+    enable_search: bool = typer.Option(False, help="Enable web search tool"),
+    workspace: str | None = typer.Option(
+        None, help="Workspace directory for file operations"
+    ),
+) -> None:
+    """Run an agent with tool use to solve complex tasks.
+
+    The agent uses a ReAct (Reasoning + Acting) approach to break down
+    tasks and use tools like calculator, file I/O, and web search.
+    """
+    from hellmholtz.agent import (
+        Agent,
+        AgentConfig,
+        CalculatorTool,
+        FileIOTool,
+        SearchTool,
+    )
+
+    try:
+        # Setup tools
+        tools = [
+            CalculatorTool(),
+            FileIOTool(workspace_dir=workspace),
+        ]
+
+        if enable_search:
+            tools.append(SearchTool())
+
+        # Configure agent
+        config = AgentConfig(
+            model=model,
+            max_iterations=max_iterations,
+            temperature=temperature,
+            verbose=verbose,
+        )
+
+        # Run agent
+        agent_instance = Agent(config=config, tools=tools)
+        result = agent_instance.run(question)
+
+        # Display results
+        if verbose:
+            typer.echo("\n" + "=" * 60)
+            typer.echo("THOUGHT PROCESS:")
+            typer.echo("=" * 60)
+            for step in result.thought_process:
+                iteration = step.get("iteration", "?")
+                step_type = step.get("type", "unknown")
+                typer.echo(f"\nIteration {iteration} ({step_type}):")
+
+                if step_type == "action":
+                    typer.echo(f"Thought: {step.get('thought', 'N/A')}")
+                    typer.echo(f"Action: {step.get('action', 'N/A')}")
+                    typer.echo(f"Input: {step.get('action_input', 'N/A')}")
+                    typer.echo(f"Observation: {step.get('observation', 'N/A')}")
+                elif step_type == "final_answer":
+                    typer.echo(f"Content: {step.get('content', 'N/A')}")
+                else:
+                    typer.echo(f"Content: {step.get('content', 'N/A')}")
+
+        typer.echo("\n" + "=" * 60)
+        typer.echo(f"STATUS: {'✓ Success' if result.success else '✗ Failed'}")
+        typer.echo(f"ITERATIONS: {result.iterations}/{max_iterations}")
+        typer.echo("=" * 60)
+        typer.echo(f"\nFINAL ANSWER:\n{result.answer}")
+
+        if not result.success:
+            raise typer.Exit(1)
+
+    except Exception as e:
+        logger.error(f"Agent error: {e}")
+        typer.echo(f"Error running agent: {e}", err=True)
+        raise typer.Exit(1) from e
+
+
 def main() -> None:
     """Main entry point for the HeLLMholtz CLI application.
 
