@@ -45,13 +45,9 @@ def run_lm_eval(
 
     if ":" in model:
         provider, model_name = model.split(":", 1)
-        if provider == "openai":
+        if provider in ["openai", "anthropic", "google", "ollama", "blablador"]:
             lm_model = "openai-chat-completions"
             model_args = f"model={model_name}"
-        elif provider == "ollama":
-            # lm_eval might support ollama via a specific interface or openai-compatible
-            # For now, let's assume local models via 'hf' or similar if not specified
-            pass
 
     results = simple_evaluate(
         model=lm_model,

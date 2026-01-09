@@ -1,0 +1,41 @@
+[
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_0",
+    "latency_seconds": 1.0818595250020735,
+    "success": true,
+    "timestamp": "2025-12-14T23:01:54.858631",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null,
+    "response_text": null,
+    "rating": null,
+    "critique": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_1",
+    "latency_seconds": 0.1856398399977479,
+    "success": true,
+    "timestamp": "2025-12-14T23:01:54.858631",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null,
+    "response_text": null,
+    "rating": null,
+    "critique": null
+  },
+  {
+    "model": "blablador:gpt-3.5-turbo",
+    "prompt_id": "prompt_2",
+    "latency_seconds": 0.2264941320026992,
+    "success": true,
+    "timestamp": "2025-12-14T23:01:54.858631",
+    "input_tokens": null,
+    "output_tokens": null,
+    "error_message": null,
+    "response_text": null,
+    "rating": null,
+    "critique": null
+  }
+]

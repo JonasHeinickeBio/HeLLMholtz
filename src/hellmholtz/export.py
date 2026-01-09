@@ -10,6 +10,9 @@ def select_best_model(
 ) -> dict[str, Any]:
     """Select the best model based on benchmark results."""
 
+    if criterion not in ["latency", "success_rate"]:
+        raise ValueError(f"Invalid criterion: {criterion}. Must be 'latency' or 'success_rate'")
+
     results = load_results(results_path)
     if not results:
         raise ValueError("No results found in file.")
@@ -51,7 +54,18 @@ def select_best_model(
 
 
 def get_default_model_config(results_dir: str = "results") -> dict[str, Any]:
-    """Get the best model config from the latest benchmark."""
+    """Get the default model configuration based on latest benchmark results.
+
+    Scans the results directory for the most recent benchmark file and
+    selects the best performing model based on latency.
+
+    Args:
+        results_dir: Directory containing benchmark result JSON files.
+
+    Returns:
+        Dictionary containing the best model configuration with 'model' key.
+        Defaults to 'openai:gpt-4o' if no results found or on error.
+    """
 
     # Find latest benchmark file
     files = glob.glob(os.path.join(results_dir, "benchmark_*.json"))

@@ -1,19 +1,12 @@
-import json
+"""
+Markdown report generation functions.
+"""
 
 from hellmholtz.benchmark import BenchmarkResult
 
 
-def load_results(path: str) -> list[BenchmarkResult]:
-    """Load benchmark results from a JSON file."""
-    with open(path) as f:
-        data = json.load(f)
-
-    return [BenchmarkResult(**item) for item in data]
-
-
-def summarize_results(results: list[BenchmarkResult]) -> str:
+def generate_markdown_report(results: list[BenchmarkResult]) -> str:
     """Generate a Markdown summary of benchmark results."""
-
     if not results:
         return "No results to summarize."
 
@@ -39,3 +32,8 @@ def summarize_results(results: list[BenchmarkResult]) -> str:
         summary.append(f"| {model} | {success_rate:.1f}% | {avg_latency:.4f} |")
 
     return "\n".join(summary)
+
+
+def summarize_results(results: list[BenchmarkResult]) -> str:
+    """Summarize benchmark results (alias for markdown report)."""
+    return generate_markdown_report(results)

@@ -24,10 +24,55 @@ hellm models
 
 ### Benchmarking
 
-Run a custom benchmark using a prompts file:
+Run benchmarks across models and prompts. HeLLMholtz supports multiple ways to specify prompts:
+
+#### Using Built-in Prompt Categories
+
+Use predefined prompts organized by category:
 
 ```bash
-hellm bench --models openai:gpt-4o,ollama:llama3.2 --prompts-file prompts.txt
+# Use reasoning prompts (default)
+hellm bench --models openai:gpt-4o --prompts-category reasoning
+
+# Use all available categories
+hellm bench --models openai:gpt-4o --all-prompts
+
+# Available categories: reasoning, coding, creative, knowledge
+```
+
+#### Using Custom Prompt Files
+
+Load prompts from external files:
+
+```bash
+# Simple text file (one prompt per line)
+hellm bench --models openai:gpt-4o --prompts-file prompts.txt
+
+# Structured JSON file with full prompt metadata
+hellm bench --models openai:gpt-4o --prompts-file custom_prompts.json
+```
+
+**Prompt File Formats:**
+
+- **Text files (.txt)**: Simple format with one prompt per line
+- **JSON files (.json)**: Structured format supporting categories, descriptions, and expected outputs
+
+**Example JSON prompts file:**
+```json
+[
+  {
+    "id": "custom_reasoning_001",
+    "category": "reasoning",
+    "messages": [
+      {
+        "role": "user",
+        "content": "If a plane crashes on the border of the US and Canada, where do they bury the survivors?"
+      }
+    ],
+    "description": "Classic lateral thinking puzzle",
+    "expected_output": "Answer to riddle"
+  }
+]
 ```
 
 ### Throughput Benchmarking

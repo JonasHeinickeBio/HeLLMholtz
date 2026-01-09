@@ -2,7 +2,7 @@
 name = "hellmholtz"
 version = "0.0.1"
 description = "Helmholtz LLM Suite"
-authors = [{name = "jhe24", email = "jhe24@example.com"}]
+authors = [{ name = "jhe24", email = "jhe24@example.com" }]
 readme = "README.md"
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
@@ -19,10 +19,11 @@ packages = [{ include = "hellmholtz", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aisuite = {extras = ["all"], version = "^0.1.6"}
+aisuite = { extras = ["all"], version = "^0.1.6" }
 pydantic = "^2.10.3"
 python-dotenv = "^1.0.1"
 typer = "^0.15.1"
+jinja2 = "^3.1.0"
 lm-eval = { version = "^0.4.7", optional = true }
 litellm = { version = "^1.55.2", optional = true }
 

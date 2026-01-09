@@ -1,0 +1,49 @@
+[
+    {
+        "id": "custom_reasoning_001",
+        "category": "reasoning",
+        "messages": [
+            {
+                "role": "user",
+                "content": "If a plane crashes on the border of the US and Canada, where do they bury the survivors?"
+            }
+        ],
+        "description": "Classic lateral thinking puzzle",
+        "expected_output": "Answer to riddle"
+    },
+    {
+        "id": "custom_coding_001",
+        "category": "coding",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Write a function that reverses a string without using built-in reverse methods."
+            }
+        ],
+        "description": "String manipulation algorithm",
+        "expected_output": "Code implementation"
+    },
+    {
+        "id": "custom_creative_001",
+        "category": "creative",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Describe a world where gravity works sideways instead of down."
+            }
+        ],
+        "description": "Creative world-building",
+        "expected_output": "Descriptive narrative"
+    },
+    {
+        "id": "analysis_validation_001",
+        "category": "analysis",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Analyze the following quarterly sales data for a retail company and provide a comprehensive summary in JSON format.\n\nQ1 2023: $125,000 (15% growth from Q1 2022)\nQ2 2023: $142,000 (13% growth from Q2 2022)  \nQ3 2023: $118,000 (-8% growth from Q3 2022)\nQ4 2023: $165,000 (22% growth from Q4 2022)\nQ1 2024: $138,000 (10% growth from Q1 2023)\nQ2 2024: $152,000 (7% growth from Q2 2023)\n\nSteps to follow:\n1. Calculate year-over-year growth rates for each quarter (show intermediate calculations)\n2. Identify seasonal patterns and trends\n3. Determine the best and worst performing quarters\n4. Calculate the total annual revenue for 2023 and 2024 (use ONLY actual data for 2024 totals - Q1+Q2 only)\n5. Predict Q3 and Q4 2024 performance based on historical patterns\n\nIMPORTANT: Provide your final answer as a single, valid JSON object with EXACTLY the following structure. Do not add extra fields, nesting, or explanations outside the JSON:\n{\n  \"intermediate_calculations\": {\n    \"yoy_growth_q1_2024\": \"10%\",\n    \"yoy_growth_q2_2024\": \"7%\",\n    \"total_revenue_2023_calculation\": \"125000 + 142000 + 118000 + 165000 = 550000\",\n    \"total_revenue_2024_calculation\": \"138000 + 152000 = 290000\"\n  },\n  \"total_revenue_2023\": 550000,\n  \"total_revenue_2024\": 290000,\n  \"best_quarter\": \"Q4 2023\",\n  \"worst_quarter\": \"Q3 2023\",\n  \"seasonal_pattern\": \"description\",\n  \"predicted_q3_2024\": 130000,\n  \"predicted_q4_2024\": 180000,\n  \"growth_trend\": \"description\"\n}\n\nVALIDATION: Before submitting, ensure your JSON is valid and matches this exact structure. The intermediate_calculations field must show your work for key calculations."
+            }
+        ],
+        "description": "Multi-step sales data analysis with JSON output and validation",
+        "expected_output": "JSON object with calculated metrics and intermediate steps"
+    }]
