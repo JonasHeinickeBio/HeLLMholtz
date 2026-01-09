@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 
@@ -14,6 +15,21 @@ from hellmholtz.reporting import (
     generate_markdown_report,
     load_results,
 )
+
+# Module-level typer option defaults to avoid B008
+PROMPTS_FILE_OPTION = typer.Option(
+    None, help="Path to prompts file (.txt for simple text, .json for structured prompts)"
+)
+PROMPTS_CATEGORY_OPTION = typer.Option(
+    None, help="Category of prompts to use (reasoning, coding, creative, knowledge)"
+)
+ALL_PROMPTS_OPTION = typer.Option(False, help="Use all available prompts")
+TEMPERATURES_OPTION = typer.Option(
+    "0.1,0.7,1.0", help="Comma-separated temperature values to test"
+)
+MAX_TOKENS_OPTION = typer.Option(None, help="Maximum tokens for responses")
+HTML_REPORT_OPTION = typer.Option(None, help="Generate HTML report at specified path")
+RESULTS_FILE_ARGUMENT = typer.Argument(..., help="Path to evaluation results JSON file")
 
 app = typer.Typer()
 logger = logging.getLogger(__name__)
@@ -66,15 +82,11 @@ def bench(  # noqa: C901
             "If not specified, uses all available models"
         ),
     ),
-    prompts_file: Path | None = None,
-    prompts_category: str | None = typer.Option(
-        None, help="Category of prompts to use (reasoning, coding, creative, knowledge)"
-    ),
-    all_prompts: bool = typer.Option(False, help="Use all available prompts"),
-    temperatures: str | None = typer.Option(
-        "0.1,0.7,1.0", help="Comma-separated temperature values to test"
-    ),
-    max_tokens: int | None = typer.Option(None, help="Maximum tokens for responses"),
+    prompts_file: Path | None = PROMPTS_FILE_OPTION,
+    prompts_category: str | None = PROMPTS_CATEGORY_OPTION,
+    all_prompts: bool = ALL_PROMPTS_OPTION,
+    temperatures: str | None = TEMPERATURES_OPTION,
+    max_tokens: int | None = MAX_TOKENS_OPTION,
     replications: int = typer.Option(
         3, help="Number of replications per configuration for statistical significance"
     ),
@@ -120,17 +132,33 @@ def bench(  # noqa: C901
     # Determine prompts to use
     if prompts_file:
         typer.echo(f"Loading prompts from file: {prompts_file}")
-        with open(prompts_file) as f:
-            file_prompts = [line.strip() for line in f if line.strip()]
-        prompts = [
-            Prompt(
-                id=f"custom_{i}",
-                category="custom",
-                messages=[Message(role="user", content=line)],
-            )
-            for i, line in enumerate(file_prompts)
-        ]
-        typer.echo(f"Loaded {len(prompts)} custom prompts")
+
+        if prompts_file.suffix.lower() == ".json":
+            # Load structured prompts from JSON
+            try:
+                with open(prompts_file) as f:
+                    prompt_data = json.load(f)
+                if isinstance(prompt_data, list):
+                    prompts = [Prompt(**p) for p in prompt_data]
+                else:
+                    prompts = [Prompt(**prompt_data)]
+                typer.echo(f"Loaded {len(prompts)} structured prompts from JSON")
+            except (json.JSONDecodeError, ValueError) as e:
+                typer.echo(f"Error parsing JSON prompts file: {e}", err=True)
+                raise typer.Exit(1) from e
+        else:
+            # Load simple text prompts (one per line)
+            with open(prompts_file) as f:
+                file_prompts = [line.strip() for line in f if line.strip()]
+            prompts = [
+                Prompt(
+                    id=f"custom_{i}",
+                    category="custom",
+                    messages=[Message(role="user", content=line)],
+                )
+                for i, line in enumerate(file_prompts)
+            ]
+            typer.echo(f"Loaded {len(prompts)} custom prompts from text file")
     elif prompts_category:
         from hellmholtz.benchmark.prompts import get_prompts_by_category
 
@@ -193,9 +221,15 @@ def bench(  # noqa: C901
 
             results = evaluate_responses(results, evaluate_with, prompts)
 
-            # Note: run_benchmarks already saved results,
-            # evaluation results are not automatically saved
-            # To save evaluation results, call save_results manually here
+            # Save evaluation results
+            from datetime import datetime
+            from pathlib import Path
+
+            from hellmholtz.benchmark.runner import save_results
+
+            timestamp = datetime.now().isoformat()
+            results_path = Path("results")
+            save_results(results, results_path, f"{timestamp}_evaluated")
 
         typer.echo("\nBenchmarks completed! Results saved to results/ directory")
         typer.echo("Use 'hellm report <results_file>' to generate detailed reports")
@@ -310,6 +344,38 @@ def bench_throughput(
 
 
 @app.command()
+def monitor(
+    test_accessibility: bool = typer.Option(
+        False, help="Test actual accessibility of configured models (slower)"
+    ),
+    save_report: bool = typer.Option(True, help="Save report to file in reports/ directory"),
+) -> None:
+    """Monitor Blablador model availability and configuration consistency.
+
+    Checks which models are available in the API versus configured locally,
+    identifies mismatches, and provides recommendations for keeping the
+    configuration up-to-date.
+    """
+    from hellmholtz.monitoring import ModelAvailabilityMonitor
+
+    try:
+        monitor = ModelAvailabilityMonitor()
+        analysis = monitor.analyze_availability(test_accessibility=test_accessibility)
+        report = monitor.generate_report(analysis, test_accessibility=test_accessibility)
+
+        typer.echo(report)
+
+        if save_report:
+            filepath = monitor.save_report(report)
+            typer.echo(f"\n💾 Report saved to: {filepath}")
+
+    except Exception as e:
+        logger.error(f"Monitoring error: {e}")
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(1) from e
+
+
+@app.command()
 def models() -> None:
     """List available models from Blablador."""
     from hellmholtz.providers.blablador import list_models
@@ -334,6 +400,33 @@ def models() -> None:
     except Exception as e:
         logger.error(f"Model list error: {e}")
         typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(1) from e
+
+
+@app.command()
+def analyze(
+    results_file: Path = RESULTS_FILE_ARGUMENT,
+    html_report: Path | None = HTML_REPORT_OPTION,
+) -> None:
+    """Analyze benchmark evaluation results with LLM-as-a-Judge scoring.
+
+    Provides comprehensive analysis including model rankings, statistical
+    summaries, and interactive visualizations. Supports evaluation results
+    from benchmarks run with the --evaluate-with flag.
+    """
+    from hellmholtz.evaluation_analysis import analyze_evaluations_cli
+
+    try:
+        analyze_evaluations_cli(str(results_file), str(html_report) if html_report else None)
+
+        if html_report:
+            typer.echo(f"\n📊 Analysis complete! HTML report saved to: {html_report}")
+        else:
+            typer.echo("\n📊 Analysis complete! Use --html-report to generate visualizations.")
+
+    except Exception as e:
+        logger.error(f"Analysis error: {e}")
+        typer.echo(f"Error analyzing results: {e}", err=True)
         raise typer.Exit(1) from e
 
 

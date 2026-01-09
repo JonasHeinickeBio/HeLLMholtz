@@ -4,8 +4,9 @@ HTML report generation functions.
 
 import json
 from pathlib import Path
-from string import Template
-from typing import Any
+from typing import Any, cast
+
+from jinja2 import Environment, FileSystemLoader, Template
 
 from hellmholtz.benchmark import BenchmarkResult
 from hellmholtz.benchmark.prompts import PROMPTS
@@ -14,8 +15,8 @@ from hellmholtz.benchmark.prompts import PROMPTS
 def _load_template(template_name: str) -> Template:
     """Load an HTML template from the templates directory."""
     template_path = Path(__file__).parent / "templates" / f"{template_name}.html"
-    with open(template_path, encoding="utf-8") as f:
-        return Template(f.read())
+    env = Environment(loader=FileSystemLoader(template_path.parent), autoescape=True)
+    return env.get_template(f"{template_name}.html")
 
 
 def _prepare_simple_report_data(results: list[BenchmarkResult]) -> dict[str, Any]:
@@ -68,7 +69,7 @@ def generate_html_report_simple(results: list[BenchmarkResult]) -> str:
 
     template = _load_template("simple")
     data = _prepare_simple_report_data(results)
-    return template.safe_substitute(data)
+    return cast(str, template.render(**data))
 
 
 def generate_html_report_detailed(results: list[BenchmarkResult]) -> str:  # noqa: C901
@@ -289,7 +290,7 @@ def generate_html_report_detailed(results: list[BenchmarkResult]) -> str:  # noq
         "detailed_results": detailed_results_html,
         "temperature_chart_script": temperature_chart_script,
     }
-    return template.safe_substitute(data)
+    return cast(str, template.render(**data))
 
 
 def generate_html_report(results: list[BenchmarkResult]) -> str:

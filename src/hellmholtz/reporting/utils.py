@@ -11,7 +11,7 @@ def export_to_csv(results: list[BenchmarkResult], filepath: str) -> None:
     """Export benchmark results to CSV format."""
     import csv
 
-    with open(filepath, "w", newline="") as csvfile:
+    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
         fieldnames = [
             "model",
             "prompt_id",

@@ -9,9 +9,7 @@ from typing import Any
 from hellmholtz.benchmark import BenchmarkResult
 
 
-def calculate_confidence_interval(
-    data: list[float], confidence: float = 0.95
-) -> tuple[float, float]:
+def calculate_confidence_interval(data: list[float]) -> tuple[float, float]:
     """Calculate confidence interval for a dataset."""
     if len(data) < 2:
         return (float("nan"), float("nan"))
@@ -38,6 +36,9 @@ def calculate_statistical_significance(group1: list[float], group2: list[float])
 
     # Pooled standard deviation
     pooled_std = math.sqrt(((n1 - 1) * std1**2 + (n2 - 1) * std2**2) / (n1 + n2 - 2))
+
+    if pooled_std == 0:
+        return {"significant": False, "p_value": 1.0, "effect_size": 0.0, "t_statistic": 0.0}
 
     # t-statistic
     t_stat = (mean1 - mean2) / (pooled_std * math.sqrt(1 / n1 + 1 / n2))
@@ -73,6 +74,8 @@ def detect_outliers(data: list[float], method: str = "iqr") -> list[int]:
     else:  # z-score method
         mean_val = statistics.mean(data)
         std_val = statistics.stdev(data)
+        if std_val == 0:
+            return []  # No outliers when all values are identical
         outliers = [i for i, x in enumerate(data) if abs((x - mean_val) / std_val) > 3]
 
     return outliers

@@ -158,8 +158,9 @@ def run_benchmarks(  # noqa: C901
                                 out_tokens = response.usage.completion_tokens
 
                         except Exception as e:
+                            success = False
                             error_msg = str(e)
-                            logger.error(
+                            logger.exception(
                                 f"Benchmark failed for {model}, prompt {prompt_id}, "
                                 f"temp {temperature}: {error_msg}"
                             )
@@ -243,7 +244,7 @@ def run_throughput_benchmark(
         }
 
     except Exception as e:
-        logger.error(f"Throughput benchmark failed for {model}: {e}")
+        logger.exception(f"Throughput benchmark failed for {model}: {e}")
         return {"model": model, "success": False, "error": str(e)}
 
 

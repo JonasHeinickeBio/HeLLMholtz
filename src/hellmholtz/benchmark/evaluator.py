@@ -80,9 +80,6 @@ def evaluate_responses(
                 result.critique = critique_match.group(1).strip()
 
         except Exception as e:
-            import traceback
-
-            logger.error(f"Evaluation failed for {result.model}, {result.prompt_id}: {e}")
-            logger.error(traceback.format_exc())
+            logger.exception(f"Evaluation failed for {result.model}, {result.prompt_id}: {e}")
 
     return results

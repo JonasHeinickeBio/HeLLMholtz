@@ -6,7 +6,7 @@ HeLLMholtz is a Python package providing unified LLM access, benchmarking, and r
 ## Architecture
 - **Core Components**: `core/config.py` (env-based settings), `client.py` (lazy singleton ClientManager for aisuite), `cli.py` (Typer-based CLI)
 - **Benchmarking**: `benchmark/runner.py` (parallel benchmark execution), `evaluator.py` (LLM-as-a-Judge evaluation), `prompts.py` (categorized prompt sets)
-- **Reporting**: `reporting.py` (Markdown/HTML generation), `export.py` (best model selection from results)
+- **Reporting**: `reporting/` package (`markdown.py`, `html.py`, `utils.py`, `stats.py`) for Markdown/HTML generation
 - **Integrations**: `integrations/lm_eval.py` (LM Evaluation Harness), `integrations/litellm.py` (proxy server)
 - **Providers**: `providers/blablador_provider.py` (custom OpenAI-compatible provider), `blablador_config.py` (model metadata)
 - **Data Flow**: Env config → ClientManager → aisuite Client → chat() returns str. Benchmarks collect BenchmarkResult dataclasses, save to JSON in `results/`, reports aggregate metrics.

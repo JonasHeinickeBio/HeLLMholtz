@@ -3,3 +3,4 @@ Write a Python function to calculate the Fibonacci sequence.
 What are the capital cities of France, Germany, and Italy?
 Compose a haiku about a robot dreaming.
 Solve this logic puzzle: If all Bloops are Razzies and some Razzies are Zazzles, are all Bloops Zazzles? Explain.
+What is 15 + 27?
