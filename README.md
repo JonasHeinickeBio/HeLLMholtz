@@ -10,6 +10,7 @@ A comprehensive Python package for unified LLM access, benchmarking, evaluation,
 
 - **🔄 Unified Client**: Single interface for OpenAI, Google, Anthropic, Ollama, and Helmholtz Blablador models
 - **⚙️ Centralized Configuration**: Environment-based configuration for all your projects
+- **🤖 Agentic Capabilities**: ReAct-style agent with tool use (calculator, file I/O, web search)
 - **📊 Advanced Benchmarking**: Compare model performance across temperatures, replications, and prompt categories
 - **🔍 LLM-as-a-Judge Evaluation**: Automated evaluation with comprehensive statistical analysis
 - **📈 Interactive Reports**: HTML reports with Chart.js visualizations and Markdown summaries
@@ -90,6 +91,34 @@ messages = [
 response = chat("anthropic:claude-3-sonnet", messages)
 ```
 
+#### Agent with Tool Use
+
+```python
+from hellmholtz.agent import Agent, AgentConfig, CalculatorTool, FileIOTool
+
+# Configure agent
+config = AgentConfig(
+    model="openai:gpt-4o",
+    max_iterations=10,
+    temperature=0.1,
+    verbose=True
+)
+
+# Setup tools
+tools = [
+    CalculatorTool(),
+    FileIOTool(workspace_dir="/tmp/agent_workspace")
+]
+
+# Run agent
+agent = Agent(config=config, tools=tools)
+result = agent.run("What is 15% of 240?")
+
+if result.success:
+    print(f"Answer: {result.answer}")
+    print(f"Iterations: {result.iterations}")
+```
+
 #### Benchmarking
 
 ```python
@@ -129,6 +158,28 @@ hellm chat --model anthropic:claude-3-sonnet --interactive
 
 # With system prompt
 hellm chat --model blablador:gpt-4o --system "You are a coding assistant" "Write a Python function to calculate fibonacci numbers"
+```
+
+#### Agent with Tool Use
+
+```bash
+# Basic agent with calculator
+hellm agent --model openai:gpt-4o "What is 15% of 240 plus 30?"
+
+# Agent with verbose reasoning
+hellm agent --model openai:gpt-4o --verbose "Calculate compound interest: $1000 at 5% for 3 years"
+
+# Agent with file operations
+hellm agent \
+  --model anthropic:claude-3-sonnet \
+  --workspace /tmp/my_workspace \
+  "Create a file called notes.txt with Python's key features"
+
+# Agent with web search
+hellm agent \
+  --model openai:gpt-4o \
+  --enable-search \
+  "What are the latest developments in quantum computing?"
 ```
 
 #### Benchmarking
