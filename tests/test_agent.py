@@ -33,9 +33,7 @@ class MockTool(Tool):
     def execute(self, *args: str, **kwargs: str) -> ToolResult:
         self.call_count += 1
         self.last_input = args[0] if args else None
-        return ToolResult(
-            success=True, output=f"Mock result for: {self.last_input}", error=None
-        )
+        return ToolResult(success=True, output=f"Mock result for: {self.last_input}", error=None)
 
 
 class TestAgentConfig:
@@ -124,9 +122,7 @@ class TestAgent:
         assert action == "mock"
         assert action_input == "test input"
 
-    def test_parse_action_invalid(
-        self, basic_config: AgentConfig, mock_tool: MockTool
-    ) -> None:
+    def test_parse_action_invalid(self, basic_config: AgentConfig, mock_tool: MockTool) -> None:
         """Test parsing invalid action format."""
         agent = Agent(config=basic_config, tools=[mock_tool])
 
@@ -136,9 +132,7 @@ class TestAgent:
         assert action is None
         assert action_input is None
 
-    def test_execute_tool_success(
-        self, basic_config: AgentConfig, mock_tool: MockTool
-    ) -> None:
+    def test_execute_tool_success(self, basic_config: AgentConfig, mock_tool: MockTool) -> None:
         """Test successful tool execution."""
         agent = Agent(config=basic_config, tools=[mock_tool])
 
@@ -147,9 +141,7 @@ class TestAgent:
         assert mock_tool.call_count == 1
         assert mock_tool.last_input == "test input"
 
-    def test_execute_tool_unknown(
-        self, basic_config: AgentConfig, mock_tool: MockTool
-    ) -> None:
+    def test_execute_tool_unknown(self, basic_config: AgentConfig, mock_tool: MockTool) -> None:
         """Test execution of unknown tool."""
         agent = Agent(config=basic_config, tools=[mock_tool])
 
@@ -181,9 +173,7 @@ class TestAgent:
         self, mock_chat: MagicMock, basic_config: AgentConfig, mock_tool: MockTool
     ) -> None:
         """Test agent run with immediate final answer."""
-        mock_chat.return_value = (
-            "Thought: I can answer this directly\n" "Final Answer: 42"
-        )
+        mock_chat.return_value = "Thought: I can answer this directly\nFinal Answer: 42"
 
         agent = Agent(config=basic_config, tools=[mock_tool])
         result = agent.run("What is the answer?")
@@ -311,6 +301,4 @@ class TestAgentIntegration:
         assert result.success is True
         assert "4" in result.answer
         # Check that calculator was actually used
-        assert any(
-            step.get("action") == "calculator" for step in result.thought_process
-        )
+        assert any(step.get("action") == "calculator" for step in result.thought_process)

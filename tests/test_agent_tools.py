@@ -119,9 +119,7 @@ class TestFileIOTool:
     def test_write_file(self, file_io: FileIOTool, temp_workspace: Path) -> None:
         """Test writing file."""
         test_file = temp_workspace / "test.txt"
-        result = file_io.execute(
-            operation="write", path=str(test_file), content="Hello, World!"
-        )
+        result = file_io.execute(operation="write", path=str(test_file), content="Hello, World!")
         assert result.success is True
         assert test_file.exists()
         assert test_file.read_text() == "Hello, World!"

@@ -42,7 +42,8 @@ class Agent:
     alternates between thinking about the task and using tools.
     """
 
-    REACT_PROMPT = """You are a helpful AI assistant that can use tools to answer questions and solve tasks.
+    REACT_PROMPT = """You are a helpful AI assistant that can use tools \
+to answer questions and solve tasks.
 
 Available tools:
 {tools}
@@ -117,7 +118,8 @@ Begin!
             Tool execution result as string
         """
         if tool_name not in self.tools:
-            return f"Error: Unknown tool '{tool_name}'. Available tools: {', '.join(self.tools.keys())}"
+            available = ", ".join(self.tools.keys())
+            return f"Error: Unknown tool '{tool_name}'. Available tools: {available}"
 
         tool = self.tools[tool_name]
 
@@ -151,9 +153,7 @@ Begin!
         self.thought_process = []
 
         # Build initial prompt
-        prompt = self.REACT_PROMPT.format(
-            tools=self._get_tools_description(), question=question
-        )
+        prompt = self.REACT_PROMPT.format(tools=self._get_tools_description(), question=question)
 
         conversation = [{"role": "user", "content": prompt}]
 
@@ -210,7 +210,10 @@ Begin!
                     conversation.append(
                         {
                             "role": "user",
-                            "content": "Please provide a valid Action and Action Input, or a Final Answer.",
+                            "content": (
+                                "Please provide a valid Action and Action Input, "
+                                "or a Final Answer."
+                            ),
                         }
                     )
                     continue
@@ -234,9 +237,7 @@ Begin!
 
                 # Add to conversation
                 conversation.append({"role": "assistant", "content": response})
-                conversation.append(
-                    {"role": "user", "content": f"Observation: {observation}"}
-                )
+                conversation.append({"role": "user", "content": f"Observation: {observation}"})
 
             except Exception as e:
                 logger.error(f"Error in iteration {iteration}: {e}")
@@ -248,9 +249,12 @@ Begin!
                 )
 
         # Max iterations reached
+        max_iter_msg = (
+            f"Maximum iterations ({self.config.max_iterations}) reached without final answer"
+        )
         return AgentResult(
             success=False,
-            answer=f"Maximum iterations ({self.config.max_iterations}) reached without final answer",
+            answer=max_iter_msg,
             iterations=self.config.max_iterations,
             thought_process=self.thought_process,
         )

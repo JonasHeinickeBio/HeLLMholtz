@@ -80,9 +80,7 @@ class CalculatorTool(Tool):
             # Evaluate expression
             result = self._eval_expr(tree.body)
 
-            return ToolResult(
-                success=True, output=f"Result: {result}", error=None
-            )
+            return ToolResult(success=True, output=f"Result: {result}", error=None)
         except ZeroDivisionError:
             return ToolResult(
                 success=False,

@@ -36,9 +36,7 @@ class FileIOTool(Tool):
     @property
     def description(self) -> str:
         """Tool description."""
-        workspace_info = (
-            f" (restricted to {self.workspace_dir})" if self.workspace_dir else ""
-        )
+        workspace_info = f" (restricted to {self.workspace_dir})" if self.workspace_dir else ""
         return (
             f"Reads and writes files{workspace_info}. "
             "Operations: 'read' to read file content, 'write' to write content to file, "
@@ -64,10 +62,10 @@ class FileIOTool(Tool):
         if self.workspace_dir:
             try:
                 file_path.relative_to(self.workspace_dir)
-            except ValueError:
+            except ValueError as e:
                 raise ValueError(
                     f"Path {path} is outside workspace directory {self.workspace_dir}"
-                )
+                ) from e
 
         return file_path
 
@@ -124,9 +122,7 @@ class FileIOTool(Tool):
                 error=None,
             )
         except UnicodeDecodeError:
-            return ToolResult(
-                success=False, output="", error=f"Cannot read binary file: {path}"
-            )
+            return ToolResult(success=False, output="", error=f"Cannot read binary file: {path}")
 
     def _write_file(self, path: str, content: str) -> ToolResult:
         """Write content to file."""

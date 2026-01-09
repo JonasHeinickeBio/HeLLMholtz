@@ -62,9 +62,7 @@ class SearchTool(Tool):
             ToolResult with search results or error
         """
         if not query or not query.strip():
-            return ToolResult(
-                success=False, output="", error="Search query cannot be empty"
-            )
+            return ToolResult(success=False, output="", error="Search query cannot be empty")
 
         if not self._ddgs_available:
             return ToolResult(
@@ -99,12 +97,8 @@ class SearchTool(Tool):
                     output_lines.append(f"   URL: {link}")
                 output_lines.append("")
 
-            return ToolResult(
-                success=True, output="\n".join(output_lines), error=None
-            )
+            return ToolResult(success=True, output="\n".join(output_lines), error=None)
 
         except Exception as e:
             logger.error(f"Search error: {e}")
-            return ToolResult(
-                success=False, output="", error=f"Search failed: {str(e)}"
-            )
+            return ToolResult(success=False, output="", error=f"Search failed: {str(e)}")
