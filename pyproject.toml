@@ -1,6 +1,6 @@
 [project]
 name = "hellmholtz"
-version = "0.0.1"
+version = "0.1.0"
 description = "Helmholtz LLM Suite"
 authors = [{ name = "jhe24", email = "jhe24@example.com" }]
 readme = "README.md"
