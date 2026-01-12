@@ -1,0 +1,160 @@
+name: Benchmarks
+
+on:
+  schedule:
+    # Run benchmarks weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      models:
+        description: 'Comma-separated list of models to benchmark (e.g., openai:gpt-4o,anthropic:claude-3-5-sonnet-20241022)'
+        required: false
+        default: 'openai:gpt-4o-mini'
+      prompt_categories:
+        description: 'Comma-separated list of prompt categories (e.g., reasoning,coding,creative)'
+        required: false
+        default: 'all'
+      replications:
+        description: 'Number of replications per prompt'
+        required: false
+        default: '3'
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-3.12-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --with dev
+
+      - name: Install project
+        run: poetry install --no-interaction
+
+      - name: Create results directory
+        run: mkdir -p results reports
+
+      - name: Run benchmarks (scheduled)
+        if: github.event_name == 'schedule'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+          BLABLADOR_API_BASE: ${{ secrets.BLABLADOR_API_BASE }}
+        run: |
+          poetry run hellm bench \
+            --models openai:gpt-4o-mini,openai:gpt-4o \
+            --prompt-categories reasoning,coding,creative \
+            --replications 3 \
+            --output-dir results \
+            --save-markdown
+
+      - name: Run benchmarks (manual)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+          BLABLADOR_API_BASE: ${{ secrets.BLABLADOR_API_BASE }}
+        run: |
+          poetry run hellm bench \
+            --models "${{ github.event.inputs.models }}" \
+            --prompt-categories "${{ github.event.inputs.prompt_categories }}" \
+            --replications ${{ github.event.inputs.replications }} \
+            --output-dir results \
+            --save-markdown
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-${{ github.run_number }}
+          path: |
+            results/
+            reports/
+          retention-days: 90
+
+      - name: Generate benchmark summary
+        if: always()
+        run: |
+          if [ -f "reports/benchmark_report.md" ]; then
+            echo "## Benchmark Results" >> $GITHUB_STEP_SUMMARY
+            cat reports/benchmark_report.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+  throughput-test:
+    name: Throughput Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-3.12-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --with dev
+
+      - name: Install project
+        run: poetry install --no-interaction
+
+      - name: Run throughput tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          poetry run pytest tests/test_throughput.py -v -m "not integration" --timeout=300
+
+      - name: Upload throughput results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: throughput-results-${{ github.run_number }}
+          path: results/
+          retention-days: 30
