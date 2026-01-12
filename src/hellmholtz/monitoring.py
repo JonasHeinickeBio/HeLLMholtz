@@ -28,7 +28,7 @@ class ModelAvailabilityMonitor:
         """
         self.api_key = api_key or os.getenv("BLABLADOR_API_KEY")
         self.api_base = api_base or os.getenv(
-            "BLABLADOR_API_BASE", "https://api.helmholtz-blablador.fz-juelich.de/v1"
+            "BLABLADOR_API_BASE", "https://api.blablador.example.com/v1"
         )
 
         if not self.api_key:

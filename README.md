@@ -1,8 +1,10 @@
 # HeLLMholtz LLM Suite
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI Version](https://img.shields.io/pypi/v/hellmholtz.svg)](https://pypi.org/project/hellmholtz/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/JonasHeinickeBio/HeLLMholtz/actions)
 
 A comprehensive Python package for unified LLM access, benchmarking, evaluation, and reporting. Built on top of `aisuite` with specialized support for Helmholtz Blablador models.
 
@@ -18,6 +20,7 @@ A comprehensive Python package for unified LLM access, benchmarking, evaluation,
 - **🚀 LM Evaluation Harness**: Integration with EleutherAI's comprehensive evaluation suite
 - **🌐 LiteLLM Proxy**: Built-in proxy server for model routing and load balancing
 - **⚡ Throughput Testing**: Performance benchmarking for high-throughput scenarios
+- **🔍 Model Discovery**: Dynamic model listing and availability checking
 
 ## 🚀 Installation
 
@@ -171,8 +174,11 @@ hellm report --results-file results/benchmark_latest.json --output report.md
 # List available Blablador models
 hellm models
 
-# Monitor model availability
+# Monitor model availability and test accessibility
 hellm monitor --test-accessibility
+
+# Check model configuration consistency
+hellm monitor --check-config
 ```
 
 #### Advanced Features
@@ -196,20 +202,27 @@ hellm proxy \
 hellmholtz/
 ├── cli.py                 # Command-line interface
 ├── client.py              # Unified LLM client
+├── monitoring.py          # Model availability monitoring
+├── evaluation_analysis.py # Statistical analysis and reporting
+├── export.py              # Result export utilities
 ├── core/
 │   ├── config.py          # Configuration management
 │   └── prompts.py         # Prompt loading and validation
 ├── benchmark/
 │   ├── runner.py          # Benchmark execution
-│   └── evaluator.py       # LLM-as-a-Judge evaluation
-├── evaluation_analysis.py # Statistical analysis and reporting
-├── monitoring.py          # Model availability monitoring
+│   ├── evaluator.py       # LLM-as-a-Judge evaluation
+│   └── prompts.py         # Benchmark-specific prompts
 ├── providers/
-│   └── blablador_provider.py # Custom Blablador provider
+│   ├── blablador_provider.py # Custom Blablador provider
+│   ├── blablador_config.py   # Blablador model configuration
+│   ├── blablador.py          # Blablador utilities
+│   └── __init__.py
 ├── reporting/
 │   ├── html.py            # HTML report generation
 │   ├── markdown.py        # Markdown report generation
-│   └── stats.py           # Statistical calculations
+│   ├── stats.py           # Statistical calculations
+│   ├── utils.py           # Reporting utilities
+│   └── templates/         # HTML templates
 └── integrations/
     ├── lm_eval.py         # LM Evaluation Harness integration
     └── litellm.py         # LiteLLM proxy integration

@@ -5,9 +5,9 @@ This module contains comprehensive tests for the throughput benchmarking,
 including unit tests for token throughput calculations and edge cases.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
-from typing import Dict, Any
+
+import pytest
 
 from hellmholtz.benchmark.runner import run_throughput_benchmark
 
@@ -21,7 +21,9 @@ class TestThroughputBenchmark:
         mock_response = MagicMock()
         mock_response.usage.completion_tokens = 100
         mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "This is a test response with some content for throughput testing."
+        mock_response.choices[
+            0
+        ].message.content = "This is a test response with some content for throughput testing."
         return mock_response
 
     @pytest.fixture
@@ -30,7 +32,9 @@ class TestThroughputBenchmark:
         mock_response = MagicMock()
         mock_response.usage = None
         mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "This is a test response with some content for throughput testing."
+        mock_response.choices[
+            0
+        ].message.content = "This is a test response with some content for throughput testing."
         return mock_response
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
@@ -39,7 +43,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_with_usage: MagicMock
+        mock_chat_response_with_usage: MagicMock,
     ) -> None:
         """Test successful throughput benchmark with usage information."""
         # Mock timing
@@ -61,7 +65,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_no_usage: MagicMock
+        mock_chat_response_no_usage: MagicMock,
     ) -> None:
         """Test successful throughput benchmark without usage information."""
         # Mock timing
@@ -87,7 +91,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_with_usage: MagicMock
+        mock_chat_response_with_usage: MagicMock,
     ) -> None:
         """Test throughput benchmark with custom prompt and max_tokens."""
         mock_perf_counter.side_effect = [0.0, 0.5]
@@ -97,9 +101,7 @@ class TestThroughputBenchmark:
         max_tokens = 50
 
         result = run_throughput_benchmark(
-            model="anthropic:claude-3-sonnet-20240229",
-            prompt=custom_prompt,
-            max_tokens=max_tokens
+            model="anthropic:claude-3-sonnet-20240229", prompt=custom_prompt, max_tokens=max_tokens
         )
 
         assert result["success"] is True
@@ -109,14 +111,11 @@ class TestThroughputBenchmark:
         mock_chat_raw.assert_called_once_with(
             model="anthropic:claude-3-sonnet-20240229",
             messages=[{"role": "user", "content": custom_prompt}],
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
         )
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
-    def test_throughput_benchmark_failure(
-        self,
-        mock_chat_raw: MagicMock
-    ) -> None:
+    def test_throughput_benchmark_failure(self, mock_chat_raw: MagicMock) -> None:
         """Test throughput benchmark when chat call fails."""
         mock_chat_raw.side_effect = Exception("API Error")
 
@@ -133,7 +132,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_with_usage: MagicMock
+        mock_chat_response_with_usage: MagicMock,
     ) -> None:
         """Test throughput benchmark with zero latency (edge case)."""
         # Mock timing with zero latency
@@ -153,7 +152,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_with_usage: MagicMock
+        mock_chat_response_with_usage: MagicMock,
     ) -> None:
         """Test throughput benchmark with different model providers."""
         # Each benchmark call needs 2 perf_counter calls (start and end)
@@ -165,7 +164,7 @@ class TestThroughputBenchmark:
             "anthropic:claude-3-sonnet-20240229",
             "google:gemini-pro",
             "ollama:llama3.2:3b",
-            "blablador:test-model"
+            "blablador:test-model",
         ]
 
         for model in test_models:
@@ -177,9 +176,7 @@ class TestThroughputBenchmark:
     @patch("hellmholtz.benchmark.runner.chat_raw")
     @patch("time.perf_counter")
     def test_throughput_benchmark_empty_response(
-        self,
-        mock_perf_counter: MagicMock,
-        mock_chat_raw: MagicMock
+        self, mock_perf_counter: MagicMock, mock_chat_raw: MagicMock
     ) -> None:
         """Test throughput benchmark with empty response content."""
         mock_perf_counter.side_effect = [0.0, 1.0]
@@ -197,11 +194,14 @@ class TestThroughputBenchmark:
         assert result["output_tokens"] == 0  # len("") / 4 = 0
         assert result["tokens_per_sec"] == 0
 
-    @pytest.mark.parametrize("content,expected_tokens", [
-        ("Hello", 1.25),  # 5 chars / 4 = 1.25
-        ("Hello world!", 3.0),  # 12 chars / 4 = 3.0
-        ("This is a longer response with more content.", 11.0),  # 44 chars / 4 = 11.0
-    ])
+    @pytest.mark.parametrize(
+        "content,expected_tokens",
+        [
+            ("Hello", 1.25),  # 5 chars / 4 = 1.25
+            ("Hello world!", 3.0),  # 12 chars / 4 = 3.0
+            ("This is a longer response with more content.", 11.0),  # 44 chars / 4 = 11.0
+        ],
+    )
     @patch("hellmholtz.benchmark.runner.chat_raw")
     @patch("time.perf_counter")
     def test_throughput_benchmark_token_estimation(
@@ -209,7 +209,7 @@ class TestThroughputBenchmark:
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
         content: str,
-        expected_tokens: float
+        expected_tokens: float,
     ) -> None:
         """Test token estimation when usage info is not available."""
         mock_perf_counter.side_effect = [0.0, 1.0]
@@ -233,7 +233,7 @@ class TestThroughputBenchmark:
         self,
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
-        mock_chat_response_with_usage: MagicMock
+        mock_chat_response_with_usage: MagicMock,
     ) -> None:
         """Test throughput benchmark with default parameters."""
         mock_perf_counter.side_effect = [0.0, 1.0]
@@ -245,7 +245,7 @@ class TestThroughputBenchmark:
         mock_chat_raw.assert_called_once_with(
             model="openai:gpt-4o",
             messages=[{"role": "user", "content": "Write a long story about a space adventure."}],
-            max_tokens=100
+            max_tokens=100,
         )
 
         assert result["success"] is True

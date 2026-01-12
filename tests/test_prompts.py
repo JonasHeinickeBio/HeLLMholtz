@@ -1,11 +1,12 @@
 """Tests for the HeLLMholtz prompt loading functionality."""
 
 import json
-import pytest
-import tempfile
 from pathlib import Path
+import tempfile
 
-from hellmholtz.core.prompts import load_prompts, Prompt, Message
+import pytest
+
+from hellmholtz.core.prompts import Prompt, load_prompts
 
 
 class TestPromptLoading:
@@ -19,10 +20,8 @@ class TestPromptLoading:
                 "id": "test-1",
                 "category": "reasoning",
                 "description": "Test reasoning prompt",
-                "messages": [
-                    {"role": "user", "content": "What is 2+2?"}
-                ],
-                "expected_output": "4"
+                "messages": [{"role": "user", "content": "What is 2+2?"}],
+                "expected_output": "4",
             },
             {
                 "id": "test-2",
@@ -30,9 +29,9 @@ class TestPromptLoading:
                 "description": "Test coding prompt",
                 "messages": [
                     {"role": "system", "content": "You are a Python expert."},
-                    {"role": "user", "content": "Write a function to reverse a string."}
-                ]
-            }
+                    {"role": "user", "content": "Write a function to reverse a string."},
+                ],
+            },
         ]
         return json.dumps(prompts_data)
 
@@ -43,7 +42,7 @@ class TestPromptLoading:
 
     def test_load_json_prompts(self, sample_json_prompts: str) -> None:
         """Test loading prompts from JSON file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write(sample_json_prompts)
             json_file = f.name
 
@@ -76,7 +75,7 @@ class TestPromptLoading:
 
     def test_load_text_prompts(self, sample_text_prompts: str) -> None:
         """Test loading prompts from text file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write(sample_text_prompts)
             text_file = f.name
 
@@ -103,7 +102,7 @@ class TestPromptLoading:
 
     def test_load_prompts_with_category_filter(self, sample_json_prompts: str) -> None:
         """Test loading prompts with category filtering."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write(sample_json_prompts)
             json_file = f.name
 
@@ -132,7 +131,7 @@ class TestPromptLoading:
 
     def test_load_prompts_invalid_json(self) -> None:
         """Test error handling for invalid JSON."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write("invalid json content {")
             json_file = f.name
 
@@ -144,7 +143,7 @@ class TestPromptLoading:
 
     def test_load_prompts_empty_file(self) -> None:
         """Test loading from empty file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             # Empty file
             text_file = f.name
 
@@ -156,7 +155,7 @@ class TestPromptLoading:
 
     def test_load_prompts_empty_json_array(self) -> None:
         """Test loading from empty JSON array."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write("[]")
             json_file = f.name
 
@@ -166,27 +165,27 @@ class TestPromptLoading:
         finally:
             Path(json_file).unlink()
 
-    def test_load_prompts_with_category_filter(self) -> None:
+    def test_load_prompts_with_category_filter_standalone(self) -> None:
         """Test loading prompts with category filtering."""
         prompts_data = [
             {
                 "id": "reasoning-1",
                 "category": "reasoning",
-                "messages": [{"role": "user", "content": "Test reasoning"}]
+                "messages": [{"role": "user", "content": "Test reasoning"}],
             },
             {
                 "id": "coding-1",
                 "category": "coding",
-                "messages": [{"role": "user", "content": "Test coding"}]
+                "messages": [{"role": "user", "content": "Test coding"}],
             },
             {
                 "id": "reasoning-2",
                 "category": "reasoning",
-                "messages": [{"role": "user", "content": "Another reasoning"}]
-            }
+                "messages": [{"role": "user", "content": "Another reasoning"}],
+            },
         ]
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(prompts_data, f)
             json_file = f.name
 
@@ -219,11 +218,11 @@ class TestPromptLoading:
             {
                 "id": "test-1",
                 "category": "test",
-                "messages": [{"role": "user", "content": "Test message"}]
+                "messages": [{"role": "user", "content": "Test message"}],
             }
         ]
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.custom', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".custom", delete=False) as f:
             json.dump(json_content, f)
             custom_file = f.name
 

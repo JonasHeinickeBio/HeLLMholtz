@@ -22,6 +22,21 @@ List available models from the Blablador API:
 hellm models
 ```
 
+### Monitor Models
+
+Monitor model availability and test accessibility:
+
+```bash
+# Basic monitoring
+hellm monitor
+
+# Test actual model accessibility
+hellm monitor --test-accessibility
+
+# Check configuration consistency
+hellm monitor --check-config
+```
+
 ### Benchmarking
 
 Run benchmarks across models and prompts. HeLLMholtz supports multiple ways to specify prompts:

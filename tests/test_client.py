@@ -6,11 +6,11 @@ including unit tests for chat functions, ClientManager singleton,
 and integration tests for different providers.
 """
 
-import pytest
-from unittest.mock import MagicMock, patch, MagicMock
-from typing import List, Dict, Any
+from unittest.mock import MagicMock, patch
 
-from hellmholtz.client import chat, chat_raw, ClientManager
+import pytest
+
+from hellmholtz.client import ClientManager, chat, chat_raw
 
 
 class TestClientFunctions:
@@ -27,7 +27,9 @@ class TestClientFunctions:
         return mock_client
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_basic_functionality(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_basic_functionality(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test basic chat functionality with string response."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -39,12 +41,13 @@ class TestClientFunctions:
 
         assert response == "Test response"
         mock_aisuite_client.chat.completions.create.assert_called_once_with(
-            model="openai:gpt-4o",
-            messages=messages
+            model="openai:gpt-4o", messages=messages
         )
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_with_different_models(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_with_different_models(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test chat with different model providers."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -54,7 +57,7 @@ class TestClientFunctions:
             "openai:gpt-4o",
             "anthropic:claude-3-sonnet-20240229",
             "google:gemini-pro",
-            "blablador:test-model"
+            "blablador:test-model",
         ]
 
         messages = [{"role": "user", "content": "Test"}]
@@ -67,7 +70,9 @@ class TestClientFunctions:
         assert mock_aisuite_client.chat.completions.create.call_count == len(test_cases)
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_with_complex_messages(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_with_complex_messages(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test chat with complex message structures."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -77,19 +82,20 @@ class TestClientFunctions:
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": "Hello"},
             {"role": "assistant", "content": "Hi there!"},
-            {"role": "user", "content": "How are you?"}
+            {"role": "user", "content": "How are you?"},
         ]
 
         response = chat("openai:gpt-4o", messages)
 
         assert response == "Test response"
         mock_aisuite_client.chat.completions.create.assert_called_once_with(
-            model="openai:gpt-4o",
-            messages=messages
+            model="openai:gpt-4o", messages=messages
         )
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_raw_returns_full_response(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_raw_returns_full_response(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test chat_raw returns the full response object."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -100,12 +106,13 @@ class TestClientFunctions:
 
         assert response == mock_aisuite_client.chat.completions.create.return_value
         mock_aisuite_client.chat.completions.create.assert_called_once_with(
-            model="openai:gpt-4o",
-            messages=messages
+            model="openai:gpt-4o", messages=messages
         )
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_with_empty_messages(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_with_empty_messages(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test chat behavior with empty messages."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -116,12 +123,13 @@ class TestClientFunctions:
 
         assert response == "Test response"
         mock_aisuite_client.chat.completions.create.assert_called_once_with(
-            model="openai:gpt-4o",
-            messages=messages
+            model="openai:gpt-4o", messages=messages
         )
 
     @patch("hellmholtz.client.ai.Client")
-    def test_client_manager_singleton_behavior(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_client_manager_singleton_behavior(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test that ClientManager maintains singleton behavior for the underlying client."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -137,7 +145,9 @@ class TestClientFunctions:
         assert ClientManager._default_instance is client1
 
     @patch("hellmholtz.client.ai.Client")
-    def test_client_manager_get_client(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_client_manager_get_client(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test ClientManager.get_client method."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -151,7 +161,9 @@ class TestClientFunctions:
         mock_client_cls.assert_called_once()
 
     @patch("hellmholtz.client.ai.Client")
-    def test_multiple_chat_calls_reuse_client(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_multiple_chat_calls_reuse_client(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test that multiple chat calls reuse the same client instance."""
         mock_client_cls.return_value = mock_aisuite_client
 
@@ -169,7 +181,9 @@ class TestClientFunctions:
         assert mock_aisuite_client.chat.completions.create.call_count == 3
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_with_exception_handling(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_with_exception_handling(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test that exceptions from the underlying client are propagated."""
         mock_client_cls.return_value = mock_aisuite_client
         mock_aisuite_client.chat.completions.create.side_effect = Exception("API Error")
@@ -182,7 +196,9 @@ class TestClientFunctions:
             chat("openai:gpt-4o", messages)
 
     @patch("hellmholtz.client.ai.Client")
-    def test_chat_raw_with_exception_handling(self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock) -> None:
+    def test_chat_raw_with_exception_handling(
+        self, mock_client_cls: MagicMock, mock_aisuite_client: MagicMock
+    ) -> None:
         """Test that chat_raw propagates exceptions from the underlying client."""
         mock_client_cls.return_value = mock_aisuite_client
         mock_aisuite_client.chat.completions.create.side_effect = Exception("API Error")

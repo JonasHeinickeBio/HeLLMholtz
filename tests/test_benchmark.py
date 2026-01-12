@@ -7,32 +7,32 @@ and integration tests for the full benchmark workflow.
 """
 
 import json
-import pytest
 from pathlib import Path
-from unittest.mock import MagicMock, patch, mock_open
-from typing import List, Dict, Any
+from unittest.mock import MagicMock, mock_open, patch
 
-from hellmholtz.benchmark.runner import run_benchmarks, BenchmarkResult
-from hellmholtz.core.prompts import Prompt, Message
+import pytest
+
+from hellmholtz.benchmark.runner import BenchmarkResult, run_benchmarks
+from hellmholtz.core.prompts import Message, Prompt
 
 
 class TestBenchmarkRunner:
     """Test suite for benchmark runner functionality."""
 
     @pytest.fixture
-    def sample_prompts(self) -> List[Prompt]:
+    def sample_prompts(self) -> list[Prompt]:
         """Create sample prompts for testing."""
         return [
             Prompt(
                 id="test-1",
                 category="test",
-                messages=[Message(role="user", content="test prompt 1")]
+                messages=[Message(role="user", content="test prompt 1")],
             ),
             Prompt(
                 id="test-2",
                 category="test",
-                messages=[Message(role="user", content="test prompt 2")]
-            )
+                messages=[Message(role="user", content="test prompt 2")],
+            ),
         ]
 
     @pytest.fixture
@@ -49,9 +49,9 @@ class TestBenchmarkRunner:
     def test_benchmark_run_single_model_single_prompt(
         self,
         mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
+        sample_prompts: list[Prompt],
         mock_chat_response: MagicMock,
-        tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """Test benchmark run with single model and single prompt."""
         mock_chat_raw.return_value = mock_chat_response
@@ -64,7 +64,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=1
+            replications=1,
         )
 
         assert len(results) == 1
@@ -89,9 +89,9 @@ class TestBenchmarkRunner:
     def test_benchmark_run_multiple_models(
         self,
         mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
+        sample_prompts: list[Prompt],
         mock_chat_response: MagicMock,
-        tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """Test benchmark run with multiple models."""
         mock_chat_raw.return_value = mock_chat_response
@@ -104,7 +104,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=1
+            replications=1,
         )
 
         assert len(results) == 2
@@ -125,9 +125,9 @@ class TestBenchmarkRunner:
     def test_benchmark_run_multiple_prompts(
         self,
         mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
+        sample_prompts: list[Prompt],
         mock_chat_response: MagicMock,
-        tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """Test benchmark run with multiple prompts."""
         mock_chat_raw.return_value = mock_chat_response
@@ -140,7 +140,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=1
+            replications=1,
         )
 
         assert len(results) == 2
@@ -151,9 +151,9 @@ class TestBenchmarkRunner:
     def test_benchmark_run_with_replications(
         self,
         mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
+        sample_prompts: list[Prompt],
         mock_chat_response: MagicMock,
-        tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """Test benchmark run with multiple replications."""
         mock_chat_raw.return_value = mock_chat_response
@@ -167,7 +167,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=replications
+            replications=replications,
         )
 
         assert len(results) == replications
@@ -179,9 +179,9 @@ class TestBenchmarkRunner:
     def test_benchmark_run_multiple_temperatures(
         self,
         mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
+        sample_prompts: list[Prompt],
         mock_chat_response: MagicMock,
-        tmp_path: Path
+        tmp_path: Path,
     ) -> None:
         """Test benchmark run with multiple temperatures."""
         mock_chat_raw.return_value = mock_chat_response
@@ -195,7 +195,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=temperatures,
-            replications=1
+            replications=1,
         )
 
         assert len(results) == len(temperatures)
@@ -204,10 +204,7 @@ class TestBenchmarkRunner:
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
     def test_benchmark_run_chat_failure(
-        self,
-        mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
-        tmp_path: Path
+        self, mock_chat_raw: MagicMock, sample_prompts: list[Prompt], tmp_path: Path
     ) -> None:
         """Test benchmark run when chat call fails."""
         mock_chat_raw.side_effect = Exception("API Error")
@@ -220,7 +217,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=1
+            replications=1,
         )
 
         assert len(results) == 1
@@ -229,10 +226,7 @@ class TestBenchmarkRunner:
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
     def test_benchmark_run_no_usage_info(
-        self,
-        mock_chat_raw: MagicMock,
-        sample_prompts: List[Prompt],
-        tmp_path: Path
+        self, mock_chat_raw: MagicMock, sample_prompts: list[Prompt], tmp_path: Path
     ) -> None:
         """Test benchmark run when response has no usage information."""
         mock_response = MagicMock()
@@ -249,7 +243,7 @@ class TestBenchmarkRunner:
             prompts=prompts,
             results_dir=str(tmp_path),
             temperatures=[0.1],
-            replications=1
+            replications=1,
         )
 
         assert len(results) == 1
@@ -257,11 +251,10 @@ class TestBenchmarkRunner:
         assert results[0].input_tokens is None  # Should be None when no usage info
         assert results[0].output_tokens is None  # Should be None when no usage info
 
-    def test_benchmark_result_serialization(self, sample_prompts: List[Prompt]) -> None:
+    def test_benchmark_result_serialization(self, sample_prompts: list[Prompt]) -> None:
         """Test that BenchmarkResult can be properly serialized to JSON."""
-        import time
-        from datetime import datetime
         from dataclasses import asdict
+        from datetime import datetime
 
         result = BenchmarkResult(
             model="test-model",
@@ -273,7 +266,7 @@ class TestBenchmarkRunner:
             input_tokens=10,
             output_tokens=20,
             latency_seconds=1.5,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         # Test JSON serialization
@@ -294,32 +287,28 @@ class TestBenchmarkRunner:
     @patch("builtins.open", new_callable=mock_open)
     @patch("json.dump")
     def test_results_file_creation(
-        self,
-        mock_json_dump: MagicMock,
-        mock_file: MagicMock,
-        tmp_path: Path
+        self, mock_json_dump: MagicMock, mock_file: MagicMock, tmp_path: Path
     ) -> None:
         """Test that results are properly written to file."""
         # This is a basic test to ensure file operations are called
         # In a real scenario, we'd check the actual file content
-        results = [
-            BenchmarkResult(
-                model="test-model",
-                prompt_id="test-1",
-                temperature=0.1,
-                run_id=1,
-                response_text="test",
-                success=True,
-                input_tokens=5,
-                output_tokens=10,
-                latency_seconds=1.0,
-                timestamp="2023-01-01T00:00:00"
-            )
-        ]
+        # results = [
+        #     BenchmarkResult(
+        #         model="test-model",
+        #         prompt_id="test-1",
+        #         temperature=0.1,
+        #         run_id=1,
+        #         response_text="test",
+        #         success=True,
+        #         input_tokens=5,
+        #         output_tokens=10,
+        #         latency_seconds=1.0,
+        #         timestamp="2023-01-01T00:00:00",
+        #     )
+        # ]
 
         # Mock the file operations that happen in run_benchmarks
-        with patch("pathlib.Path.mkdir"):
-            with patch("pathlib.Path.glob") as mock_glob:
-                mock_glob.return_value = [Path(tmp_path / "benchmark_test.json")]
-                # The actual file writing logic is tested implicitly through the run_benchmarks tests above
-                pass
+        with patch("pathlib.Path.mkdir"), patch("pathlib.Path.glob") as mock_glob:
+            mock_glob.return_value = [Path(tmp_path / "benchmark_test.json")]
+            # The actual file writing logic is tested implicitly through the run_benchmarks tests above
+            pass
