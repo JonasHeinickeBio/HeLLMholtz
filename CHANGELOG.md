@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated README.md with workflow status badges
 - Enhanced CONTRIBUTING.md with CI/CD workflow information
 
-## [0.1.0] - YYYY-MM-DD
+## [0.1.0]
 
 ### Added
 - Initial release of HeLLMholtz

@@ -112,11 +112,12 @@ jobs:
           # Try to extract release notes from CHANGELOG.md if it exists
           if [ -f "CHANGELOG.md" ]; then
             # Use Python to extract the section more reliably
+            export VERSION
             python3 << 'EOF' > release_notes.md
           import re
-          import sys
+          import os
           
-          version = "$VERSION"
+          version = os.environ.get("VERSION", "unknown")
           try:
               with open("CHANGELOG.md", "r") as f:
                   content = f.read()
