@@ -54,7 +54,7 @@ jobs:
         run: poetry build
 
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: python-package-distributions
           path: dist/
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.3
         with:
           name: python-package-distributions
           path: dist/
@@ -100,7 +100,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download all the dists
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.3
         with:
           name: python-package-distributions
           path: dist/
@@ -161,7 +161,7 @@ jobs:
 
     steps:
       - name: Download all the dists
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.3
         with:
           name: python-package-distributions
           path: dist/

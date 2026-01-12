@@ -91,7 +91,7 @@ jobs:
             --save-markdown
 
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         if: always()
         with:
           name: benchmark-results-${{ github.run_number }}
@@ -152,7 +152,7 @@ jobs:
           poetry run pytest tests/test_throughput.py -v -m "not integration" --timeout=300
 
       - name: Upload throughput results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         if: always()
         with:
           name: throughput-results-${{ github.run_number }}
