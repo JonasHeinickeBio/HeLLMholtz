@@ -82,11 +82,14 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
           BLABLADOR_API_BASE: ${{ secrets.BLABLADOR_API_BASE }}
+          MODELS_INPUT: ${{ github.event.inputs.models }}
+          CATEGORIES_INPUT: ${{ github.event.inputs.prompt_categories }}
+          REPLICATIONS_INPUT: ${{ github.event.inputs.replications }}
         run: |
           poetry run hellm bench \
-            --models "${{ github.event.inputs.models }}" \
-            --prompt-categories "${{ github.event.inputs.prompt_categories }}" \
-            --replications ${{ github.event.inputs.replications }} \
+            --models "$MODELS_INPUT" \
+            --prompt-categories "$CATEGORIES_INPUT" \
+            --replications "$REPLICATIONS_INPUT" \
             --output-dir results \
             --save-markdown
 
