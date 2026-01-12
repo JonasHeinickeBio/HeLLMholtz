@@ -78,6 +78,8 @@ jobs:
 
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        # Note: Remove 'password' field if using trusted publishing (OIDC)
+        # Otherwise, remove 'id-token: write' permission and keep password field
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
@@ -109,8 +111,27 @@ jobs:
           
           # Try to extract release notes from CHANGELOG.md if it exists
           if [ -f "CHANGELOG.md" ]; then
-            # Extract section for this version
-            sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '1d;$d' > release_notes.md
+            # Use Python to extract the section more reliably
+            python3 << 'EOF' > release_notes.md
+          import re
+          import sys
+          
+          version = "$VERSION"
+          try:
+              with open("CHANGELOG.md", "r") as f:
+                  content = f.read()
+              
+              # Find the section for this version
+              pattern = rf"## \[{re.escape(version)}\].*?\n(.*?)(?=\n## \[|\Z)"
+              match = re.search(pattern, content, re.DOTALL)
+              
+              if match:
+                  print(match.group(1).strip())
+              else:
+                  print(f"Release {version}\n\nSee commit history for changes.")
+          except Exception as e:
+              print(f"Release {version}\n\nSee commit history for changes.")
+          EOF
           else
             echo "Release ${VERSION}" > release_notes.md
             echo "" >> release_notes.md
