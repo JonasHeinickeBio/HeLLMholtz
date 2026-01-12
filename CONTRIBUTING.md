@@ -172,6 +172,62 @@ Types:
 - Include usage examples
 - Keep documentation up to date
 
+## CI/CD Workflows
+
+The project uses GitHub Actions for continuous integration and deployment. When you create a pull request, the following workflows will automatically run:
+
+### Automated Checks
+
+1. **Tests Workflow** (`test.yml`):
+   - Runs pytest across Python 3.10, 3.11, 3.12
+   - Tests on Ubuntu, Windows, and macOS
+   - Generates code coverage reports
+   - Must pass before merging
+
+2. **Code Quality Workflow** (`code-quality.yml`):
+   - Dependency review for security vulnerabilities
+   - CodeQL security analysis
+   - Markdown link checking
+   - Coverage reporting with PR comments
+
+3. **Pre-commit Workflow** (`pre-commit.yml`):
+   - Runs all pre-commit hooks
+   - Auto-fixes formatting issues
+   - Commits fixes automatically
+
+4. **Linting and Security**:
+   - Ruff linter and formatter checks
+   - mypy type checking
+   - Bandit security scanning
+
+### Viewing Workflow Results
+
+- Go to the "Actions" tab in the pull request
+- Click on a workflow run to see details
+- Review any failures and fix issues
+- Push new commits to re-trigger checks
+
+### Local Testing Before Push
+
+To avoid CI failures, run these commands locally:
+
+```bash
+# Run all pre-commit hooks
+poetry run pre-commit run --all-files
+
+# Run tests with the same filters as CI
+poetry run pytest tests/ -v -m "not network and not integration"
+
+# Check code coverage
+poetry run pytest --cov=hellmholtz --cov-report=term-missing
+
+# Type checking
+poetry run mypy src/
+
+# Security check
+poetry run bandit -r src/
+```
+
 ## Pull Request Process
 
 1. **Ensure CI passes**: All tests must pass, code must be formatted and linted
@@ -182,6 +238,8 @@ Types:
    - Why they were needed
    - How to test the changes
    - Any breaking changes
+5. **Wait for review**: Maintainers will review your PR and provide feedback
+6. **Address feedback**: Make requested changes and push new commits
 
 ## Areas for Contribution
 
