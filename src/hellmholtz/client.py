@@ -89,6 +89,15 @@ def chat(
         response = client.chat.completions.create(
             model=effective_model, messages=messages, **call_args
         )
+
+        # Log token usage if available
+        if hasattr(response, "usage") and response.usage:
+            logger.debug(
+                f"Token usage for {model}: "
+                f"prompt={response.usage.prompt_tokens}, "
+                f"completion={response.usage.completion_tokens}, "
+                f"total={response.usage.total_tokens}"
+            )
     except Exception as e:
         logger.error(f"Chat completion failed for {model}: {e}")
         raise
