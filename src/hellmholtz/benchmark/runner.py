@@ -250,11 +250,11 @@ def run_throughput_benchmark(
         else:
             # Estimate tokens: approximately 4 characters per token
             content = response.choices[0].message.content
-            out_tokens = len(content) / 4
-            in_tokens = len(prompt) / 4
+            out_tokens = len(content) // 4  # Integer division
+            in_tokens = len(prompt) // 4  # Integer division
             logger.debug(
                 f"Estimated token usage for {model}: "
-                f"prompt≈{in_tokens:.0f}, completion≈{out_tokens:.0f} "
+                f"prompt≈{in_tokens}, completion≈{out_tokens} "
                 "(API did not provide usage information)"
             )
 
