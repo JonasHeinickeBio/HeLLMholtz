@@ -24,7 +24,15 @@ hellm models
 
 ### Benchmarking
 
-Run benchmarks across models and prompts. HeLLMholtz supports multiple ways to specify prompts:
+Run benchmarks across models and prompts. HeLLMholtz supports multiple ways to specify prompts and automatically tracks token usage when available from the API.
+
+**Token Usage Tracking:**
+
+Benchmark results automatically include:
+- Input tokens (prompt tokens)
+- Output tokens (completion tokens)
+- Token usage information when provided by the API
+- Estimated tokens when API doesn't provide usage data
 
 #### Using Built-in Prompt Categories
 
@@ -77,11 +85,16 @@ hellm bench --models openai:gpt-4o --prompts-file custom_prompts.json
 
 ### Throughput Benchmarking
 
-Measure the throughput (tokens/sec) of a model:
+Measure the throughput (tokens/sec) of a model. Results include both token counts and timing information:
 
 ```bash
 hellm bench-throughput --model ollama:llama3.2
 ```
+
+The throughput benchmark now tracks:
+- Input and output token counts
+- Whether tokens came from API usage data or estimation
+- Tokens per second calculation
 
 ### Reporting
 
@@ -114,8 +127,27 @@ hellm proxy --model ollama:llama3.2 --port 4000
 ```python
 from hellmholtz.client import chat
 
+# Simple chat - token usage is logged automatically at debug level
 response = chat("openai:gpt-4o", [{"role": "user", "content": "Hello!"}])
 print(response)
+```
+
+### Token Limits
+
+Check token limits for models:
+
+```python
+from hellmholtz.providers.blablador_config import get_token_limit, get_model_by_name
+
+# Get token limit
+limit = get_token_limit("Ministral-3-14B-Instruct-2512")
+print(f"Max tokens: {limit}")  # Output: Max tokens: 131072
+
+# Get full model info
+model = get_model_by_name("Qwen3 235")
+if model:
+    print(f"Model: {model.name}")
+    print(f"Context: {model.max_context_tokens} tokens")
 ```
 
 ### Benchmarking
