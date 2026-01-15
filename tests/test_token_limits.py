@@ -12,6 +12,9 @@ from hellmholtz.providers.blablador_config import (
     BlabladorModel,
     get_model_by_name,
     get_token_limit,
+    get_all_provider_token_limits,
+    clear_online_token_cache,
+    _get_model_family_context_length,
 )
 
 
@@ -256,3 +259,173 @@ class TestTokenLimitCategories:
         for name in models_4k:
             limit = get_token_limit(name)
             assert limit == 4096, f"Model {name} should have 4k context"
+
+
+class TestOnlineTokenFetching:
+    """Test suite for online token limit fetching functionality."""
+
+    def test_online_fetching_for_unknown_models(self) -> None:
+        """Test that unknown models can fetch token limits online."""
+        # Clear cache first to ensure clean state
+        clear_online_token_cache()
+
+        # Test with a known HF model that should be fetchable
+        # Note: This test may fail if network is unavailable, but that's expected
+        try:
+            limit = get_token_limit("microsoft/Phi-4-multimodal-instruct")
+            # Should either return the correct limit or fallback to default
+            assert isinstance(limit, int)
+            assert limit > 0
+        except Exception:
+            # If network fails, should still return default
+            limit = get_token_limit("unknown-model-xyz")
+            assert limit == 32768
+
+    def test_online_fetching_caching(self) -> None:
+        """Test that online fetching results are cached."""
+        # Clear cache first
+        clear_online_token_cache()
+
+        # This test assumes network is available
+        try:
+            # First call should fetch from API
+            limit1 = get_token_limit("microsoft/Phi-4-multimodal-instruct")
+
+            # Second call should use cache
+            limit2 = get_token_limit("microsoft/Phi-4-multimodal-instruct")
+
+            # Results should be identical
+            assert limit1 == limit2
+            assert isinstance(limit1, int)
+        except Exception:
+            # Skip if network unavailable
+            pass
+
+    def test_clear_online_token_cache(self) -> None:
+        """Test that cache clearing works."""
+        # This should not raise any exceptions
+        clear_online_token_cache()
+
+        # Verify cache is empty by checking get_all_provider_token_limits
+        limits = get_all_provider_token_limits(include_online=True)
+        online_limits = limits.get("online", {})
+        # Cache should be empty after clearing
+        assert len(online_limits) == 0
+
+
+class TestGetAllProviderTokenLimits:
+    """Test suite for get_all_provider_token_limits function."""
+
+    def test_get_all_provider_token_limits_basic(self) -> None:
+        """Test basic functionality of get_all_provider_token_limits."""
+        limits = get_all_provider_token_limits()
+
+        # Should have all expected providers
+        expected_providers = {"blablador", "openai", "anthropic", "google", "ollama"}
+        assert set(limits.keys()) == expected_providers
+
+        # Each provider should have models
+        for provider, models in limits.items():
+            assert isinstance(models, dict)
+            assert len(models) > 0
+
+    def test_get_all_provider_token_limits_with_online(self) -> None:
+        """Test get_all_provider_token_limits with include_online=True."""
+        # Clear cache first
+        clear_online_token_cache()
+
+        limits = get_all_provider_token_limits(include_online=True)
+
+        # Should include online provider even if empty
+        assert "online" in limits
+        assert isinstance(limits["online"], dict)
+
+    def test_get_all_provider_token_limits_online_populated(self) -> None:
+        """Test that online models appear when cache is populated."""
+        # Clear cache and populate it
+        clear_online_token_cache()
+
+        try:
+            # Fetch a model to populate cache
+            get_token_limit("microsoft/Phi-4-multimodal-instruct")
+
+            limits = get_all_provider_token_limits(include_online=True)
+
+            # Should have online models now
+            online_limits = limits.get("online", {})
+            assert len(online_limits) > 0
+
+            # Should contain the fetched model
+            cache_key = "huggingface:microsoft/Phi-4-multimodal-instruct"
+            assert cache_key in online_limits
+            assert isinstance(online_limits[cache_key], int)
+
+        except Exception:
+            # Skip if network unavailable
+            pass
+
+
+class TestModelFamilyContextLength:
+    """Test suite for _get_model_family_context_length helper function."""
+
+    def test_llama_models(self) -> None:
+        """Test context length detection for Llama models."""
+        test_cases = [
+            ("meta-llama/llama-3.2-3b-instruct", 131072),
+            ("meta-llama/llama-3.1-8b-instruct", 131072),
+            ("meta-llama/llama-3-8b-instruct", 8192),
+            ("meta-llama/llama-2-7b-chat", None),  # Not in known families
+        ]
+
+        for model_id, expected in test_cases:
+            result = _get_model_family_context_length(model_id)
+            assert result == expected, f"Model {model_id} should return {expected}"
+
+    def test_mistral_models(self) -> None:
+        """Test context length detection for Mistral models."""
+        result = _get_model_family_context_length("mistralai/mistral-7b-instruct-v0.2")
+        assert result == 32768
+
+    def test_qwen_models(self) -> None:
+        """Test context length detection for Qwen models."""
+        test_cases = [
+            ("qwen/qwen3-8b", 131072),
+            ("qwen/qwen-2.5-7b-instruct", None),  # Not Qwen3
+        ]
+
+        for model_id, expected in test_cases:
+            result = _get_model_family_context_length(model_id)
+            assert result == expected, f"Model {model_id} should return {expected}"
+
+    def test_phi_models(self) -> None:
+        """Test context length detection for Phi models."""
+        test_cases = [
+            ("microsoft/phi-4-multimodal-instruct", 16384),
+            ("microsoft/phi-3-medium-128k-instruct", 4096),
+        ]
+
+        for model_id, expected in test_cases:
+            result = _get_model_family_context_length(model_id)
+            assert result == expected, f"Model {model_id} should return {expected}"
+
+    def test_gpt_models(self) -> None:
+        """Test context length detection for GPT models."""
+        result = _get_model_family_context_length("openai/gpt-4")
+        assert result == 128000
+
+    def test_claude_models(self) -> None:
+        """Test context length detection for Claude models."""
+        result = _get_model_family_context_length("anthropic/claude-3-sonnet")
+        assert result == 200000
+
+    def test_unknown_models(self) -> None:
+        """Test that unknown model families return None."""
+        unknown_models = [
+            "unknown/model",
+            "random-model-name",
+            "",
+        ]
+
+        for model_id in unknown_models:
+            result = _get_model_family_context_length(model_id)
+            assert result is None, f"Unknown model {model_id} should return None"

@@ -162,9 +162,7 @@ def run_benchmarks(  # noqa: C901
                                     f"total={in_tokens + out_tokens}"
                                 )
                             else:
-                                logger.debug(
-                                    f"No token usage information available from {model}"
-                                )
+                                logger.debug(f"No token usage information available from {model}")
 
                         except Exception as e:
                             success = False
@@ -244,8 +242,7 @@ def run_throughput_benchmark(
             out_tokens = response.usage.completion_tokens
             tokens_from_usage = True
             logger.debug(
-                f"Token usage from API for {model}: "
-                f"prompt={in_tokens}, completion={out_tokens}"
+                f"Token usage from API for {model}: prompt={in_tokens}, completion={out_tokens}"
             )
         else:
             # Estimate tokens: approximately 4 characters per token
