@@ -16,6 +16,19 @@ from hellmholtz.reporting import (
     load_results,
 )
 
+
+def _format_token_limit(token_limit: int) -> str:
+    """Format token limit in human-readable form using binary (1024) units."""
+    if token_limit < 1024:
+        return str(token_limit)
+
+    # Use binary units (1024-based) for consistency with model specs
+    if token_limit < 1024 * 1024:
+        return f"{token_limit // 1024}k"
+    else:
+        return f"{token_limit // (1024 * 1024)}M"
+
+
 # Module-level typer option defaults to avoid B008
 PROMPTS_FILE_OPTION = typer.Option(
     None, help="Path to prompts file (.txt for simple text, .json for structured prompts)"
@@ -392,7 +405,7 @@ def models() -> None:
         for model in models:
             alias = model.alias if model.alias else ""
             token_limit = get_token_limit(model.name)
-            token_display = f"{token_limit // 1000}k" if token_limit >= 1000 else str(token_limit)
+            token_display = _format_token_limit(token_limit)
 
             # If ID is same as Name (fallback), just show Name
             if model.id == model.name:

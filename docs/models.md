@@ -66,6 +66,8 @@ print(all_limits["openai"]["gpt-4o"])  # Output: 128000
 | | **text-davinci-003** | Legacy text generation | 4k |
 | | **text-embedding-ada-002** | Legacy embeddings | 8k |
 
+> **Note**: Some models share the same ID (e.g., both GPT-OSS-120b and MiniMax-M2.1 use ID `1`). This is intentional and allows multiple models to be accessed via the same identifier.
+
 ## Other Providers
 
 HeLLMholtz supports any provider supported by `aisuite`, including:

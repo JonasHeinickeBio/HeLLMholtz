@@ -11,6 +11,9 @@ logger = logging.getLogger(__name__)
 # Cache for online-fetched token limits to avoid repeated API calls
 _ONLINE_TOKEN_CACHE: dict[str, int | None] = {}
 
+# Default token limit for unknown models
+DEFAULT_TOKEN_LIMIT = 32768
+
 
 @dataclass
 class BaseModel:
@@ -43,7 +46,7 @@ class BlabladorModel(BaseModel):
     id: str = ""
     original_api_id: str | None = None
     description_separator: str = " - "  # Separator between name and description in API ID
-    max_context_tokens: int = 32768  # Default context window size
+    max_context_tokens: int = DEFAULT_TOKEN_LIMIT  # Default context window size
 
     @property
     def display_string(self) -> str:
@@ -464,7 +467,7 @@ def _get_provider_token_limit(provider: str, model: str) -> int:
     elif provider == "blablador":
         limit = _get_blablador_token_limit(model)
         # If not found in static config, try online fetching for Blablador models
-        if limit == 32768:  # Default fallback value
+        if limit == DEFAULT_TOKEN_LIMIT:  # Default fallback value
             online_limit = _get_online_token_limit(model, "huggingface")
             if online_limit:
                 limit = online_limit
@@ -473,7 +476,7 @@ def _get_provider_token_limit(provider: str, model: str) -> int:
         # Unknown provider, try blablador as fallback
         limit = _get_blablador_token_limit(model)
         # If not found, try online fetching
-        if limit == 32768:  # Default fallback value
+        if limit == DEFAULT_TOKEN_LIMIT:  # Default fallback value
             online_limit = _get_online_token_limit(model, "huggingface")
             if online_limit:
                 limit = online_limit
@@ -589,45 +592,49 @@ def get_all_provider_token_limits(include_online: bool = False) -> dict[str, dic
     Returns:
         Dictionary mapping provider names to dictionaries of model_name -> token_limit
     """
-    limits = {
-        "blablador": {},
-        "openai": {
-            "gpt-4o": 128000,
-            "gpt-4-turbo": 128000,
-            "gpt-4": 8192,
-            "gpt-3.5-turbo": 16384,
-            "text-davinci-003": 4096,
-            "text-embedding-ada-002": 8192,
-        },
-        "anthropic": {
-            "claude-3-opus-20240229": 200000,
-            "claude-3-sonnet-20240229": 200000,
-            "claude-3-haiku-20240307": 200000,
-            "claude-3-5-sonnet-20240620": 200000,
-            "claude-2.1": 100000,
-            "claude-2": 100000,
-        },
-        "google": {
-            "gemini-pro": 1000000,
-            "gemini-pro-vision": 1000000,
-            "gemini-1.5-flash": 1000000,
-            "gemini-1.5-pro": 1000000,
-        },
-        "ollama": {
-            "llama3.2": 131072,
-            "llama3.2:1b": 131072,
-            "llama3.2:3b": 131072,
-            "llama3.1": 131072,
-            "llama3.1:8b": 131072,
-            "llama3.1:70b": 131072,
-            "llama3.1:405b": 131072,
-            "llama3": 8192,
-            "mistral": 32768,
-            "codellama": 16384,
-            "phi": 4096,
-            "phi3": 4096,
-        },
+    # Define all known models for each provider
+    provider_models = {
+        "openai": [
+            "gpt-4o",
+            "gpt-4-turbo",
+            "gpt-4",
+            "gpt-3.5-turbo",
+            "text-davinci-003",
+            "text-embedding-ada-002",
+        ],
+        "anthropic": [
+            "claude-3-opus-20240229",
+            "claude-3-sonnet-20240229",
+            "claude-3-haiku-20240307",
+            "claude-3-5-sonnet-20240620",
+            "claude-2.1",
+            "claude-2",
+        ],
+        "google": ["gemini-pro", "gemini-pro-vision", "gemini-1.5-flash", "gemini-1.5-pro"],
+        "ollama": [
+            "llama3.2",
+            "llama3.2:1b",
+            "llama3.2:3b",
+            "llama3.1",
+            "llama3.1:8b",
+            "llama3.1:70b",
+            "llama3.1:405b",
+            "llama3",
+            "mistral",
+            "codellama",
+            "phi",
+            "phi3",
+        ],
     }
+
+    limits: dict[str, dict[str, int]] = {"blablador": {}}
+
+    # Build limits using provider-specific functions
+    for provider, models in provider_models.items():
+        limits[provider] = {}
+        for model_name in models:
+            limit = get_token_limit(f"{provider}:{model_name}")
+            limits[provider][model_name] = limit
 
     # Add all Blablador models
     for model in KNOWN_MODELS:
