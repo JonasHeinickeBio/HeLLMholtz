@@ -16,6 +16,19 @@ from hellmholtz.reporting import (
     load_results,
 )
 
+
+def _format_token_limit(token_limit: int) -> str:
+    """Format token limit in human-readable form using binary (1024) units."""
+    if token_limit < 1024:
+        return str(token_limit)
+
+    # Use binary units (1024-based) for consistency with model specs
+    if token_limit < 1024 * 1024:
+        return f"{token_limit // 1024}k"
+    else:
+        return f"{token_limit // (1024 * 1024)}M"
+
+
 # Module-level typer option defaults to avoid B008
 PROMPTS_FILE_OPTION = typer.Option(
     None, help="Path to prompts file (.txt for simple text, .json for structured prompts)"
@@ -377,25 +390,33 @@ def monitor(
 
 @app.command()
 def models() -> None:
-    """List available models from Blablador."""
+    """List available models from Blablador with token limits."""
     from hellmholtz.providers.blablador import list_models
+    from hellmholtz.providers.blablador_config import get_token_limit
 
     try:
         models = list_models()
-        typer.echo(f"{'ID':<5} | {'Name':<40} | {'Alias':<10} | {'Source':<10} | {'Description'}")
-        typer.echo("-" * 100)
+        header = (
+            f"{'ID':<5} | {'Name':<35} | {'Alias':<10} | {'Source':<10} | "
+            f"{'Tokens':<8} | {'Description'}"
+        )
+        typer.echo(header)
+        typer.echo("-" * 110)
         for model in models:
             alias = model.alias if model.alias else ""
+            token_limit = get_token_limit(model.name)
+            token_display = _format_token_limit(token_limit)
+
             # If ID is same as Name (fallback), just show Name
             if model.id == model.name:
                 typer.echo(
-                    f"{'':<5} | {model.name:<40} | {alias:<10} | "
-                    f"{model.source:<10} | {model.description}"
+                    f"{'':<5} | {model.name:<35} | {alias:<10} | "
+                    f"{model.source:<10} | {token_display:<8} | {model.description}"
                 )
             else:
                 typer.echo(
-                    f"{model.id:<5} | {model.name:<40} | {alias:<10} | "
-                    f"{model.source:<10} | {model.description}"
+                    f"{model.id:<5} | {model.name:<35} | {alias:<10} | "
+                    f"{model.source:<10} | {token_display:<8} | {model.description}"
                 )
     except Exception as e:
         logger.error(f"Model list error: {e}")

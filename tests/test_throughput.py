@@ -5,9 +5,9 @@ This module contains comprehensive tests for the throughput benchmarking,
 including unit tests for token throughput calculations and edge cases.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
-from typing import Dict, Any
+
+import pytest
 
 from hellmholtz.benchmark.runner import run_throughput_benchmark
 
@@ -21,7 +21,9 @@ class TestThroughputBenchmark:
         mock_response = MagicMock()
         mock_response.usage.completion_tokens = 100
         mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "This is a test response with some content for throughput testing."
+        mock_response.choices[0].message.content = (
+            "This is a test response with some content for throughput testing."
+        )
         return mock_response
 
     @pytest.fixture
@@ -30,7 +32,9 @@ class TestThroughputBenchmark:
         mock_response = MagicMock()
         mock_response.usage = None
         mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "This is a test response with some content for throughput testing."
+        mock_response.choices[0].message.content = (
+            "This is a test response with some content for throughput testing."
+        )
         return mock_response
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
@@ -75,9 +79,9 @@ class TestThroughputBenchmark:
         assert result["model"] == "ollama:llama3"
         assert result["latency"] == 2.0
 
-        # Should estimate tokens: len(content) / 4
+        # Should estimate tokens: len(content) // 4 (integer division)
         content = mock_chat_response_no_usage.choices[0].message.content
-        expected_tokens = len(content) / 4
+        expected_tokens = len(content) // 4
         assert result["output_tokens"] == expected_tokens
         assert result["tokens_per_sec"] == expected_tokens / 2.0
 
@@ -198,9 +202,9 @@ class TestThroughputBenchmark:
         assert result["tokens_per_sec"] == 0
 
     @pytest.mark.parametrize("content,expected_tokens", [
-        ("Hello", 1.25),  # 5 chars / 4 = 1.25
-        ("Hello world!", 3.0),  # 12 chars / 4 = 3.0
-        ("This is a longer response with more content.", 11.0),  # 44 chars / 4 = 11.0
+        ("Hello", 1),  # 5 chars // 4 = 1
+        ("Hello world!", 3),  # 12 chars // 4 = 3
+        ("This is a longer response with more content.", 11),  # 44 chars // 4 = 11
     ])
     @patch("hellmholtz.benchmark.runner.chat_raw")
     @patch("time.perf_counter")
@@ -209,7 +213,7 @@ class TestThroughputBenchmark:
         mock_perf_counter: MagicMock,
         mock_chat_raw: MagicMock,
         content: str,
-        expected_tokens: float
+        expected_tokens: int
     ) -> None:
         """Test token estimation when usage info is not available."""
         mock_perf_counter.side_effect = [0.0, 1.0]
