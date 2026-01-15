@@ -5,6 +5,8 @@ This module contains tests for the token limit metadata and helper functions
 in the blablador_config module.
 """
 
+import logging
+
 import pytest
 
 from hellmholtz.providers.blablador_config import (
@@ -276,8 +278,9 @@ class TestOnlineTokenFetching:
             # Should either return the correct limit or fallback to default
             assert isinstance(limit, int)
             assert limit > 0
-        except Exception:
+        except Exception as e:
             # If network fails, should still return default
+            logging.debug(f"Network unavailable for online token fetching: {e}")
             limit = get_token_limit("unknown-model-xyz")
             assert limit == 32768
 
@@ -297,9 +300,10 @@ class TestOnlineTokenFetching:
             # Results should be identical
             assert limit1 == limit2
             assert isinstance(limit1, int)
-        except Exception:
-            # Skip if network unavailable
-            pass
+        except Exception as e:
+            # Skip if network unavailable, but log for debugging
+            logging.debug(f"Network unavailable for online token fetching test: {e}")
+            pytest.skip(f"Network unavailable: {e}")
 
     def test_clear_online_token_cache(self) -> None:
         """Test that cache clearing works."""
@@ -325,7 +329,7 @@ class TestGetAllProviderTokenLimits:
         assert set(limits.keys()) == expected_providers
 
         # Each provider should have models
-        for provider, models in limits.items():
+        for _provider, models in limits.items():
             assert isinstance(models, dict)
             assert len(models) > 0
 
@@ -360,8 +364,9 @@ class TestGetAllProviderTokenLimits:
             assert cache_key in online_limits
             assert isinstance(online_limits[cache_key], int)
 
-        except Exception:
+        except Exception as e:
             # Skip if network unavailable
+            logging.debug(f"Network unavailable for online cache population test: {e}")
             pass
 
 
