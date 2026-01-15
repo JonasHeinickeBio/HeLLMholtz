@@ -152,10 +152,17 @@ def run_benchmarks(  # noqa: C901
                                     f"No choices in response for {model}, prompt {prompt_id}"
                                 )
 
-                            # Try to extract usage
+                            # Extract token usage information
                             if hasattr(response, "usage") and response.usage:
                                 in_tokens = response.usage.prompt_tokens
                                 out_tokens = response.usage.completion_tokens
+                                logger.debug(
+                                    f"Token usage for {model}: "
+                                    f"prompt={in_tokens}, completion={out_tokens}, "
+                                    f"total={in_tokens + out_tokens}"
+                                )
+                            else:
+                                logger.debug(f"No token usage information available from {model}")
 
                         except Exception as e:
                             success = False
@@ -225,20 +232,37 @@ def run_throughput_benchmark(
 
         latency = end_time - start_time
 
-        # Try to get exact token counts
+        # Extract token counts from response
+        in_tokens = None
+        out_tokens = None
+        tokens_from_usage = False
+
         if hasattr(response, "usage") and response.usage:
+            in_tokens = response.usage.prompt_tokens
             out_tokens = response.usage.completion_tokens
+            tokens_from_usage = True
+            logger.debug(
+                f"Token usage from API for {model}: prompt={in_tokens}, completion={out_tokens}"
+            )
         else:
-            # Estimate: 4 chars per token
+            # Estimate tokens: approximately 4 characters per token
             content = response.choices[0].message.content
-            out_tokens = len(content) / 4
+            out_tokens = len(content) // 4  # Integer division
+            in_tokens = len(prompt) // 4  # Integer division
+            logger.debug(
+                f"Estimated token usage for {model}: "
+                f"prompt≈{in_tokens}, completion≈{out_tokens} "
+                "(API did not provide usage information)"
+            )
 
         tokens_per_sec = out_tokens / latency if latency > 0 else 0
 
         return {
             "model": model,
             "latency": latency,
+            "input_tokens": in_tokens,
             "output_tokens": out_tokens,
+            "tokens_from_usage": tokens_from_usage,
             "tokens_per_sec": tokens_per_sec,
             "success": True,
         }
