@@ -4,7 +4,9 @@
 [![PyPI Version](https://img.shields.io/pypi/v/hellmholtz.svg)](https://pypi.org/project/hellmholtz/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/JonasHeinickeBio/HeLLMholtz/actions)
+[![Tests](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/test.yml/badge.svg)](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/test.yml)
+[![Code Quality](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/code-quality.yml/badge.svg)](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/code-quality.yml)
+[![Benchmarks](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/benchmark.yml/badge.svg)](https://github.com/JonasHeinickeBio/HeLLMholtz/actions/workflows/benchmark.yml)
 
 A comprehensive Python package for unified LLM access, benchmarking, evaluation, and reporting. Built on top of `aisuite` with specialized support for Helmholtz Blablador models.
 
