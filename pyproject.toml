@@ -1,6 +1,6 @@
 [project]
 name = "hellmholtz"
-version = "0.2.0"
+version = "0.3.0"
 description = "A comprehensive Python package for unified LLM access, benchmarking, evaluation, and reporting"
 authors = [{ name = "jhe24", email = "jhe24@example.com" }]
 readme = "README.md"
