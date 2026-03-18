@@ -171,6 +171,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: latest
+          virtualenvs-in-project: true
 
       - name: Get version from pyproject.toml
         id: version
