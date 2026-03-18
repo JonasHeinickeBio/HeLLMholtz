@@ -5,6 +5,15 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-03-18
+
+### Fixed
+
+- Fixed type annotations in benchmark scripts (`generate_comprehensive_report.py`, `generate_chart.py`)
+- Fixed blanket noqa comments in monitoring module
+- Corrected Poetry build command in GitHub Actions workflow (removed invalid `--no-directory` flag)
+- Resolved mypy type checking discrepancies between local and CI runs
+
 ## [0.2.0] - 2026-03-18
 
 ### Added

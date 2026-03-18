@@ -87,7 +87,7 @@ jobs:
           version: latest
 
       - name: Build distribution
-        run: poetry build --no-directory
+        run: poetry build
 
       - name: Store distribution artifacts
         uses: actions/upload-artifact@v4
