@@ -34,7 +34,7 @@ print(f"Configured models: {len(config_models)}")
 
 ```python
 # Test if a specific model is accessible
-is_accessible, latency = monitor.test_model_accessibility("gpt-4o")
+is_accessible, latency = monitor.test_model_accessibility("GPT-OSS-120b")
 print(f"Model accessible: {is_accessible}, Latency: {latency:.2f}s")
 
 # Analyze overall availability
@@ -77,11 +77,11 @@ hellm monitor --check-config
 ### Output Example
 
 ```
-🔍 Model Availability Analysis
+Model Availability Analysis
 ══════════════════════════════════════════════
 
-📊 API Models Found: 15
-📋 Configured Models: 12
+API Models Found: 15
+Configured Models: 12
 
 ✅ Available Models:
   • gpt-4o (accessible, 0.85s latency)
@@ -92,7 +92,7 @@ hellm monitor --check-config
   • Model 'old-model-v1' not found in API
   • Model 'deprecated-model' marked as inactive
 
-📈 Health Summary:
+Health Summary:
   • Overall Success Rate: 92.3%
   • Average Latency: 0.96s
   • Total Tests: 15

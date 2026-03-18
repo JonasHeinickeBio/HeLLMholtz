@@ -1,0 +1,184 @@
+name: Weekly Benchmark Report
+
+on:
+  schedule:
+    # Run weekly on Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for proper diff checking
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: actions/install-poetry@v3
+      with:
+        version: latest
+
+    - name: Cache Poetry dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ runner.os }}-
+
+    - name: Install dependencies
+      run: |
+        poetry install --with dev,reporting
+
+    - name: Check for API keys
+      id: check-keys
+      run: |
+        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ]; then
+          echo "keys_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "keys_available=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create .env file
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        echo "BLABLADOR_API_KEY=${{ secrets.BLABLADOR_API_KEY }}" > .env
+        echo "BLABLADOR_API_BASE=${{ secrets.BLABLADOR_API_BASE }}" >> .env
+
+    - name: Check model availability and update status
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        # Check model availability and update models_status.yaml
+        poetry run python -c "
+        from src.hellmholtz.monitoring import ModelAvailabilityMonitor
+        monitor = ModelAvailabilityMonitor()
+        monitor.check_all_models_automatically()
+        print('Model status updated')
+        "
+
+    - name: Run intelligent benchmarks
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        # Load available models from status file
+        AVAILABLE_MODELS=$(python3 -c "
+        import yaml
+        with open('models_status.yaml', 'r') as f:
+            data = yaml.safe_load(f)
+        models = [k for k, v in data.get('models', {}).items() if v.get('available', False)]
+        print(','.join([f'blablador:{m}' for m in models]))
+        ")
+
+        if [ -n \"$AVAILABLE_MODELS\" ]; then
+          echo \"Running benchmarks for available models: $AVAILABLE_MODELS\"
+          poetry run hellm bench --models \"$AVAILABLE_MODELS\" --all-prompts --replications 1
+        else
+          echo \"No available models found, skipping benchmarks\"
+        fi
+
+    - name: Generate comprehensive reports
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        # Find the latest results file
+        LATEST_RESULTS=$(ls -t results/benchmark_*.json | head -1)
+        echo "Using results file: $LATEST_RESULTS"
+
+        # Generate comprehensive reports using the dedicated script
+        poetry run python scripts/generate_comprehensive_report.py \"$LATEST_RESULTS\"
+
+    - name: Create fallback reports (no API keys)
+      if: steps.check-keys.outputs.keys_available == 'false'
+      run: |
+        # Create a placeholder report when no API keys are available
+        cat > reports/weekly_benchmark_report.md << 'EOF'
+        # Weekly Benchmark Report
+
+        **Note:** This report was generated without API access. To enable full benchmarking:
+
+        1. Set the following secret in your GitHub repository:
+           - `BLABLADOR_API_KEY`: Your Blablador API key
+           - `BLABLADOR_API_BASE`: Blablador API base URL (optional)
+
+        2. The workflow will automatically run weekly benchmarks and update this report.
+
+        ## Last Updated
+        $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+        ## Status
+        ⏳ Waiting for BLABLADOR API credentials to be configured
+        EOF
+
+        # Copy placeholder HTML
+        cat > reports/weekly_benchmark_report.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Weekly Benchmark Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .note { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; }
+            </style>
+        </head>
+        <body>
+            <h1>Weekly Benchmark Report</h1>
+            <div class="note">
+                <h3>Note</h3>
+                <p>This report was generated without API access. To enable full benchmarking:</p>
+                <ol>
+                    <li>Set the following secret in your GitHub repository:
+                        <ul>
+                            <li><code>BLABLADOR_API_KEY</code>: Your Blablador API key</li>
+                            <li><code>BLABLADOR_API_BASE</code>: Blablador API base URL (optional)</li>
+                        </ul>
+                    </li>
+                    <li>The workflow will automatically run weekly benchmarks and update this report.</li>
+                </ol>
+            </div>
+            <p><strong>Last Updated:</strong> $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
+            <p><strong>Status:</strong> ⏳ Waiting for BLABLADOR API credentials to be configured</p>
+        </body>
+        </html>
+        EOF
+
+    - name: Check for changes
+      id: check-changes
+      run: |
+        if git diff --quiet reports/ models_status.yaml; then
+          echo "changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push changes
+      if: steps.check-changes.outputs.changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add reports/ models_status.yaml
+        git commit -m "Update weekly benchmark report and model status
+
+        - Generated on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        - Workflow run: ${{ github.run_id }}
+        - Commit: ${{ github.sha }}"
+        git push
+
+    - name: Create issue on failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Weekly Benchmark Failed',
+            body: `The weekly benchmark workflow failed on ${{ github.ref }}.\n\n**Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n**Error:** The benchmark process encountered an error. Please check the logs for details.`,
+            labels: ['bug', 'automated']
+          })

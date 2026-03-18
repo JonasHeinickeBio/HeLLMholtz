@@ -5,6 +5,7 @@ This module contains comprehensive tests for the monitoring module,
 including unit tests for ModelAvailabilityMonitor and integration tests.
 """
 
+import os
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -51,12 +52,12 @@ class TestModelAvailabilityMonitor:
 
     def test_init_missing_api_key(self) -> None:
         """Test initialization fails without API key."""
-        with patch.dict("os.environ", {}, clear=True), pytest.raises(ValueError, match="BLABLADOR_API_KEY not found"):
+        with patch.dict(os.environ, {}, clear=True), pytest.raises(ValueError, match="BLABLADOR_API_KEY not found"):
             ModelAvailabilityMonitor()
 
     def test_init_default_api_base(self) -> None:
         """Test initialization uses default API base when not provided."""
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}, clear=True):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}, clear=True):
             monitor = ModelAvailabilityMonitor()
             assert monitor.api_base == "https://api.blablador.example.com/v1"
 
@@ -69,7 +70,7 @@ class TestModelAvailabilityMonitor:
         mock_response.json.return_value = mock_api_response
         mock_get.return_value = mock_response
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}, clear=True):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}, clear=True):
             monitor = ModelAvailabilityMonitor()
             models = monitor.get_api_models()
 
@@ -86,7 +87,7 @@ class TestModelAvailabilityMonitor:
         """Test API models fetch with request failure."""
         mock_get.side_effect = Exception("Connection failed")
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
 
             with pytest.raises(RuntimeError, match="Failed to fetch models from API"):
@@ -94,7 +95,7 @@ class TestModelAvailabilityMonitor:
 
     def test_get_configured_models(self) -> None:
         """Test getting configured models."""
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
             models = monitor.get_configured_models()
 
@@ -109,7 +110,7 @@ class TestModelAvailabilityMonitor:
         """Test successful model accessibility test."""
         mock_chat.return_value = mock_chat_response
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
             accessible, latency = monitor.test_model_accessibility("test-model")
 
@@ -128,7 +129,7 @@ class TestModelAvailabilityMonitor:
         """Test model accessibility test with failure."""
         mock_chat.side_effect = Exception("Model not available")
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
             accessible, latency = monitor.test_model_accessibility("test-model")
 
@@ -140,7 +141,7 @@ class TestModelAvailabilityMonitor:
         """Test model accessibility test with empty response."""
         mock_chat.return_value = ""
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
             accessible, latency = monitor.test_model_accessibility("test-model")
 
@@ -152,9 +153,67 @@ class TestModelAvailabilityMonitor:
         """Test model accessibility test with None response."""
         mock_chat.return_value = None
 
-        with patch.dict("os.environ", {"BLABLADOR_API_KEY": "test_key"}):
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
             monitor = ModelAvailabilityMonitor()
             accessible, latency = monitor.test_model_accessibility("test-model")
 
             assert accessible is False
             assert isinstance(latency, float)
+
+    @patch("hellmholtz.monitoring.requests.get")
+    def test_analyze_availability(self, mock_get: MagicMock, mock_api_response: dict[str, Any]) -> None:
+        """Test availability analysis."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = mock_api_response
+        mock_get.return_value = mock_response
+
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
+            monitor = ModelAvailabilityMonitor()
+            analysis = monitor.analyze_availability(test_accessibility=False)
+
+            assert isinstance(analysis, dict)
+            assert "api_models_count" in analysis
+            assert "configured_models_count" in analysis
+            assert "configured_and_available" in analysis
+            assert "configured_not_available" in analysis
+            assert "available_not_configured" in analysis
+            assert "accessibility_results" in analysis
+
+    @patch("hellmholtz.monitoring.requests.get")
+    def test_generate_report(self, mock_get: MagicMock, mock_api_response: dict[str, Any]) -> None:
+        """Test report generation."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = mock_api_response
+        mock_get.return_value = mock_response
+
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
+            monitor = ModelAvailabilityMonitor()
+            analysis = monitor.analyze_availability(test_accessibility=False)
+            report = monitor.generate_report(analysis, test_accessibility=False)
+
+            assert isinstance(report, str)
+            assert len(report) > 0
+            assert "Model Availability Report" in report
+
+    @patch("builtins.open", new_callable=MagicMock)
+    @patch("pathlib.Path.mkdir")
+    def test_save_report(self, mock_mkdir: MagicMock, mock_open: MagicMock) -> None:
+        """Test report saving."""
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
+            monitor = ModelAvailabilityMonitor()
+            filepath = monitor.save_report("Test report content", "test_report.txt")
+
+            assert isinstance(filepath, str)
+            assert "test_report.txt" in filepath
+            mock_open.assert_called_once()
+            mock_mkdir.assert_called_once()
+
+    def test_get_configured_models(self) -> None:
+        """Test getting configured models."""
+        with patch.dict(os.environ, {"BLABLADOR_API_KEY": "test_key"}):
+            monitor = ModelAvailabilityMonitor()
+            models = monitor.get_configured_models()
+
+            assert isinstance(models, dict)
+            # Should have some models from KNOWN_MODELS
+            assert len(models) > 0

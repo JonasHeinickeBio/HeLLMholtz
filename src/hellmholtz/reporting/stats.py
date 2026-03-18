@@ -64,8 +64,8 @@ def detect_outliers(data: list[float], method: str = "iqr") -> list[int]:
         return []
 
     if method == "iqr":
-        q1 = statistics.quantiles(data, n=4)[0]
-        q3 = statistics.quantiles(data, n=4)[2]
+        q1 = statistics.quantiles(data, n=4, method="inclusive")[0]
+        q3 = statistics.quantiles(data, n=4, method="inclusive")[2]
         iqr = q3 - q1
         lower_bound = q1 - 1.5 * iqr
         upper_bound = q3 + 1.5 * iqr

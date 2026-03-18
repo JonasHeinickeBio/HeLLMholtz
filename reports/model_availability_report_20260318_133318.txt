@@ -1,0 +1,53 @@
+📊 Blablador Model Availability Report
+==================================================
+Generated: 2026-03-18 13:33:18
+
+📈 Summary:
+  • API Models: 17
+  • Configured Models: 29
+  • Available & Configured: 15
+  • Configured but Unavailable: 14
+  • Available but Unconfigured: 2
+
+✅ Available & Configured Models:
+  • Qwen3.5 122B
+  • Qwen3.5-35B-A3B
+  • Qwen3.5-27B
+  • option-g-50
+  • GPT-OSS-120b
+  • Apertus-8B-Instruct-2509
+  • NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
+  • alias-fast
+  • alias-large
+  • alias-code
+  • alias-apertus
+  • alias-embeddings
+  • gpt-3.5-turbo
+  • text-davinci-003
+  • text-embedding-ada-002
+
+⚠️  Configured but Not Available:
+  • alias-code-27B (API ID: alias-code-27B - alias-code-27B - Optimized for coding tasks, 27B parameters)
+  • alias-qwen3-8b-embeddings (API ID: alias-qwen3-8b-embeddings - alias-qwen3-8b-embeddings - Optimized for Qwen3 8B embeddings)
+  • Ministral-3-14B-Instruct-2512 (API ID: 0 - Ministral-3-14B-Instruct-2512 - The latest Ministral from Dec.2.2025)
+  • MiniMax-M2.1 (API ID: 1 - MiniMax-M2.1 - our best model as of December 26, 2025)
+  • Qwen3 235 (API ID: 2 - Qwen3 235, a great model from Alibaba with a long context size)
+  • Qwen3-Coder-30B-A3B-Instruct (API ID: 7 - Qwen3-Coder-30B-A3B-Instruct - A code model from August 2025)
+  • option-g-2T-step-47250 (API ID: 9999 option-g-2T-step-47250)
+  • Devstral-Small-2-24B-Instruct-2512 (API ID: Devstral-Small-2-24B-Instruct-2512)
+  • Phi-4-multimodal-instruct (API ID: Phi-4-multimodal-instruct)
+  • Qwen3-Next (API ID: Qwen3-Next)
+  • Qwen3-VL-32B-Instruct-FP8 (API ID: Qwen3-VL-32B-Instruct-FP8)
+  • Tongyi-DeepResearch-30B-A3B (API ID: Tongyi-DeepResearch-30B-A3B)
+  • alias-huge (API ID: alias-huge)
+  • alias-function-call (API ID: alias-function-call)
+
+🔍 Available but Not Configured:
+  • alias-code-27B - model
+  • alias-qwen3-8b-embeddings - model
+
+💡 Recommendations:
+  • Review configured models that are no longer available
+  • Consider removing or updating these configurations
+  • Consider adding newly available models to configuration
+  • Test new models for compatibility and performance

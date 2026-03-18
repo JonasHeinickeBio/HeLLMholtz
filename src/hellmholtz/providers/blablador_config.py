@@ -90,6 +90,49 @@ class BlabladorModel(BaseModel):
 
 # Models known to have specific IDs and descriptions
 KNOWN_MODELS: list[BlabladorModel] = [
+    # Newly available but not configured models (added from availability report)
+    BlabladorModel(
+        id="2 - Qwen3.5 122B, new multimodal model from Feb 2026, long context",
+        name="Qwen3.5 122B",
+        description="Multimodal model from Feb 2026 with long context and vision",
+        source="Blablador",
+        max_context_tokens=131072,
+    ),
+    BlabladorModel(
+        id="7 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026",
+        name="Qwen3.5-35B-A3B",
+        description="Multimodal model from Feb 2026",
+        source="Blablador",
+        max_context_tokens=131072,
+    ),
+    BlabladorModel(
+        id="8 - Qwen3.5-27B - Multimodal model from Feb 2026",
+        name="Qwen3.5-27B",
+        description="Multimodal model from Feb 2026",
+        source="Blablador",
+        max_context_tokens=131072,
+    ),
+    BlabladorModel(
+        id="9999 option-g-50",
+        name="option-g-50",
+        description="Experimental model checkpoint",
+        source="Blablador",
+        max_context_tokens=32768,
+    ),
+    BlabladorModel(
+        id="alias-code-27B",
+        name="alias-code-27B",
+        description="Optimized for coding tasks, 27B parameters",
+        source="Blablador",
+        max_context_tokens=131072,
+    ),
+    BlabladorModel(
+        id="alias-qwen3-8b-embeddings",
+        name="alias-qwen3-8b-embeddings",
+        description="Optimized for Qwen3 8B embeddings",
+        source="Blablador",
+        max_context_tokens=32000,
+    ),
     BlabladorModel(
         id="0 - Ministral-3-14B-Instruct-2512 - The latest Ministral from Dec.2.2025",
         name="Ministral-3-14B-Instruct-2512",

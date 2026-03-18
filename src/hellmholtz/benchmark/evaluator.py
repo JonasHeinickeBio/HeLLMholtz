@@ -47,7 +47,16 @@ def evaluate_responses(
         Only evaluates successful runs with response text. Failed runs
         and runs without responses are skipped.
     """
+    from hellmholtz.client import check_model_availability
+
     logger.info(f"Starting evaluation with judge model: {judge_model}")
+
+    # Check if judge model is available
+    if not check_model_availability(judge_model):
+        logger.warning(f"Judge model {judge_model} is not available. Skipping evaluation.")
+        return results
+
+    logger.info(f"Judge model {judge_model} is available. Proceeding with evaluation.")
 
     for result in results:
         if not result.success or not result.response_text:

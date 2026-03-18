@@ -46,7 +46,7 @@ class TestCLI:
         """Test that the CLI app exists."""
         assert app is not None
 
-    @patch("hellmholtz.cli.chat")
+    @patch("hellmholtz.cli.chat.chat")
     def test_chat_command_basic(self, mock_chat: MagicMock, runner: CliRunner) -> None:
         """Test basic chat command."""
         mock_chat.return_value = "Test response"
@@ -57,7 +57,7 @@ class TestCLI:
         assert "Test response" in result.output
         mock_chat.assert_called_once()
 
-    @patch("hellmholtz.cli.chat")
+    @patch("hellmholtz.cli.chat.chat")
     def test_chat_command_with_options(self, mock_chat: MagicMock, runner: CliRunner) -> None:
         """Test chat command with temperature and max tokens."""
         mock_chat.return_value = "Test response"
@@ -91,7 +91,7 @@ class TestCLI:
 
         assert result.exit_code != 0
 
-    @patch("hellmholtz.cli.generate_markdown_report")
+    @patch("hellmholtz.reporting.generate_markdown_report")
     def test_report_markdown_command(
         self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
     ) -> None:
@@ -113,11 +113,11 @@ class TestCLI:
         assert result.exit_code == 0
         # Should be called with the loaded results (list of BenchmarkResult)
         assert mock_generate.called
-        args, kwargs = mock_generate.call_args
+        args, _kwargs = mock_generate.call_args
         assert len(args) == 1
         assert isinstance(args[0], list)  # Should be a list of BenchmarkResult objects
 
-    @patch("hellmholtz.cli.generate_html_report")
+    @patch("hellmholtz.reporting.generate_html_report")
     def test_report_html_command(
         self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
     ) -> None:
@@ -132,7 +132,7 @@ class TestCLI:
         assert result.exit_code == 0
         assert mock_generate.called
 
-    @patch("hellmholtz.cli.generate_html_report_simple")
+    @patch("hellmholtz.reporting.generate_html_report_simple")
     def test_report_html_simple_command(
         self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
     ) -> None:
@@ -144,7 +144,7 @@ class TestCLI:
         assert result.exit_code == 0
         assert mock_generate.called
 
-    @patch("hellmholtz.cli.generate_html_report_detailed")
+    @patch("hellmholtz.reporting.generate_html_report_detailed")
     def test_report_html_detailed_command(
         self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
     ) -> None:
@@ -158,7 +158,7 @@ class TestCLI:
         assert result.exit_code == 0
         assert mock_generate.called
 
-    @patch("hellmholtz.cli.generate_html_report_full")
+    @patch("hellmholtz.reporting.generate_html_report_full")
     def test_report_html_full_command(
         self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
     ) -> None:
@@ -174,7 +174,7 @@ class TestCLI:
         self, runner: CliRunner, temp_results_file: Path
     ) -> None:
         """Test report command with invalid format defaults to markdown."""
-        with patch("hellmholtz.cli.generate_markdown_report") as mock_generate:
+        with patch("hellmholtz.reporting.generate_markdown_report") as mock_generate:
             mock_generate.return_value = "# Test Report"
 
             result = runner.invoke(app, ["report", str(temp_results_file), "--format", "invalid"])
@@ -192,7 +192,7 @@ class TestCLI:
         """Test logging configuration."""
         import logging
 
-        from hellmholtz.cli import configure_logging
+        from hellmholtz.cli.common import configure_logging
 
         # Should not raise any exceptions
         configure_logging()
@@ -200,3 +200,75 @@ class TestCLI:
         # Check that logging is configured
         logger = logging.getLogger("hellmholtz.cli")
         assert logger.level <= logging.INFO
+
+    @patch("hellmholtz.benchmark.run_benchmarks")
+    def test_bench_command_basic(self, mock_run_benchmarks: MagicMock, runner: CliRunner) -> None:
+        """Test basic bench command."""
+        result = runner.invoke(app, ["bench", "--models", "openai:gpt-4o"])
+
+        assert result.exit_code == 0
+        mock_run_benchmarks.assert_called_once()
+
+    @patch("hellmholtz.integrations.lm_eval.run_lm_eval")
+    def test_lm_eval_command(self, mock_run_lm_eval: MagicMock, runner: CliRunner) -> None:
+        """Test LM eval command."""
+        result = runner.invoke(app, ["lm-eval", "openai:gpt-4o", "arc_easy,arc_challenge"])
+
+        assert result.exit_code == 0
+        mock_run_lm_eval.assert_called_once_with("openai:gpt-4o", ["arc_easy", "arc_challenge"], num_fewshot=None, limit=None)
+
+    @patch("hellmholtz.integrations.litellm.start_proxy")
+    def test_proxy_command(self, mock_start_proxy: MagicMock, runner: CliRunner) -> None:
+        """Test proxy command."""
+        result = runner.invoke(app, ["proxy", "openai:gpt-4o"])
+
+        assert result.exit_code == 0
+        mock_start_proxy.assert_called_once_with("openai:gpt-4o", port=4000, debug=False)
+
+    @patch("hellmholtz.benchmark.run_throughput_benchmark")
+    def test_bench_throughput_command(self, mock_run_throughput: MagicMock, runner: CliRunner) -> None:
+        """Test throughput benchmark command."""
+        mock_run_throughput.return_value = {
+            "success": True,
+            "model": "openai:gpt-4o",
+            "tokens_per_sec": 50.5,
+            "latency": 2.1,
+            "output_tokens": 100
+        }
+
+        result = runner.invoke(app, ["bench-throughput", "openai:gpt-4o"])
+
+        assert result.exit_code == 0
+        mock_run_throughput.assert_called_once()
+
+    @patch("hellmholtz.providers.blablador_config.get_token_limit")
+    @patch("hellmholtz.providers.blablador.list_models")
+    def test_models_command(self, mock_list_models: MagicMock, mock_get_token_limit: MagicMock, runner: CliRunner) -> None:
+        """Test models command."""
+        from hellmholtz.core.prompts import Message
+
+        # Mock model data
+        mock_model = MagicMock()
+        mock_model.id = "1"
+        mock_model.name = "Test Model"
+        mock_model.alias = "test"
+        mock_model.source = "Blablador"
+        mock_model.description = "A test model"
+        mock_list_models.return_value = [mock_model]
+        mock_get_token_limit.return_value = 128000
+
+        result = runner.invoke(app, ["models"])
+
+        assert result.exit_code == 0
+        assert "Test Model" in result.output
+        assert "125k" in result.output  # 128000 / 1024 = 125
+        mock_list_models.assert_called_once()
+        mock_get_token_limit.assert_called_once_with("Test Model")
+
+    @patch("hellmholtz.evaluation_analysis.analyze_evaluations_cli")
+    def test_analyze_command(self, mock_analyze: MagicMock, runner: CliRunner, temp_results_file: Path) -> None:
+        """Test analyze command."""
+        result = runner.invoke(app, ["analyze", str(temp_results_file)])
+
+        assert result.exit_code == 0
+        mock_analyze.assert_called_once_with(str(temp_results_file), None)

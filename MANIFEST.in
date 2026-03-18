@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include pyproject.toml
+include .env.example
+recursive-include src/hellmholtz *.html
+recursive-include src/hellmholtz *.yaml
+recursive-include src/hellmholtz *.yml
+recursive-include src/hellmholtz *.json

@@ -8,21 +8,21 @@
 
 A comprehensive Python package for unified LLM access, benchmarking, evaluation, and reporting. Built on top of `aisuite` with specialized support for Helmholtz Blablador models.
 
-## ✨ Features
+## Features
 
-- **🔄 Unified Client**: Single interface for OpenAI, Google, Anthropic, Ollama, and Helmholtz Blablador models
-- **⚙️ Centralized Configuration**: Environment-based configuration for all your projects
-- **📊 Advanced Benchmarking**: Compare model performance across temperatures, replications, and prompt categories
-- **🔍 LLM-as-a-Judge Evaluation**: Automated evaluation with comprehensive statistical analysis
-- **📈 Interactive Reports**: HTML reports with Chart.js visualizations and Markdown summaries
-- **🎯 Flexible Prompt System**: Support for both simple text files and structured JSON prompt collections
-- **📊 Model Monitoring**: Track Blablador model availability and configuration consistency
-- **🚀 LM Evaluation Harness**: Integration with EleutherAI's comprehensive evaluation suite
-- **🌐 LiteLLM Proxy**: Built-in proxy server for model routing and load balancing
-- **⚡ Throughput Testing**: Performance benchmarking for high-throughput scenarios
-- **🔍 Model Discovery**: Dynamic model listing and availability checking
+- **Unified Client**: Single interface for OpenAI, Google, Anthropic, Ollama, and Helmholtz Blablador models
+- **Centralized Configuration**: Environment-based configuration for all your projects
+- **Advanced Benchmarking**: Compare model performance across temperatures, replications, and prompt categories
+- **LLM-as-a-Judge Evaluation**: Automated evaluation with comprehensive statistical analysis
+- **Interactive Reports**: HTML reports with Chart.js visualizations and Markdown summaries
+- **Flexible Prompt System**: Support for both simple text files and structured JSON prompt collections
+- **Model Monitoring**: Track Blablador model availability and configuration consistency
+- **LM Evaluation Harness**: Integration with EleutherAI's comprehensive evaluation suite
+- **LiteLLM Proxy**: Built-in proxy server for model routing and load balancing
+- **Throughput Testing**: Performance benchmarking for high-throughput scenarios
+- **Model Discovery**: Dynamic model listing and availability checking (19+ BLABLADOR models currently available)
 
-## 🚀 Installation
+## Installation
 
 ### Basic Installation
 
@@ -46,7 +46,7 @@ pip install -e ".[eval,proxy]"
 poetry install --with eval,proxy
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 1. Copy the example environment file:
 ```bash
@@ -72,7 +72,7 @@ BLABLADOR_API_BASE=https://your-blablador-instance.com
 AISUITE_DEFAULT_MODELS='{"openai": "gpt-4o", "anthropic": "claude-3-haiku"}'
 ```
 
-## 📖 Usage
+## Usage
 
 ### Python API
 
@@ -181,6 +181,33 @@ hellm monitor --test-accessibility
 hellm monitor --check-config
 ```
 
+#### Weekly Automated Benchmarking
+
+The repository includes a GitHub Actions workflow that automatically runs benchmarks weekly and updates reports:
+
+- **Scheduled**: Runs every Sunday at 00:00 UTC
+- **Model Discovery**: Automatically fetches latest Blablador models
+- **Performance Charts**: Generates visual charts comparing model performance
+- **Multiple Formats**: Creates HTML, Markdown, and PNG chart reports
+- **Auto-commit**: Updates reports in the repository for public viewing
+
+To enable automated benchmarking:
+
+1. Set repository secrets for API keys:
+   - `BLABLADOR_API_KEY`: Your Blablador API key
+   - `BLABLADOR_API_BASE`: Blablador API base URL (optional)
+
+2. The workflow will automatically:
+   - Run benchmarks on selected models
+   - Generate performance reports
+   - Create visual charts
+   - Commit updated reports to the repository
+
+Reports are available in the `reports/` directory and include:
+- `weekly_benchmark_report.html`: Interactive HTML report
+- `weekly_benchmark_report.md`: Markdown summary
+- `weekly_benchmark_chart.png`: Performance visualization
+
 #### Advanced Features
 
 ```bash
@@ -196,7 +223,7 @@ hellm proxy \
   --port 8000
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 hellmholtz/
@@ -228,7 +255,7 @@ hellmholtz/
     └── litellm.py         # LiteLLM proxy integration
 ```
 
-## 🎯 Prompt System
+## Prompt System
 
 HeLLMholtz supports two prompt formats:
 
@@ -270,7 +297,7 @@ Write a Python function to reverse a string.
 ]
 ```
 
-## 📊 Evaluation System
+## Evaluation System
 
 The LLM-as-a-Judge evaluation system provides:
 
@@ -283,10 +310,10 @@ The LLM-as-a-Judge evaluation system provides:
 ### Example Analysis Output
 
 ```
-🔍 EVALUATION ANALYSIS RESULTS
+[Monitor] EVALUATION ANALYSIS RESULTS
 ══════════════════════════════════════════════════════════════
 
-📊 OVERVIEW
+ OVERVIEW
 • Total Evaluations: 150
 • Models Tested: 3
 • Prompts Tested: 5
@@ -297,14 +324,53 @@ The LLM-as-a-Judge evaluation system provides:
 2. anthropic:claude-3-opus - Avg Score: 8.4/10 (±0.9)
 3. blablador:gpt-4o     - Avg Score: 7.9/10 (±1.1)
 
-📈 DETAILED METRICS
+ DETAILED METRICS
 • Response Quality: 8.3/10 average
 • Relevance: 8.6/10 average
 • Accuracy: 9.1/10 average
 • Creativity: 7.8/10 average
 ```
 
-## 🔧 Development
+## Latest Benchmark Results
+
+Recent benchmarking results from the automated weekly workflow testing BLABLADOR models:
+
+### Model Performance Overview
+
+| Model | Success Rate | Avg Latency | Avg Rating (1-10) | Rating Std Dev |
+|-------|-------------|-------------|-------------------|----------------|
+| GPT-OSS-120b | 100.0% | 5.35s | 8.5 | ±2.38 |
+| Ministral-3-14B-Instruct-2512 | 100.0% | 9.55s | 7.5 | ±3.70 |
+
+**Overall Statistics:**
+- **Total Evaluations**: 8 across 4 different prompts
+- **Models Tested**: 2 BLABLADOR models
+- **Overall Success Rate**: 100.0%
+- **Average Rating**: 8.0/10
+- **Average Latency**: 7.45s
+
+### Key Findings
+- **Top Performer**: GPT-OSS-120b with highest rating (8.5/10) and fastest response time (5.35s)
+- **Most Consistent**: GPT-OSS-120b with lower rating variation (±2.38)
+- **Performance Gap**: 1.0 point difference between best and worst performing models
+- **Model Availability**: Both tested models are fully operational with 100% success rates
+
+### Evaluation Details
+- **Prompt Categories**: Reasoning, coding, and creative writing tasks
+- **Temperature Testing**: Multiple temperature settings (0.1, 0.7, 1.0) for response variation
+- **LLM-as-a-Judge**: Automated evaluation with detailed critiques and statistical analysis
+- **Rating Distribution**: GPT-OSS-120b received mostly 9-10 ratings, Ministral-3-14B showed more variation
+
+### Reports and Visualizations
+
+- [Interactive HTML Report](reports/evaluation_analysis.html) - Comprehensive evaluation analysis with charts
+- [Markdown Summary](reports/benchmark_report_comprehensive.md) - Detailed performance metrics
+- [Performance Chart](reports/benchmark_chart_comprehensive.png) - Visual model comparison
+- [Basic Report](reports/benchmark_report.md) - Simple performance overview
+
+Reports are automatically updated and include LLM-as-a-Judge evaluation with detailed statistical analysis and model rankings.
+
+## Development
 
 ### Setup Development Environment
 
@@ -361,7 +427,7 @@ poetry run sphinx-build docs/ docs/_build/
 poetry run sphinx-serve docs/_build/
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
@@ -374,23 +440,23 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 7. Push to the branch: `git push origin feature/amazing-feature`
 8. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built on top of [aisuite](https://github.com/andrewyng/aisuite) for unified LLM access
 - LLM evaluation powered by [EleutherAI's LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness)
 - Proxy functionality via [LiteLLM](https://github.com/BerriAI/litellm)
 - Special thanks to the Helmholtz Association for Blablador model access
 
-## 📞 Support
+## Support
 
-- 📖 [Documentation](https://hellmholtz.readthedocs.io/)
-- 🐛 [Issue Tracker](https://github.com/JonasHeinickeBio/HeLLMholtz/issues)
-- 💬 [Discussions](https://github.com/JonasHeinickeBio/HeLLMholtz/discussions)
+- Documentation: https://hellmholtz.readthedocs.io/
+- Issue Tracker: https://github.com/JonasHeinickeBio/HeLLMholtz/issues
+- Discussions: https://github.com/JonasHeinickeBio/HeLLMholtz/discussions
 
 ---
 
-<p align="center">Made with ❤️ for the scientific computing community</p>
+<p align="center">Made with love for the scientific computing community</p>

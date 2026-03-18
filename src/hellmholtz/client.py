@@ -120,3 +120,29 @@ def chat_raw(
     except Exception as e:
         logger.error(f"Raw chat completion failed for {model}: {e}")
         raise
+
+
+def check_model_availability(model: str) -> bool:
+    """Check if a model is available by making a minimal test request.
+
+    Args:
+        model: Model identifier (e.g., "openai:gpt-4o", "blablador:gpt-4o")
+
+    Returns:
+        True if the model is available and can respond to requests
+    """
+    try:
+        # For all models, try a minimal request using the chat function
+        test_messages = [{"role": "user", "content": "test"}]
+        chat(
+            model=model,
+            messages=test_messages,
+            max_tokens=1,  # Minimal response
+            temperature=0,  # Deterministic
+        )
+        logger.debug(f"Model {model} is available")
+        return True
+
+    except Exception as e:
+        logger.debug(f"Model {model} availability check failed: {e}")
+        return False

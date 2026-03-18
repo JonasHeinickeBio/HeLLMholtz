@@ -286,29 +286,246 @@ class TestBenchmarkRunner:
 
     @patch("builtins.open", new_callable=mock_open)
     @patch("json.dump")
+    @patch("pathlib.Path.mkdir")
+    @patch("pathlib.Path.glob")
     def test_results_file_creation(
-        self, mock_json_dump: MagicMock, mock_file: MagicMock, tmp_path: Path
+        self, mock_glob: MagicMock, mock_mkdir: MagicMock, mock_json_dump: MagicMock, mock_file: MagicMock
     ) -> None:
         """Test that results are properly written to file."""
-        # This is a basic test to ensure file operations are called
-        # In a real scenario, we'd check the actual file content
-        # results = [
-        #     BenchmarkResult(
-        #         model="test-model",
-        #         prompt_id="test-1",
-        #         temperature=0.1,
-        #         run_id=1,
-        #         response_text="test",
-        #         success=True,
-        #         input_tokens=5,
-        #         output_tokens=10,
-        #         latency_seconds=1.0,
-        #         timestamp="2023-01-01T00:00:00",
-        #     )
-        # ]
+        from hellmholtz.benchmark.runner import BenchmarkResult
+
+        results = [
+            BenchmarkResult(
+                model="test-model",
+                prompt_id="test-1",
+                temperature=0.1,
+                run_id=1,
+                response_text="test",
+                success=True,
+                input_tokens=5,
+                output_tokens=10,
+                latency_seconds=1.0,
+                timestamp="2023-01-01T00:00:00",
+            )
+        ]
 
         # Mock the file operations that happen in run_benchmarks
-        with patch("pathlib.Path.mkdir"), patch("pathlib.Path.glob") as mock_glob:
-            mock_glob.return_value = [Path(tmp_path / "benchmark_test.json")]
-            # The actual file writing logic is tested implicitly through the run_benchmarks tests above
-            pass
+        mock_glob.return_value = [Path("results/benchmark_test.json")]
+
+        # Import and call the function that writes results
+        from hellmholtz.benchmark.runner import save_results
+        save_results(results, Path("results"), "benchmark_test")
+
+        # Assert that json.dump was called with the expected data
+        mock_json_dump.assert_called_once()
+        call_args = mock_json_dump.call_args
+        saved_data = call_args[0][0]  # First positional argument is the data
+        assert len(saved_data) == 1
+        assert saved_data[0]["model"] == "test-model"
+        assert saved_data[0]["prompt_id"] == "test-1"
+
+
+class TestBenchmarkPrompts:
+    """Test suite for benchmark prompts functionality."""
+
+    def test_get_all_prompts(self) -> None:
+        """Test getting all prompts."""
+        from hellmholtz.benchmark.prompts import get_all_prompts
+
+        prompts = get_all_prompts()
+        assert isinstance(prompts, list)
+        assert len(prompts) > 0
+        # Check that all prompts have required attributes
+        for prompt in prompts:
+            assert hasattr(prompt, 'id')
+            assert hasattr(prompt, 'category')
+            assert hasattr(prompt, 'messages')
+            assert hasattr(prompt, 'description')
+
+    def test_get_prompts_by_category(self) -> None:
+        """Test getting prompts by category."""
+        from hellmholtz.benchmark.prompts import get_prompts_by_category
+
+        # Test with existing category
+        reasoning_prompts = get_prompts_by_category("reasoning")
+        assert isinstance(reasoning_prompts, list)
+        assert len(reasoning_prompts) > 0
+        for prompt in reasoning_prompts:
+            assert prompt.category == "reasoning"
+
+        # Test with non-existing category
+        empty_prompts = get_prompts_by_category("nonexistent")
+        assert isinstance(empty_prompts, list)
+        assert len(empty_prompts) == 0
+
+    def test_get_prompt_by_id(self) -> None:
+        """Test getting a prompt by ID."""
+        from hellmholtz.benchmark.prompts import get_prompt_by_id
+
+        # Test with existing ID
+        prompt = get_prompt_by_id("reasoning_001")
+        assert prompt is not None
+        assert prompt.id == "reasoning_001"
+        assert prompt.category == "reasoning"
+
+        # Test with non-existing ID
+        prompt = get_prompt_by_id("nonexistent_id")
+        assert prompt is None
+
+    def test_prompt_categories_exist(self) -> None:
+        """Test that prompts have expected categories."""
+        from hellmholtz.benchmark.prompts import get_all_prompts
+
+        prompts = get_all_prompts()
+        categories = {prompt.category for prompt in prompts}
+
+        # Check that we have some expected categories
+        expected_categories = {"reasoning", "coding", "creative", "knowledge"}
+        assert len(categories.intersection(expected_categories)) > 0
+
+
+class TestBenchmarkEvaluator:
+    """Test suite for benchmark evaluator functionality."""
+
+    @pytest.fixture
+    def sample_results(self) -> list[BenchmarkResult]:
+        """Create sample benchmark results for testing."""
+        return [
+            BenchmarkResult(
+                model="openai:gpt-4o",
+                prompt_id="test-1",
+                latency_seconds=1.5,
+                success=True,
+                timestamp="2024-01-01T12:00:00",
+                response_text="This is a good response.",
+            ),
+            BenchmarkResult(
+                model="openai:gpt-4o",
+                prompt_id="test-2",
+                latency_seconds=2.0,
+                success=True,
+                timestamp="2024-01-01T12:00:00",
+                response_text="Another excellent response.",
+            ),
+            BenchmarkResult(
+                model="openai:gpt-4o",
+                prompt_id="test-3",
+                latency_seconds=1.8,
+                success=False,  # Failed result
+                timestamp="2024-01-01T12:00:00",
+                response_text=None,
+            ),
+        ]
+
+    @pytest.fixture
+    def sample_prompts(self) -> list[Prompt]:
+        """Create sample prompts for testing."""
+        return [
+            Prompt(
+                id="test-1",
+                category="test",
+                messages=[Message(role="user", content="What is 2+2?")],
+            ),
+            Prompt(
+                id="test-2",
+                category="test",
+                messages=[Message(role="user", content="Explain quantum physics.")],
+            ),
+            Prompt(
+                id="test-3",
+                category="test",
+                messages=[Message(role="user", content="Write a poem.")],
+            ),
+        ]
+
+    @patch("hellmholtz.benchmark.evaluator.chat")
+    @patch("hellmholtz.client.check_model_availability", return_value=True)
+    def test_evaluate_responses_success(self, mock_check_model_availability: MagicMock, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        """Test successful evaluation of responses."""
+
+        # Mock judge response
+        mock_chat.return_value = "RATING: 8.5\nCRITIQUE: This is a well-structured and accurate response that demonstrates good understanding."
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+
+        # Check that successful results got ratings and critiques
+        assert results[0].rating == 8.5
+        assert "well-structured" in results[0].critique
+        assert results[1].rating == 8.5
+        assert "well-structured" in results[1].critique
+
+        # Failed result should not be evaluated
+        assert results[2].rating is None
+        assert results[2].critique is None
+
+        # Check that chat was called for successful results only
+        assert mock_chat.call_count == 2
+
+    @patch("hellmholtz.benchmark.evaluator.chat")
+    def test_evaluate_responses_parsing_errors(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        """Test evaluation with malformed judge responses."""
+        # Mock judge response with missing rating
+        mock_chat.return_value = "This response is okay but lacks detail."
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+
+        # Should handle missing rating gracefully
+        assert results[0].rating is None
+        assert results[0].critique is None  # No CRITIQUE section
+
+    @patch("hellmholtz.benchmark.evaluator.chat")
+    def test_evaluate_responses_chat_error(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        """Test evaluation when chat call fails."""
+        mock_chat.side_effect = Exception("API Error")
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+
+        # Results should remain unchanged on error
+        assert results[0].rating is None
+        assert results[0].critique is None
+
+    def test_evaluate_responses_no_matching_prompt(self, sample_results: list[BenchmarkResult]) -> None:
+        """Test evaluation when prompt ID doesn't match."""
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        # Prompt with different ID
+        prompts = [
+            Prompt(
+                id="different-id",
+                category="test",
+                messages=[Message(role="user", content="Different prompt")],
+            )
+        ]
+
+        results = evaluate_responses(sample_results, "openai:gpt-4o", prompts)
+
+        # Should skip evaluation due to no matching prompt
+        assert results[0].rating is None
+        assert results[0].critique is None
+
+    def test_evaluate_responses_empty_results(self) -> None:
+        """Test evaluation with empty results list."""
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses([], "openai:gpt-4o", [])
+
+        assert results == []
+
+    @patch("hellmholtz.benchmark.evaluator.chat")
+    @patch("hellmholtz.client.check_model_availability", return_value=True)
+    def test_evaluate_responses_partial_ratings(self, mock_check_model_availability: MagicMock, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        """Test evaluation with only rating but no critique."""
+        mock_chat.return_value = "RATING: 7"
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+
+        assert results[0].rating == 7.0
+        assert results[0].critique is None

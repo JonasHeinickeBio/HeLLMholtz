@@ -21,7 +21,7 @@
 
 ```bash
 # Install
-pip install -e .
+poetry install
 
 # Chat
 hellm chat --model openai:gpt-4o "Hello, world!"
@@ -36,6 +36,22 @@ hellm bench --models openai:gpt-4o,anthropic:claude-3-haiku --prompts-category r
 hellm monitor --test-accessibility
 ```
 
+## Automated Benchmarking
+
+This project includes automated weekly benchmarking that tests Blablador models and generates comprehensive reports. The benchmarking system:
+
+- Automatically fetches the latest Blablador models from the API
+- Runs evaluation benchmarks with LLM-as-a-Judge scoring
+- Generates HTML, Markdown, and visualization reports
+- Updates reports in the repository for public viewing
+
+Reports are available in the [reports/](../reports/) directory and include:
+
+- Interactive HTML reports with Chart.js visualizations
+- Markdown summaries with detailed metrics
+- Performance charts comparing model speed and accuracy
+- Statistical analysis with model rankings
+
 ## Documentation
 
 - **[Installation](installation.md)**: Setup and installation instructions
@@ -43,4 +59,5 @@ hellm monitor --test-accessibility
 - **[Usage](usage.md)**: Command-line interface and Python API
 - **[Models](models.md)**: Available models and providers
 - **[Monitoring](monitoring.md)**: Model availability and health monitoring
-- **[Contributing](https://github.com/JonasHeinickeBio/HeLLMholtz/blob/main/CONTRIBUTING.md)**: Development guidelines
+- **[Publishing](publishing.md)**: PyPI publishing workflow and release management
+- [Contributing](https://github.com/JonasHeinickeBio/HeLLMholtz/blob/main/CONTRIBUTING.md): Development guidelines

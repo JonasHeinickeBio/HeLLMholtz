@@ -8,7 +8,8 @@ The following models are available via the Helmholtz Blablador API. You can list
 
 Each model has a maximum context window size (in tokens) that determines how much text it can process at once. HeLLMholtz provides comprehensive token limit information for all supported providers.
 
-#### Blablador Models
+#### Blablador Models by Size
+
 - **Large Models (128k+ tokens)**: Ministral, GPT-OSS, MiniMax, Qwen3 variants, Code models, Vision models
 - **Medium Models (32k tokens)**: Apertus, NVIDIA, Experimental models, Fast/Small aliases
 - **Small Models (16k tokens)**: Phi-4, Legacy GPT-3.5-turbo
