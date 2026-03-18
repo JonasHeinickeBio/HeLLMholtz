@@ -1,0 +1,162 @@
+name: Daily Model Availability Check
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC (night time)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-models:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: actions/install-poetry@v3
+      with:
+        version: latest
+
+    - name: Cache Poetry dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ runner.os }}-
+
+    - name: Install dependencies
+      run: |
+        poetry install --with dev
+
+    - name: Check for API keys
+      id: check-keys
+      run: |
+        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ]; then
+          echo "keys_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "keys_available=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create .env file
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        echo "BLABLADOR_API_KEY=${{ secrets.BLABLADOR_API_KEY }}" > .env
+        echo "BLABLADOR_API_BASE=${{ secrets.BLABLADOR_API_BASE }}" >> .env
+
+    - name: Check model availability
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        poetry run python -c "
+        from src.hellmholtz.monitoring import ModelAvailabilityMonitor
+        import yaml
+        from datetime import datetime
+
+        monitor = ModelAvailabilityMonitor()
+        monitor.check_all_models_automatically()
+
+        # Load and display status
+        with open('models_status.yaml', 'r') as f:
+            data = yaml.safe_load(f)
+
+        print('\n=== Model Availability Report ===')
+        print(f'Checked at: {datetime.now().isoformat()}')
+        print('\nAvailable Models:')
+        for model, info in data.get('models', {}).items():
+            status = '✓' if info.get('available', False) else '✗'
+            print(f'  {status} {model}: {info.get(\"status\", \"unknown\")}')
+
+        print(f'\nTotal: {len([m for m, v in data.get(\"models\", {}).items() if v.get(\"available\")])} available')
+        print(f'Updated: {data.get(\"last_checked\", \"N/A\")}')
+        "
+
+    - name: Generate availability report
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        cat > /tmp/gen_report.py << 'SCRIPT_EOF'
+        import yaml
+        from datetime import datetime
+
+        with open('models_status.yaml', 'r') as f:
+            data = yaml.safe_load(f)
+
+        available = [m for m, v in data.get('models', {}).items() if v.get('available')]
+        unavailable = [m for m, v in data.get('models', {}).items() if not v.get('available')]
+
+        available_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'OK')}" for m in sorted(available)]) if available else '- None'
+        unavailable_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'Unavailable')}" for m in sorted(unavailable)]) if unavailable else '- None'
+
+        yaml_dump = yaml.dump(data, default_flow_style=False)
+
+        report = f"""# Daily Model Availability Report
+
+        **Generated:** {datetime.now().isoformat()}
+
+        ## Summary
+        - **Available:** {len(available)}/{len(data.get('models', {}))}
+        - **Unavailable:** {len(unavailable)}/{len(data.get('models', {}))}
+
+        ## Available Models ✓
+        {available_list}
+
+        ## Unavailable Models ✗
+        {unavailable_list}
+
+        ## Last Check Details
+        ```yaml
+        {yaml_dump}
+        ```
+        """
+
+        with open('reports/model_availability_report.md', 'w') as f:
+            f.write(report)
+
+        print('Availability report generated: reports/model_availability_report.md')
+        SCRIPT_EOF
+
+        poetry run python /tmp/gen_report.py
+
+    - name: Check for changes
+      id: check-changes
+      run: |
+        if git diff --quiet models_status.yaml reports/model_availability_report.md 2>/dev/null || \
+           (! git ls-files --error-unmatch reports/model_availability_report.md 2>/dev/null); then
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push changes
+      if: steps.check-changes.outputs.changes == 'true' && steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add models_status.yaml reports/model_availability_report.md
+        git commit -m "Daily model availability check
+
+        - Checked at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        - Workflow run: ${{ github.run_id }}
+        - Branch: ${{ github.ref }}"
+        git push
+
+    - name: Workflow status notification
+      if: always()
+      run: |
+        if [ "${{ steps.check-keys.outputs.keys_available }}" == "true" ]; then
+          echo "✓ Model availability check completed successfully"
+        else
+          echo "⚠ Skipped: BLABLADOR_API_KEY not configured"
+        fi

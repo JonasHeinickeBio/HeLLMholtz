@@ -6,19 +6,19 @@ including model selection algorithms and result processing.
 """
 
 import json
-import pytest
 from pathlib import Path
-from typing import List, Dict, Any
 
-from hellmholtz.export import select_best_model
+import pytest
+
 from hellmholtz.benchmark.runner import BenchmarkResult
+from hellmholtz.export import select_best_model
 
 
 class TestExportFunctions:
     """Test suite for export functions."""
 
     @pytest.fixture
-    def sample_results(self) -> List[BenchmarkResult]:
+    def sample_results(self) -> list[BenchmarkResult]:
         """Create sample benchmark results for testing."""
         return [
             BenchmarkResult(
@@ -31,7 +31,7 @@ class TestExportFunctions:
                 input_tokens=10,
                 output_tokens=20,
                 latency_seconds=0.1,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             BenchmarkResult(
                 model="slow-model",
@@ -43,7 +43,7 @@ class TestExportFunctions:
                 input_tokens=10,
                 output_tokens=20,
                 latency_seconds=1.0,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             BenchmarkResult(
                 model="accurate-model",
@@ -55,14 +55,15 @@ class TestExportFunctions:
                 input_tokens=15,
                 output_tokens=25,
                 latency_seconds=0.5,
-                timestamp="2024-01-01T00:00:00"
-            )
+                timestamp="2024-01-01T00:00:00",
+            ),
         ]
 
     @pytest.fixture
-    def results_file(self, tmp_path: Path, sample_results: List[BenchmarkResult]) -> Path:
+    def results_file(self, tmp_path: Path, sample_results: list[BenchmarkResult]) -> Path:
         """Create a temporary results file for testing."""
         from dataclasses import asdict
+
         filepath = tmp_path / "test_results.json"
         with open(filepath, "w") as f:
             json.dump([asdict(result) for result in sample_results], f)
@@ -99,7 +100,7 @@ class TestExportFunctions:
                 input_tokens=10,
                 output_tokens=20,
                 latency_seconds=0.5,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             BenchmarkResult(
                 model="unreliable-model",
@@ -111,13 +112,14 @@ class TestExportFunctions:
                 input_tokens=0,
                 output_tokens=0,
                 latency_seconds=0.0,
-                timestamp="2024-01-01T00:00:00"
-            )
+                timestamp="2024-01-01T00:00:00",
+            ),
         ]
 
         filepath = tmp_path / "mixed_results.json"
         with open(filepath, "w") as f:
             from dataclasses import asdict
+
             json.dump([asdict(result) for result in results], f)
 
         best = select_best_model(str(filepath), criterion="success_rate")
@@ -137,7 +139,7 @@ class TestExportFunctions:
                 input_tokens=10,
                 output_tokens=20,
                 latency_seconds=0.2,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             BenchmarkResult(
                 model="model-b",
@@ -149,7 +151,7 @@ class TestExportFunctions:
                 input_tokens=10,
                 output_tokens=20,
                 latency_seconds=0.3,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             # Prompt 2
             BenchmarkResult(
@@ -162,7 +164,7 @@ class TestExportFunctions:
                 input_tokens=15,
                 output_tokens=25,
                 latency_seconds=0.4,
-                timestamp="2024-01-01T00:00:00"
+                timestamp="2024-01-01T00:00:00",
             ),
             BenchmarkResult(
                 model="model-b",
@@ -174,13 +176,14 @@ class TestExportFunctions:
                 input_tokens=15,
                 output_tokens=25,
                 latency_seconds=0.2,
-                timestamp="2024-01-01T00:00:00"
-            )
+                timestamp="2024-01-01T00:00:00",
+            ),
         ]
 
         filepath = tmp_path / "multi_prompt_results.json"
         with open(filepath, "w") as f:
             from dataclasses import asdict
+
             json.dump([asdict(result) for result in results], f)
 
         # Model A average latency: (0.2 + 0.4) / 2 = 0.3
@@ -207,15 +210,15 @@ class TestExportFunctions:
         with pytest.raises(FileNotFoundError):
             select_best_model("nonexistent_file.json", criterion="latency")
 
-    @pytest.mark.parametrize("criterion,expected_key", [
-        ("latency", "latency_seconds"),
-        ("success_rate", "success_rate"),
-    ])
+    @pytest.mark.parametrize(
+        "criterion,expected_key",
+        [
+            ("latency", "latency_seconds"),
+            ("success_rate", "success_rate"),
+        ],
+    )
     def test_select_best_model_returns_expected_keys(
-        self,
-        results_file: Path,
-        criterion: str,
-        expected_key: str
+        self, results_file: Path, criterion: str, expected_key: str
     ) -> None:
         """Test that select_best_model returns expected keys for different criteria."""
         best = select_best_model(str(results_file), criterion=criterion)

@@ -6,16 +6,16 @@ including LM Evaluation Harness and LiteLLM proxy functionality.
 """
 
 import sys
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, call
-from typing import List, Dict, Any
 
 # Mock lm_eval before importing the integration module
 sys.modules["lm_eval"] = MagicMock()
 sys.modules["lm_eval.utils"] = MagicMock()
 
-from hellmholtz.integrations.lm_eval import run_lm_eval
 from hellmholtz.integrations.litellm import start_proxy
+from hellmholtz.integrations.lm_eval import run_lm_eval
 
 
 class TestLmEvalIntegration:
@@ -23,49 +23,52 @@ class TestLmEvalIntegration:
 
     def test_run_lm_eval_missing_dependency(self) -> None:
         """Test that run_lm_eval raises SystemExit when lm_eval is not available."""
-        with patch("hellmholtz.integrations.lm_eval.lm_eval", None):
-            with pytest.raises(SystemExit):
-                run_lm_eval("openai:gpt-4o", ["mmlu"])
+        with patch("hellmholtz.integrations.lm_eval.lm_eval", None), pytest.raises(SystemExit):
+            run_lm_eval("openai:gpt-4o", ["mmlu"])
 
     def test_run_lm_eval_basic_functionality(self) -> None:
         """Test basic LM evaluation run."""
         mock_simple_eval = MagicMock()
         mock_simple_eval.return_value = {"results": {"mmlu": {"acc": 0.85}}}
 
-        with patch("hellmholtz.integrations.lm_eval.simple_evaluate", mock_simple_eval):
-            with patch("hellmholtz.integrations.lm_eval.lm_eval", MagicMock()):
-                run_lm_eval("openai:gpt-4o", ["mmlu"])
+        with patch("hellmholtz.integrations.lm_eval.simple_evaluate", mock_simple_eval), patch("hellmholtz.integrations.lm_eval.lm_eval", MagicMock()):
+            run_lm_eval("openai:gpt-4o", ["mmlu"])
 
-                mock_simple_eval.assert_called_once()
-                call_kwargs = mock_simple_eval.call_args[1]
+            mock_simple_eval.assert_called_once()
+            call_kwargs = mock_simple_eval.call_args[1]
 
-                assert call_kwargs["model"] == "openai-chat-completions"
-                assert call_kwargs["model_args"] == "model=gpt-4o"
-                assert "mmlu" in call_kwargs["tasks"]
+            assert call_kwargs["model"] == "openai-chat-completions"
+            assert call_kwargs["model_args"] == "model=gpt-4o"
+            assert "mmlu" in call_kwargs["tasks"]
 
     def test_run_lm_eval_multiple_tasks(self) -> None:
         """Test LM evaluation with multiple tasks."""
         mock_simple_eval = MagicMock()
-        mock_simple_eval.return_value = {"results": {"mmlu": {"acc": 0.8}, "hellaswag": {"acc": 0.75}}}
+        mock_simple_eval.return_value = {
+            "results": {"mmlu": {"acc": 0.8}, "hellaswag": {"acc": 0.75}}
+        }
 
-        with patch("hellmholtz.integrations.lm_eval.simple_evaluate", mock_simple_eval):
-            with patch("hellmholtz.integrations.lm_eval.lm_eval", MagicMock()):
-                tasks = ["mmlu", "hellaswag", "winogrande"]
-                run_lm_eval("anthropic:claude-3-sonnet-20240229", tasks)
+        with patch("hellmholtz.integrations.lm_eval.simple_evaluate", mock_simple_eval), patch("hellmholtz.integrations.lm_eval.lm_eval", MagicMock()):
+            tasks = ["mmlu", "hellaswag", "winogrande"]
+            run_lm_eval("anthropic:claude-3-sonnet-20240229", tasks)
 
-                mock_simple_eval.assert_called_once()
-                call_kwargs = mock_simple_eval.call_args[1]
+            mock_simple_eval.assert_called_once()
+            call_kwargs = mock_simple_eval.call_args[1]
 
-                assert call_kwargs["model"] == "openai-chat-completions"
-                assert call_kwargs["model_args"] == "model=claude-3-sonnet-20240229"
-                for task in tasks:
-                    assert task in call_kwargs["tasks"]
+            assert call_kwargs["model"] == "openai-chat-completions"
+            assert call_kwargs["model_args"] == "model=claude-3-sonnet-20240229"
+            for task in tasks:
+                assert task in call_kwargs["tasks"]
 
     def test_run_lm_eval_different_providers(self) -> None:
         """Test LM evaluation with different model providers."""
         test_cases = [
             ("openai:gpt-4o", "openai-chat-completions", "model=gpt-4o"),
-            ("anthropic:claude-3-sonnet-20240229", "openai-chat-completions", "model=claude-3-sonnet-20240229"),
+            (
+                "anthropic:claude-3-sonnet-20240229",
+                "openai-chat-completions",
+                "model=claude-3-sonnet-20240229",
+            ),
             ("google:gemini-pro", "openai-chat-completions", "model=gemini-pro"),
             ("ollama:llama3", "openai-chat-completions", "model=llama3"),
         ]
@@ -182,7 +185,9 @@ class TestLiteLLMIntegration:
 
     @patch("subprocess.run")
     @patch("subprocess.Popen")
-    def test_start_proxy_background_process(self, mock_popen: MagicMock, mock_run: MagicMock) -> None:
+    def test_start_proxy_background_process(
+        self, mock_popen: MagicMock, mock_run: MagicMock
+    ) -> None:
         """Test that proxy starts as a background process."""
         # Note: Current implementation uses subprocess.run, not Popen
         # This test documents the current behavior
@@ -198,7 +203,7 @@ class TestLiteLLMIntegration:
         complex_models = [
             "blablador:Ministral-3-14B-Instruct-2512",
             "openai:gpt-4o-mini",
-            "anthropic:claude-3-5-sonnet-20241022"
+            "anthropic:claude-3-5-sonnet-20241022",
         ]
 
         for model_spec in complex_models:

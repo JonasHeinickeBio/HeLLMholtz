@@ -1,0 +1,122 @@
+name: Release Checklist
+description: Checklist for preparing a new release
+title: "Release v"
+labels: [release, documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Release Checklist for HeLLMholtz
+
+        Complete each step to prepare a new release. This ensures quality and consistency.
+
+  - type: input
+    id: version
+    attributes:
+      label: Release Version
+      description: "Semantic version (e.g., 0.3.0)"
+      placeholder: "0.3.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: Major Changes
+      description: "Summary of major changes in this release"
+      placeholder: |
+        - Feature: Add new benchmarking capability
+        - Fix: Improved error handling
+        - Docs: Updated installation guide
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: quality
+    attributes:
+      label: Quality Checks
+      description: "Ensure code quality before release"
+      options:
+        - label: All tests pass locally (`poetry run pytest`)
+          required: true
+        - label: Linting passes (`poetry run ruff check .`)
+          required: true
+        - label: Type checking passes (`poetry run mypy src/`)
+          required: true
+        - label: Code coverage is adequate (>50%)
+          required: true
+        - label: No security warnings (`poetry run bandit -r src/`)
+          required: true
+
+  - type: checkboxes
+    id: versioning
+    attributes:
+      label: Version Management
+      description: "Update version information"
+      options:
+        - label: Updated version in `pyproject.toml`
+          required: true
+        - label: Updated `CHANGELOG.md` or release notes (if applicable)
+          required: true
+        - label: Reviewed breaking changes for major version bump
+          required: true
+
+  - type: checkboxes
+    id: documentation
+    attributes:
+      label: Documentation
+      description: "Ensure documentation is up-to-date"
+      options:
+        - label: Updated `README.md` if needed
+        - label: Updated API documentation if applicable
+        - label: Added migration guide for breaking changes (if major version)
+        - label: Updated `docs/` folder if needed
+
+  - type: checkboxes
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: "Verify dependency status"
+      options:
+        - label: All dependencies are up-to-date (`poetry update --dry-run`)
+          required: false
+        - label: No security vulnerabilities in dependencies
+          required: true
+
+  - type: checkboxes
+    id: release
+    attributes:
+      label: Release Process
+      description: "Follow the automated release process"
+      options:
+        - label: Create git tag (`git tag -a v0.X.Y -m 'Release version 0.X.Y'`)
+          required: true
+        - label: Push tag to GitHub (`git push origin vX.Y.Z`)
+          required: true
+        - label: Create GitHub Release with changelog
+          required: true
+        - label: Publish Release to trigger workflow
+          required: true
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      description: "Verify release was successful"
+      options:
+        - label: "Workflow completed successfully (check Actions tab)"
+          required: true
+        - label: "Package available on PyPI: https://pypi.org/project/hellmholtz/"
+          required: true
+        - label: "Can install new version: `pip install --upgrade hellmholtz`"
+          required: true
+        - label: "Package metadata is correct on PyPI"
+          required: true
+        - label: "Artifacts attached to GitHub Release"
+          required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: "Any additional information about this release"

@@ -64,8 +64,8 @@ def detect_outliers(data: list[float], method: str = "iqr") -> list[int]:
         return []
 
     if method == "iqr":
-        q1 = statistics.quantiles(data, n=4)[0]
-        q3 = statistics.quantiles(data, n=4)[2]
+        q1 = statistics.quantiles(data, n=4, method="inclusive")[0]
+        q3 = statistics.quantiles(data, n=4, method="inclusive")[2]
         iqr = q3 - q1
         lower_bound = q1 - 1.5 * iqr
         upper_bound = q3 + 1.5 * iqr
@@ -126,6 +126,62 @@ def analyze_performance_trends(results: list[BenchmarkResult]) -> dict[str, Any]
         analysis["outlier_percentage"] = len(outlier_indices) / len(all_latencies) * 100
 
     return analysis
+
+
+def calculate_model_stats(results: list[BenchmarkResult]) -> dict[str, dict[str, Any]]:
+    """Calculate statistics for each model."""
+    if not results:
+        return {}
+
+    model_stats = {}
+    models = set(r.model for r in results)
+
+    for model in models:
+        model_results = [r for r in results if r.model == model]
+        total_runs = len(model_results)
+        successful_runs = [r for r in model_results if r.success]
+        success_rate = len(successful_runs) / total_runs if total_runs > 0 else 0.0
+
+        avg_latency = (
+            statistics.mean([r.latency_seconds for r in successful_runs])
+            if successful_runs
+            else 0.0
+        )
+
+        model_stats[model] = {
+            "total_runs": total_runs,
+            "success_rate": success_rate,
+            "avg_latency": avg_latency,
+        }
+
+    return model_stats
+
+
+def calculate_overall_stats(results: list[BenchmarkResult]) -> dict[str, Any]:
+    """Calculate overall statistics across all results."""
+    if not results:
+        return {
+            "total_runs": 0,
+            "unique_models": 0,
+            "overall_success_rate": 0.0,
+            "avg_latency_all": 0.0,
+        }
+
+    total_runs = len(results)
+    unique_models = len(set(r.model for r in results))
+    successful_runs = [r for r in results if r.success]
+    overall_success_rate = len(successful_runs) / total_runs if total_runs > 0 else 0.0
+
+    avg_latency_all = (
+        statistics.mean([r.latency_seconds for r in successful_runs]) if successful_runs else 0.0
+    )
+
+    return {
+        "total_runs": total_runs,
+        "unique_models": unique_models,
+        "overall_success_rate": overall_success_rate,
+        "avg_latency_all": avg_latency_all,
+    }
 
 
 def generate_insights(results: list[BenchmarkResult]) -> list[str]:  # noqa: C901

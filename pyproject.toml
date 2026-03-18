@@ -1,11 +1,41 @@
 [project]
 name = "hellmholtz"
 version = "0.2.0"
-description = "Helmholtz LLM Suite"
+description = "A comprehensive Python package for unified LLM access, benchmarking, evaluation, and reporting"
 authors = [{ name = "jhe24", email = "jhe24@example.com" }]
 readme = "README.md"
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
+license = { text = "MIT" }
+keywords = [
+  "llm",
+  "benchmark",
+  "aisuite",
+  "openai",
+  "anthropic",
+  "google",
+  "ollama",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/JonasHeinickeBio/HeLLMholtz"
+Documentation = "https://github.com/JonasHeinickeBio/HeLLMholtz#readme"
+Repository = "https://github.com/JonasHeinickeBio/HeLLMholtz.git"
+Issues = "https://github.com/JonasHeinickeBio/HeLLMholtz/issues"
+Changelog = "https://github.com/JonasHeinickeBio/HeLLMholtz/releases"
 
 [project.scripts]
 hellm = "hellmholtz.cli:main"
@@ -13,6 +43,7 @@ hellm = "hellmholtz.cli:main"
 [project.optional-dependencies]
 eval = ["lm-eval"]
 proxy = ["litellm"]
+reporting = ["matplotlib", "scipy", "seaborn"]
 
 [tool.poetry]
 packages = [{ include = "hellmholtz", from = "src" }]
@@ -24,6 +55,7 @@ pydantic = "^2.10.3"
 python-dotenv = "^1.0.1"
 typer = "^0.15.1"
 jinja2 = "^3.1.0"
+requests = "^2.32.0"
 lm-eval = { version = "^0.4.7", optional = true }
 litellm = { version = "^1.55.2", optional = true }
 
@@ -39,6 +71,12 @@ types-requests = "^2.32.0"
 types-PyYAML = "^6.0.12"
 types-toml = "^0.10.8"
 types-redis = "^4.6.0"
+pytest-cov = "^7.0.0"
+
+[tool.poetry.group.reporting.dependencies]
+matplotlib = "^3.8.0"
+scipy = "^1.10.0"
+seaborn = "^0.13.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -73,6 +111,7 @@ exclude = [
   ".idea",
   "examples",
   "tests",
+  "scripts",
 ]
 
 [tool.ruff.lint]

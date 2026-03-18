@@ -1,10 +1,12 @@
 import logging
 import os
+import time
 from typing import Any
 
 from aisuite.provider import LLMError, Provider
 import openai
 
+from hellmholtz.providers.blablador import list_models
 from hellmholtz.providers.blablador_config import KNOWN_MODELS
 
 logger = logging.getLogger(__name__)
@@ -32,9 +34,68 @@ class BlabladorProvider(Provider):
 
         # Pass the config to the OpenAI client constructor
         self.client = openai.OpenAI(**config)
+        self._available_models: list[str] | None = None
+        self._models_cache_time: float | None = None
+        self._cache_ttl = 300  # 5 minutes TTL for model list
         logger.info("BlabladorProvider initialized")
 
-    def chat_completions_create(
+    def _get_available_models(self) -> list[str]:
+        """Get list of available model API IDs from the API."""
+        current_time = time.time()
+        if (
+            self._available_models is None
+            or self._models_cache_time is None
+            or current_time - self._models_cache_time > self._cache_ttl
+        ):
+            try:
+                models = list_models()
+                self._available_models = [m.api_id for m in models]
+                self._models_cache_time = current_time
+                logger.debug(f"Cached {len(self._available_models)} available models")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to fetch available models: {e}. Using known models as fallback."
+                )
+                # Fallback to known models if API fetch fails
+                self._available_models = [m.api_id for m in KNOWN_MODELS]
+                self._models_cache_time = current_time
+        return self._available_models
+
+    def check_model_availability(self, model: str) -> bool:
+        """Check if a model is available by making a minimal test request.
+
+        Args:
+            model: Model identifier (name, alias, or ID)
+
+        Returns:
+            True if the model is available and can respond to requests
+        """
+        try:
+            # Resolve model name to API ID
+            resolved_model = model
+            for m in KNOWN_MODELS:
+                if m.id == model or m.name == model or m.alias == model:
+                    resolved_model = m.api_id
+                    break
+
+            # Make a minimal test request
+            test_messages = [{"role": "user", "content": "test"}]
+            self.client.chat.completions.create(
+                model=resolved_model,
+                messages=test_messages,
+                max_tokens=1,  # Minimal response
+                temperature=0,  # Deterministic
+            )
+
+            # If we get here, the model is available
+            logger.debug(f"Model {model} (resolved to {resolved_model}) is available")
+            return True
+
+        except Exception as e:
+            logger.debug(f"Model {model} availability check failed: {e}")
+            return False
+
+    def chat_completions_create(  # noqa: C901
         self, model: str, messages: list[dict[str, Any]], **kwargs: dict[str, Any]
     ) -> object:
         logger.debug(f"Chat completion request for {model}")
@@ -45,6 +106,25 @@ class BlabladorProvider(Provider):
                 if m.id == model or m.name == model or m.alias == model:
                     resolved_model = m.api_id
                     break
+
+            # Check if the resolved model is available
+            available_models = self._get_available_models()
+            if resolved_model not in available_models:
+                available_names = []
+                for m in KNOWN_MODELS:
+                    if m.api_id in available_models:
+                        names = [m.name]
+                        if m.alias:
+                            names.append(m.alias)
+                        available_names.extend(names)
+
+                error_msg = (
+                    f"Model '{model}' (resolved to '{resolved_model}') is not currently available."
+                    f"This may indicate the model has been removed or renamed by the API provider."
+                    f"Available models: {', '.join(sorted(set(available_names)))}"
+                )
+                logger.error(error_msg)
+                raise LLMError(error_msg)
 
             response = self.client.chat.completions.create(
                 model=resolved_model,

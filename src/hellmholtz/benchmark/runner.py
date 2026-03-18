@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import logging
 from pathlib import Path
+import random
 import time
 from typing import Any
 
@@ -13,6 +14,64 @@ from hellmholtz.client import chat_raw
 from hellmholtz.core.prompts import Prompt
 
 logger = logging.getLogger(__name__)
+
+
+def _is_retryable_error(error: Exception) -> bool:
+    """Check if an error is retryable (transient network/server issues)."""
+    error_str = str(error).lower()
+    # Retry on common transient errors
+    retryable_patterns = [
+        "502",
+        "proxy error",
+        "bad gateway",
+        "503",
+        "service unavailable",
+        "504",
+        "gateway timeout",
+        "500",
+        "internal server error",
+        "connection",
+        "timeout",
+        "network",
+        "rate limit",
+        "429",
+    ]
+    return any(pattern in error_str for pattern in retryable_patterns)
+
+
+def _retry_with_backoff(
+    func: callable,
+    max_retries: int = 3,
+    base_delay: float = 1.0,
+    max_delay: float = 30.0,
+    backoff_factor: float = 2.0,
+) -> Any:
+    """Retry a function with exponential backoff for retryable errors."""
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            return func()
+        except Exception as e:
+            last_exception = e
+
+            if attempt == max_retries or not _is_retryable_error(e):
+                # Either exhausted retries or non-retryable error
+                raise e
+
+            # Calculate delay with jitter
+            delay = min(base_delay * (backoff_factor**attempt), max_delay)
+            jitter = random.uniform(0.1, 1.0) * delay * 0.1  # nosec: non-cryptographic jitter
+            total_delay = delay + jitter
+
+            logger.warning(
+                f"Attempt {attempt + 1}/{max_retries + 1} failed with retryable error: {e}. "
+                f"Retrying in {total_delay:.1f}s..."
+            )
+            time.sleep(total_delay)
+
+    # This should never be reached, but just in case
+    raise last_exception
 
 
 @dataclass
@@ -91,6 +150,7 @@ def run_benchmarks(  # noqa: C901
         "models_tested": set(),
         "categories_tested": set(),
         "temperatures_tested": set(temperatures),
+        "skipped_models": set(),
     }
 
     with tqdm(
@@ -105,6 +165,8 @@ def run_benchmarks(  # noqa: C901
         for model_idx, model in enumerate(model_list):
             model_results = 0
             model_successful = 0
+            consecutive_failures = 0
+            max_consecutive_failures = 5  # Skip model after this many consecutive failures
 
             logger.info(f"Testing model {model_idx + 1}/{len(model_list)}: {model}")
 
@@ -114,6 +176,16 @@ def run_benchmarks(  # noqa: C901
 
                 for _temp_idx, temperature in enumerate(temperatures):
                     for repl_idx in range(replications):
+                        # Check if we should skip this model due to too many failures
+                        if consecutive_failures >= max_consecutive_failures:
+                            warn_msg = (
+                                f"Skipping remaining tests for {model} due to "
+                                f"{consecutive_failures} consecutive failures"
+                            )
+                            logger.warning(warn_msg)
+                            stats["skipped_models"].add(model)
+                            break
+
                         # Update progress description
                         current_test = (
                             f"{model} | {prompt.category}/{prompt_id} | "
@@ -136,12 +208,15 @@ def run_benchmarks(  # noqa: C901
                         response_text = None
 
                         try:
-                            # Call with temperature and other parameters
+                            # Call with temperature and other parameters with retry logic
                             call_kwargs = {"temperature": temperature}
                             if max_tokens is not None:
                                 call_kwargs["max_tokens"] = max_tokens
 
-                            response = chat_raw(model=model, messages=messages, **call_kwargs)
+                            def _make_api_call(m=model, msg=messages, kw=call_kwargs):
+                                return chat_raw(model=m, messages=msg, **kw)
+
+                            response = _retry_with_backoff(_make_api_call, max_retries=3)
                             success = True
 
                             if response.choices and len(response.choices) > 0:
@@ -196,11 +271,25 @@ def run_benchmarks(  # noqa: C901
                         if success:
                             stats["successful"] += 1
                             model_successful += 1
+                            consecutive_failures = 0  # Reset on success
                         else:
                             stats["failed"] += 1
+                            consecutive_failures += 1
 
                         model_results += 1
                         pbar.update(1)
+
+                    # Check if we need to break out of replication loop due to model skipping
+                    if consecutive_failures >= max_consecutive_failures:
+                        break
+
+                # Check if we need to break out of temperature loop due to model skipping
+                if consecutive_failures >= max_consecutive_failures:
+                    break
+
+            # Check if we need to break out of prompt loop due to model skipping
+            if consecutive_failures >= max_consecutive_failures:
+                break
 
             logger.info(f"Completed testing {model}")
             stats["models_tested"].add(model)
@@ -293,6 +382,11 @@ def print_summary_stats(stats: dict[str, Any], results: list[BenchmarkResult]) -
     print(f"Completed: {stats['completed']}")
     print(f"Successful: {stats['successful']} ({stats['successful'] / stats['total'] * 100:.1f}%)")
     print(f"Failed: {stats['failed']} ({stats['failed'] / stats['total'] * 100:.1f}%)")
+
+    if stats.get("skipped_models"):
+        print(f"Skipped Models: {len(stats['skipped_models'])}")
+        for model in sorted(stats["skipped_models"]):
+            print(f"  {model}: skipped due to consecutive failures")
 
     print(f"\nModels Tested: {len(stats['models_tested'])}")
     for model in sorted(stats["models_tested"]):

@@ -6,11 +6,11 @@ including environment variable parsing, default values, and settings validation.
 """
 
 import os
-import pytest
 from unittest.mock import patch
-from typing import List, Optional
 
-from hellmholtz.core.config import get_settings, Settings
+import pytest
+
+from hellmholtz.core.config import get_settings
 
 
 class TestSettings:
@@ -36,7 +36,7 @@ class TestSettings:
             expected_models = [
                 "openai:gpt-4o",
                 "anthropic:claude-3-sonnet-20240229",
-                "ollama:llama3"
+                "ollama:llama3",
             ]
             assert settings.default_models == expected_models
 
@@ -44,7 +44,7 @@ class TestSettings:
         """Test overriding Blablador configuration via environment variables."""
         env_vars = {
             "BLABLADOR_API_KEY": "test-api-key-123",
-            "BLABLADOR_API_BASE": "https://api.blablador.example.com/v1"
+            "BLABLADOR_API_BASE": "https://api.blablador.example.com/v1",
         }
         with patch.dict(os.environ, env_vars, clear=True):
             settings = get_settings()
@@ -53,9 +53,7 @@ class TestSettings:
 
     def test_settings_env_override_timeout(self) -> None:
         """Test overriding timeout via environment variable."""
-        env_vars = {
-            "HELMHOLTZ_TIMEOUT_SECONDS": "120.5"
-        }
+        env_vars = {"HELMHOLTZ_TIMEOUT_SECONDS": "120.5"}
         with patch.dict(os.environ, env_vars, clear=True):
             settings = get_settings()
             assert settings.timeout_seconds == 120.5
@@ -66,7 +64,7 @@ class TestSettings:
             "AISUITE_DEFAULT_MODELS": "openai:gpt-4o,blablador:test-model",
             "HELMHOLTZ_TIMEOUT_SECONDS": "60.0",
             "BLABLADOR_API_KEY": "secret-key",
-            "BLABLADOR_API_BASE": "https://custom.api.com"
+            "BLABLADOR_API_BASE": "https://custom.api.com",
         }
         with patch.dict(os.environ, env_vars, clear=True):
             settings = get_settings()
@@ -81,7 +79,7 @@ class TestSettings:
         env_vars = {
             "AISUITE_DEFAULT_MODELS": "",
             "BLABLADOR_API_KEY": "",
-            "BLABLADOR_API_BASE": ""
+            "BLABLADOR_API_BASE": "",
         }
         with patch.dict(os.environ, env_vars, clear=True):
             settings = get_settings()
@@ -103,12 +101,7 @@ class TestSettings:
 
     def test_settings_numeric_timeout_conversion(self) -> None:
         """Test that timeout values are properly converted to float."""
-        test_cases = [
-            ("30", 30.0),
-            ("30.5", 30.5),
-            ("0", 0.0),
-            ("300.99", 300.99)
-        ]
+        test_cases = [("30", 30.0), ("30.5", 30.5), ("0", 0.0), ("300.99", 300.99)]
 
         for env_value, expected in test_cases:
             env_vars = {"HELMHOLTZ_TIMEOUT_SECONDS": env_value}
@@ -138,10 +131,13 @@ class TestSettings:
             assert settings.timeout_seconds == 60.0
             assert settings.timeout_seconds != original_timeout
 
-    @pytest.mark.parametrize("env_var,value,expected", [
-        ("HELMHOLTZ_TIMEOUT_SECONDS", "30.0", 30.0),
-        ("HELMHOLTZ_TIMEOUT_SECONDS", "60", 60.0),
-    ])
+    @pytest.mark.parametrize(
+        "env_var,value,expected",
+        [
+            ("HELMHOLTZ_TIMEOUT_SECONDS", "30.0", 30.0),
+            ("HELMHOLTZ_TIMEOUT_SECONDS", "60", 60.0),
+        ],
+    )
     def test_settings_timeout_values(self, env_var: str, value: str, expected: float) -> None:
         """Test various timeout value configurations."""
         env_vars = {env_var: value}
@@ -162,6 +158,6 @@ class TestSettings:
                 "openai:gpt-4o",
                 "blablador:Ministral-3-14B-Instruct-2512",
                 "anthropic:claude-3-5-sonnet-20241022",
-                "ollama:llama3.2:3b"
+                "ollama:llama3.2:3b",
             ]
             assert settings.default_models == expected_models
