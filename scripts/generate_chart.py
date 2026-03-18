@@ -17,7 +17,7 @@ import seaborn as sns
 def load_results(results_file: str) -> list[dict[str, Any]]:
     """Load benchmark results from JSON file."""
     with open(results_file) as f:
-        return json.load(f)
+        return list(json.load(f))
 
 
 def calculate_stats(data: list[float]) -> dict[str, float]:
@@ -69,34 +69,34 @@ def generate_performance_chart(results: list[dict[str, Any]], output_path: str) 
     sns.set_palette("husl")
 
     # Group results by model
-    model_stats = {}
+    model_stats: dict[str, dict[str, Any]] = {}
     for result in results:
         model = result["model"]
         if model not in model_stats:
             model_stats[model] = {
-                "latencies": [],
-                "successes": [],
-                "input_tokens": [],
-                "output_tokens": [],
+                "latencies": list[float](),
+                "successes": list[float](),
+                "input_tokens": list[float](),
+                "output_tokens": list[float](),
                 "total": 0,
             }
 
-        model_stats[model]["latencies"].append(result["latency_seconds"])
-        model_stats[model]["successes"].append(result["success"])
-        model_stats[model]["input_tokens"].append(result.get("input_tokens", 0))
-        model_stats[model]["output_tokens"].append(result.get("output_tokens", 0))
+        model_stats[model]["latencies"].append(float(result["latency_seconds"]))
+        model_stats[model]["successes"].append(float(result["success"]))
+        model_stats[model]["input_tokens"].append(float(result.get("input_tokens", 0)))
+        model_stats[model]["output_tokens"].append(float(result.get("output_tokens", 0)))
         model_stats[model]["total"] += 1
 
     # Prepare data for plotting
-    models = []
-    success_rates = []
-    success_stds = []
-    avg_latencies = []
-    latency_stds = []
-    latency_ci_lower = []
-    latency_ci_upper = []
-    throughput_data = []  # tokens per second
-    total_requests = []
+    models: list[str] = []
+    success_rates: list[float] = []
+    success_stds: list[float] = []
+    avg_latencies: list[float] = []
+    latency_stds: list[float] = []
+    latency_ci_lower: list[float] = []
+    latency_ci_upper: list[float] = []
+    throughput_data: list[float] = []
+    total_requests: list[int] = []
 
     for model, stats in model_stats.items():
         models.append(model.split(":")[-1])  # Remove provider prefix
@@ -106,7 +106,7 @@ def generate_performance_chart(results: list[dict[str, Any]], output_path: str) 
             sum(stats["successes"]) / len(stats["successes"]) * 100 if stats["successes"] else 0
         )
         success_rates.append(success_rate)
-        success_stds.append(np.std(stats["successes"]) * 100 if len(stats["successes"]) > 1 else 0)
+        success_stds.append(np.std(stats["successes"]) * 100 if len(stats["successes"]) > 1 else 0.0)
 
         # Latency stats
         latency_stats = calculate_stats(stats["latencies"])
@@ -118,10 +118,10 @@ def generate_performance_chart(results: list[dict[str, Any]], output_path: str) 
         # Throughput calculation (total tokens per second)
         total_tokens = sum(stats["input_tokens"]) + sum(stats["output_tokens"])
         total_time = sum(stats["latencies"])
-        throughput = total_tokens / total_time if total_time > 0 else 0
+        throughput = total_tokens / total_time if total_time > 0 else 0.0
         throughput_data.append(throughput)
 
-        total_requests.append(stats["total"])
+        total_requests.append(int(stats["total"]))
 
     # Create figure with subplots
     fig = plt.figure(figsize=(16, 12))
@@ -283,7 +283,7 @@ def generate_performance_chart(results: list[dict[str, Any]], output_path: str) 
     print(f"Generated charts for {len(models)} models with comprehensive statistics")
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     if len(sys.argv) != 3:
         print("Usage: python generate_chart.py <results_file> <output_image>")

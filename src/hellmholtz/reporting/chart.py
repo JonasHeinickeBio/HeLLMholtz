@@ -15,7 +15,8 @@ import seaborn as sns
 def load_results(results_file: str) -> list[dict[str, Any]]:
     """Load benchmark results from JSON file."""
     with open(results_file) as f:
-        return json.load(f)
+        data = json.load(f)
+        return data if isinstance(data, list) else [data]
 
 
 def calculate_stats(data: list[float]) -> dict[str, float]:
@@ -69,7 +70,7 @@ def generate_performance_chart(results_file: str, output_path: str) -> None:
     sns.set_palette("husl")
 
     # Group results by model
-    model_stats = {}
+    model_stats: dict[str, dict[str, Any]] = {}
     for result in results:
         model = result["model"]
         if model not in model_stats:
@@ -88,15 +89,15 @@ def generate_performance_chart(results_file: str, output_path: str) -> None:
         model_stats[model]["total"] += 1
 
     # Prepare data for plotting
-    models = []
-    success_rates = []
-    success_stds = []
-    avg_latencies = []
-    latency_stds = []
-    latency_ci_lower = []
-    latency_ci_upper = []
-    throughput_data = []  # tokens per second
-    total_requests = []
+    models: list[str] = []
+    success_rates: list[float] = []
+    success_stds: list[float] = []
+    avg_latencies: list[float] = []
+    latency_stds: list[float] = []
+    latency_ci_lower: list[float] = []
+    latency_ci_upper: list[float] = []
+    throughput_data: list[float] = []  # tokens per second
+    total_requests: list[int] = []
 
     for model, model_data in model_stats.items():
         models.append(model.split(":")[-1])  # Remove provider prefix
@@ -287,7 +288,7 @@ def generate_performance_chart(results_file: str, output_path: str) -> None:
     print(f"Generated charts for {len(models)} models with comprehensive statistics")
 
 
-def main():
+def main() -> None:
     """Main entry point for command line usage."""
     if len(sys.argv) != 3:
         print("Usage: python -m hellmholtz.reporting.chart <results_file> <output_image>")

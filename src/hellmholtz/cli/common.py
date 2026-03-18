@@ -3,7 +3,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 import typer
 
@@ -71,7 +71,7 @@ def format_token_limit(token_limit: int) -> str:
 # ============================================================================
 
 
-def handle_error(error: Exception, context: str, exit_code: int = 1) -> None:
+def handle_error(error: Exception, context: str, exit_code: int = 1) -> NoReturn:
     """Handle and log an error with consistent formatting.
 
     Args:
@@ -124,7 +124,9 @@ def load_prompts_from_file(prompts_file: Path) -> list[Prompt]:
             Prompt(
                 id=f"custom_{i}",
                 category="custom",
-                messages=[Message(role="user", content=line)],
+                messages=[Message(role="user", content=line, name=None)],
+                description=None,
+                expected_output=None,
             )
             for i, line in enumerate(file_prompts)
         ]
@@ -146,6 +148,11 @@ def get_prompts_by_category_or_default(category: str | None) -> list[Prompt]:
     """
     from hellmholtz.benchmark.prompts import PROMPTS, get_prompts_by_category
 
+    if category is None:
+        handle_error(
+            ValueError("Category cannot be None"),
+            "Category is required",
+        )
     prompts = get_prompts_by_category(category)
     if not prompts:
         available_categories = set(prompt.category for prompt in PROMPTS)

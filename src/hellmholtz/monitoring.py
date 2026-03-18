@@ -250,9 +250,10 @@ class ModelAvailabilityMonitor:
 
         try:
             with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+                data: Any = yaml.safe_load(f) or {}
                 # Handle nested structure with 'models' key
-                return data.get("models", data)
+                result = data.get("models", data) if isinstance(data, dict) else {}
+                return result if isinstance(result, dict) else {}
         except Exception as e:
             print(f"⚠️  Warning: Could not load model status from YAML: {e}")
             return {}
@@ -266,7 +267,7 @@ class ModelAvailabilityMonitor:
         yaml_path = Path("models_status.yaml")
 
         # Load existing data to preserve structure
-        existing_data = {}
+        existing_data: dict[str, Any] = {}
         if yaml_path.exists():
             try:
                 with open(yaml_path, encoding="utf-8") as f:
@@ -437,7 +438,7 @@ class ModelAvailabilityMonitor:
         lines = ["📋 Model Status from YAML:", ""]
 
         # Group by category
-        categories = {}
+        categories: dict[str, list[tuple[str, dict[str, Any]]]] = {}
         for model_name, data in status_data.items():
             category = data.get("category", "other")
             if category not in categories:

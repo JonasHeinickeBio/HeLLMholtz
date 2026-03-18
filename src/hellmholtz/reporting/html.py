@@ -4,7 +4,7 @@ HTML report generation functions.
 
 import json
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, Template
 
@@ -69,7 +69,7 @@ def generate_html_report_simple(results: list[BenchmarkResult]) -> str:
 
     template = _load_template("simple")
     data = _prepare_simple_report_data(results)
-    return cast(str, template.render(**data))
+    return str(template.render(**data))
 
 
 def generate_html_report_detailed(results: list[BenchmarkResult]) -> str:  # noqa: C901
@@ -276,21 +276,21 @@ def generate_html_report_detailed(results: list[BenchmarkResult]) -> str:  # noq
 
     # Load template and substitute
     template = _load_template("detailed")
-    data = {
+    data: dict[str, str] = {
         "total_runs": str(total_runs),
         "success_rate": f"{success_rate:.1f}",
         "models_count": str(len(models)),
         "temperatures_count": str(len(temperatures) if temperatures else 0),
         "timestamp": results[0].timestamp if results else "Unknown",
-        "model_labels": json.dumps([stat["model"] for stat in model_stats]),
-        "success_rates": json.dumps([stat["success_rate"] for stat in model_stats]),
-        "avg_latencies": json.dumps([stat["avg_latency"] for stat in model_stats]),
+        "model_labels": str(json.dumps([stat["model"] for stat in model_stats])),
+        "success_rates": str(json.dumps([stat["success_rate"] for stat in model_stats])),
+        "avg_latencies": str(json.dumps([stat["avg_latency"] for stat in model_stats])),
         "model_stats_table": model_stats_table,
         "temperature_section": temperature_section,
         "detailed_results": detailed_results_html,
         "temperature_chart_script": temperature_chart_script,
     }
-    return cast(str, template.render(**data))
+    return str(template.render(**data))
 
 
 def generate_html_report(results: list[BenchmarkResult]) -> str:

@@ -212,7 +212,9 @@ def load_prompts(
             Prompt(
                 id=f"prompt_{i:03d}",
                 category=category or "custom",
-                messages=[Message(role="user", content=line)],
+                messages=[Message(role="user", content=line, name=None)],
+                description=None,
+                expected_output=None,
             )
             for i, line in enumerate(file_prompts)
         ]

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class BlabladorProvider(Provider):
-    def __init__(self, **config: str | None) -> None:
+    def __init__(self, **config: Any) -> None:
         """
         Initialize the Blablador provider with the given configuration.
         """
@@ -33,7 +33,7 @@ class BlabladorProvider(Provider):
             )
 
         # Pass the config to the OpenAI client constructor
-        self.client = openai.OpenAI(**config)
+        self.client: openai.OpenAI = openai.OpenAI(**config)
         self._available_models: list[str] | None = None
         self._models_cache_time: float | None = None
         self._cache_ttl = 300  # 5 minutes TTL for model list
@@ -79,7 +79,7 @@ class BlabladorProvider(Provider):
                     break
 
             # Make a minimal test request
-            test_messages = [{"role": "user", "content": "test"}]
+            test_messages: list[dict[str, str]] = [{"role": "user", "content": "test"}]
             self.client.chat.completions.create(
                 model=resolved_model,
                 messages=test_messages,
@@ -96,7 +96,7 @@ class BlabladorProvider(Provider):
             return False
 
     def chat_completions_create(  # noqa: C901
-        self, model: str, messages: list[dict[str, Any]], **kwargs: dict[str, Any]
+        self, model: str, messages: list[dict[str, Any]], **kwargs: Any
     ) -> object:
         logger.debug(f"Chat completion request for {model}")
         try:

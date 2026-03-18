@@ -10,32 +10,34 @@ from datetime import datetime
 import json
 from pathlib import Path
 import sys
+from typing import Any
 
 import yaml
 
 
-def load_benchmark_data(results_file: str) -> dict:
+def load_benchmark_data(results_file: str) -> dict[str, Any]:
     """Load benchmark results from JSON file."""
     try:
         with open(results_file) as f:
-            return json.load(f)
+            data = json.load(f)
+            return dict(data) if isinstance(data, dict) else {}
     except Exception as e:
         print(f"Error loading benchmark data: {e}", file=sys.stderr)
         return {}
 
 
-def load_model_status() -> dict:
+def load_model_status() -> dict[str, Any]:
     """Load model status from YAML file."""
     try:
         with open("models_status.yaml") as f:
-            return yaml.safe_load(f)
+            return yaml.safe_load(f) or {}
     except Exception as e:
         print(f"Error loading model status: {e}", file=sys.stderr)
         return {}
 
 
 def generate_comprehensive_markdown_report(
-    benchmark_data: dict, model_status: dict, results_file: str
+    benchmark_data: dict[str, Any], model_status: dict[str, Any], results_file: str
 ) -> str:
     """Generate comprehensive Markdown report."""
     report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -85,7 +87,7 @@ def generate_comprehensive_markdown_report(
     )
 
     # Group models by category
-    categories = {}
+    categories: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for name, info in models.items():
         cat = info.get("category", "other")
         if cat not in categories:
@@ -167,7 +169,7 @@ def generate_comprehensive_markdown_report(
 
 
 def generate_comprehensive_html_report(
-    benchmark_data: dict, model_status: dict, results_file: str
+    benchmark_data: dict[str, Any], model_status: dict[str, Any], results_file: str
 ) -> str:
     """Generate comprehensive HTML report."""
     report_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -179,7 +181,7 @@ def generate_comprehensive_html_report(
     tested_models = sum(1 for m in models.values() if m.get("latency") is not None)
 
     # Group models by category
-    categories = {}
+    categories: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for name, info in models.items():
         cat = info.get("category", "other")
         if cat not in categories:
@@ -294,7 +296,7 @@ def generate_comprehensive_html_report(
     return html
 
 
-def main():
+def main() -> None:
     """Main function to generate comprehensive reports."""
     if len(sys.argv) != 2:
         print("Usage: python generate_comprehensive_report.py <results_file>", file=sys.stderr)

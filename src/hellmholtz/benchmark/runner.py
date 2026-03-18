@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
@@ -40,7 +40,7 @@ def _is_retryable_error(error: Exception) -> bool:
 
 
 def _retry_with_backoff(
-    func: callable,
+    func: Callable[..., Any],
     max_retries: int = 3,
     base_delay: float = 1.0,
     max_delay: float = 30.0,
@@ -213,7 +213,11 @@ def run_benchmarks(  # noqa: C901
                             if max_tokens is not None:
                                 call_kwargs["max_tokens"] = max_tokens
 
-                            def _make_api_call(m=model, msg=messages, kw=call_kwargs):
+                            def _make_api_call(
+                                m: str = model,
+                                msg: list[dict[str, str]] = messages,
+                                kw: dict[str, Any] = call_kwargs,
+                            ) -> Any:
                                 return chat_raw(model=m, messages=msg, **kw)
 
                             response = _retry_with_backoff(_make_api_call, max_retries=3)

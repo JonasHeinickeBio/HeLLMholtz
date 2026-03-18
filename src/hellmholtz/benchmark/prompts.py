@@ -16,6 +16,7 @@ PROMPTS: list[Prompt] = [
                     "If it takes 5 machines 5 minutes to make 5 widgets, how long would it "
                     "take 100 machines to make 100 widgets?"
                 ),
+                name=None,
             )
         ],
         description="Classic scaling problem",
@@ -31,6 +32,7 @@ PROMPTS: list[Prompt] = [
                     "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the "
                     "ball. How much does the ball cost?"
                 ),
+                name=None,
             )
         ],
         description="Price calculation puzzle",
@@ -51,6 +53,7 @@ PROMPTS: list[Prompt] = [
                     "By looking at the fruit, how can you immediately label all of the "
                     "boxes correctly?"
                 ),
+                name=None,
             )
         ],
         description="Logic puzzle with boxes and fruit",
@@ -66,6 +69,7 @@ PROMPTS: list[Prompt] = [
                     "Write a Python function to calculate the Fibonacci sequence up to n "
                     "terms using a generator."
                 ),
+                name=None,
             )
         ],
         description="Python generator implementation",
@@ -81,6 +85,7 @@ PROMPTS: list[Prompt] = [
                     "Implement a simple HTTP server in Go that responds with 'Hello, "
                     "World!' to any request."
                 ),
+                name=None,
             )
         ],
         description="Basic Go HTTP server",
@@ -94,6 +99,7 @@ PROMPTS: list[Prompt] = [
                 role="user",
                 content="Write a SQL query to find the second highest salary from an Employee "
                 "table.",
+                name=None,
             )
         ],
         description="SQL query for second highest value",
@@ -106,6 +112,7 @@ PROMPTS: list[Prompt] = [
             Message(
                 role="user",
                 content="Write a short poem about a robot discovering a flower in a wasteland.",
+                name=None,
             )
         ],
         description="Poetry about AI and nature",
@@ -119,6 +126,7 @@ PROMPTS: list[Prompt] = [
                 role="user",
                 content="Write the opening paragraph of a mystery novel set in a futuristic "
                 "underwater city.",
+                name=None,
             )
         ],
         description="Creative writing opening",
@@ -131,6 +139,7 @@ PROMPTS: list[Prompt] = [
             Message(
                 role="user",
                 content="Compose a haiku about the feeling of compiling code successfully.",
+                name=None,
             )
         ],
         description="Haiku about programming",
@@ -140,7 +149,9 @@ PROMPTS: list[Prompt] = [
         id="knowledge_001",
         category="knowledge",
         messages=[
-            Message(role="user", content="Explain the theory of relativity to a 5-year-old.")
+            Message(
+                role="user", content="Explain the theory of relativity to a 5-year-old.", name=None
+            )
         ],
         description="Simplifying complex science",
         expected_output="Simple explanation",
@@ -149,7 +160,11 @@ PROMPTS: list[Prompt] = [
         id="knowledge_002",
         category="knowledge",
         messages=[
-            Message(role="user", content="What are the main differences between TCP and UDP?")
+            Message(
+                role="user",
+                content="What are the main differences between TCP and UDP?",
+                name=None,
+            )
         ],
         description="Network protocol comparison",
         expected_output="Technical comparison",
@@ -158,7 +173,11 @@ PROMPTS: list[Prompt] = [
         id="knowledge_003",
         category="knowledge",
         messages=[
-            Message(role="user", content="Summarize the key events of the French Revolution.")
+            Message(
+                role="user",
+                content="Summarize the key events of the French Revolution.",
+                name=None,
+            )
         ],
         description="Historical summary",
         expected_output="Historical summary",
