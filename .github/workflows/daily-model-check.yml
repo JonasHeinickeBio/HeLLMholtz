@@ -22,7 +22,7 @@ jobs:
         python-version: '3.11'
 
     - name: Install Poetry
-      uses: actions/install-poetry@v3
+      uses: snok/install-poetry@v1
       with:
         version: latest
 
