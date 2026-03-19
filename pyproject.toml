@@ -44,6 +44,13 @@ hellm = "hellmholtz.cli:main"
 eval = ["lm-eval"]
 proxy = ["litellm"]
 reporting = ["matplotlib", "scipy", "seaborn"]
+rag = [
+  "langchain-community>=0.3",
+  "langchain-text-splitters>=0.3",
+  "chromadb>=0.5",
+  "sentence-transformers>=3.0",
+  "pypdf>=5.0",
+]
 
 [tool.poetry]
 packages = [{ include = "hellmholtz", from = "src" }]
@@ -58,6 +65,11 @@ jinja2 = "^3.1.0"
 requests = "^2.32.0"
 lm-eval = { version = "^0.4.7", optional = true }
 litellm = { version = "^1.55.2", optional = true }
+langchain-community = { version = "^0.3.0", optional = true }
+langchain-text-splitters = { version = "^0.3.0", optional = true }
+chromadb = { version = "^0.5.0", optional = true }
+sentence-transformers = { version = "^3.0.0", optional = true }
+pypdf = { version = "^5.0.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
@@ -77,6 +89,13 @@ pytest-cov = "^7.0.0"
 matplotlib = "^3.8.0"
 scipy = "^1.10.0"
 seaborn = "^0.13.0"
+
+[tool.poetry.group.rag.dependencies]
+langchain-community = "^0.3.0"
+langchain-text-splitters = "^0.3.0"
+chromadb = "^0.5.0"
+sentence-transformers = "^3.0.0"
+pypdf = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]
