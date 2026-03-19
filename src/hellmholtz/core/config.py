@@ -21,6 +21,14 @@ class Settings:
     anthropic_api_key: str | None = field(default_factory=lambda: os.getenv("ANTHROPIC_API_KEY"))
     google_api_key: str | None = field(default_factory=lambda: os.getenv("GOOGLE_API_KEY"))
 
+    # AnythingLLM integration
+    anythingllm_base_url: str | None = field(
+        default_factory=lambda: os.getenv("ANYTHINGLLM_BASE_URL", "http://localhost:3001")
+    )
+    anythingllm_api_key: str | None = field(
+        default_factory=lambda: os.getenv("ANYTHINGLLM_API_KEY")
+    )
+
 
 def get_settings() -> Settings:
     """Load settings from environment variables."""

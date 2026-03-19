@@ -4,7 +4,8 @@ This package organizes CLI commands into logical groups:
 - chat: Direct chat interactions
 - benchmark: Benchmarking and reporting (bench, report, chart, analyze)
 - models: Model management and monitoring (models, check, monitor)
-- integrations: Third-party integrations (lm_eval, proxy, bench_throughput)
+- integrations: Third-party integrations (lm_eval, proxy, bench_throughput,
+  anythingllm chat/upload/workspaces/ping)
 - rag: Retrieval-Augmented Generation (rag ingest, rag chat)
 """
 
