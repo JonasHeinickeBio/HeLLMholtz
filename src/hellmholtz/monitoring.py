@@ -504,7 +504,7 @@ class ModelAvailabilityMonitor:
         """
         if filename is None:
             timestamp = time.strftime("%Y%m%d_%H%M%S")
-            filename = f"model_availability_report_{timestamp}.txt"
+            filename = f"model_availability_report_{timestamp}.md"
 
         reports_dir = Path("reports")
         reports_dir.mkdir(exist_ok=True)

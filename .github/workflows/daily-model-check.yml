@@ -6,6 +6,9 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch: # Allow manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   check-models:
     runs-on: ubuntu-latest
@@ -41,10 +44,16 @@ jobs:
     - name: Check for API keys
       id: check-keys
       run: |
-        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ]; then
+        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ] && [ -n "${{ secrets.BLABLADOR_API_BASE }}" ]; then
           echo "keys_available=true" >> $GITHUB_OUTPUT
         else
           echo "keys_available=false" >> $GITHUB_OUTPUT
+          if [ -z "${{ secrets.BLABLADOR_API_KEY }}" ]; then
+            echo "⚠ BLABLADOR_API_KEY is not set"
+          fi
+          if [ -z "${{ secrets.BLABLADOR_API_BASE }}" ]; then
+            echo "⚠ BLABLADOR_API_BASE is not set"
+          fi
         fi
 
     - name: Create .env file
@@ -56,74 +65,88 @@ jobs:
     - name: Check model availability
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        poetry run python -c "
-        from src.hellmholtz.monitoring import ModelAvailabilityMonitor
-        import yaml
-        from datetime import datetime
-
-        monitor = ModelAvailabilityMonitor()
-        monitor.check_all_models_automatically()
-
-        # Load and display status
-        with open('models_status.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-
-        print('\n=== Model Availability Report ===')
-        print(f'Checked at: {datetime.now().isoformat()}')
-        print('\nAvailable Models:')
-        for model, info in data.get('models', {}).items():
-            status = '✓' if info.get('available', False) else '✗'
-            print(f'  {status} {model}: {info.get(\"status\", \"unknown\")}')
-
-        print(f'\nTotal: {len([m for m, v in data.get(\"models\", {}).items() if v.get(\"available\")])} available')
-        print(f'Updated: {data.get(\"last_checked\", \"N/A\")}')
-        "
+        poetry run hellm monitor --save-report
 
     - name: Generate availability report
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        cat > /tmp/gen_report.py << 'SCRIPT_EOF'
-        import yaml
-        from datetime import datetime
+        mkdir -p reports
+        poetry run python - << 'SCRIPT_EOF'
+import yaml
+from datetime import datetime, timezone
 
-        with open('models_status.yaml', 'r') as f:
-            data = yaml.safe_load(f)
+with open('models_status.yaml', 'r') as f:
+    data = yaml.safe_load(f) or {}
 
-        available = [m for m, v in data.get('models', {}).items() if v.get('available')]
-        unavailable = [m for m, v in data.get('models', {}).items() if not v.get('available')]
+models = data.get('models', data) if isinstance(data, dict) else {}
 
-        available_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'OK')}" for m in sorted(available)]) if available else '- None'
-        unavailable_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'Unavailable')}" for m in sorted(unavailable)]) if unavailable else '- None'
+available = [m for m, v in models.items() if isinstance(v, dict) and v.get('available')]
+unavailable = [m for m, v in models.items() if isinstance(v, dict) and not v.get('available')]
 
-        yaml_dump = yaml.dump(data, default_flow_style=False)
+now = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
 
-        report = f"""# Daily Model Availability Report
+lines = [
+    '# Daily Model Availability Report',
+    '',
+    f'**Generated:** {now}',
+    '',
+    '## Summary',
+    '',
+    f'| Metric | Count |',
+    f'|--------|-------|',
+    f'| Total models | {len(models)} |',
+    f'| Available ✅ | {len(available)} |',
+    f'| Unavailable ❌ | {len(unavailable)} |',
+    f'| Availability rate | {len(available) / len(models) * 100:.1f}% |' if models else '| Availability rate | N/A |',
+    '',
+    '## Available Models ✅',
+    '',
+    '| Model | Latency (s) | Tokens | Category |',
+    '|-------|-------------|--------|----------|',
+]
 
-        **Generated:** {datetime.now().isoformat()}
+for m in sorted(available):
+    info = models[m]
+    latency = info.get('latency') or info.get('latency_ms')
+    if isinstance(latency, (int, float)) and latency > 10:
+        latency_str = f'{latency / 1000:.3f}'
+    elif isinstance(latency, float):
+        latency_str = f'{latency:.3f}'
+    else:
+        latency_str = 'N/A'
+    tokens = info.get('tokens', 'N/A')
+    tokens_str = f'{int(tokens) // 1024}k' if isinstance(tokens, (int, float)) and tokens >= 1024 else str(tokens)
+    category = info.get('category', '')
+    lines.append(f'| {m} | {latency_str} | {tokens_str} | {category} |')
 
-        ## Summary
-        - **Available:** {len(available)}/{len(data.get('models', {}))}
-        - **Unavailable:** {len(unavailable)}/{len(data.get('models', {}))}
+lines += [
+    '',
+    '## Unavailable Models ❌',
+    '',
+    '| Model | Description |',
+    '|-------|-------------|',
+]
+for m in sorted(unavailable):
+    info = models[m]
+    desc = info.get('description', '')
+    lines.append(f'| {m} | {desc} |')
 
-        ## Available Models ✓
-        {available_list}
+lines += [
+    '',
+    '## Raw Status',
+    '',
+    '```yaml',
+    yaml.dump(data, default_flow_style=False).rstrip(),
+    '```',
+    '',
+]
 
-        ## Unavailable Models ✗
-        {unavailable_list}
+report = '\n'.join(lines)
+with open('reports/model_availability_report.md', 'w') as f:
+    f.write(report)
 
-        ## Last Check Details
-        ```yaml
-        {yaml_dump}
-        ```
-        """
-
-        with open('reports/model_availability_report.md', 'w') as f:
-            f.write(report)
-
-        print('Availability report generated: reports/model_availability_report.md')
-        SCRIPT_EOF
-
-        poetry run python /tmp/gen_report.py
+print('Availability report generated: reports/model_availability_report.md')
+SCRIPT_EOF
 
     - name: Check for changes
       id: check-changes
