@@ -2,7 +2,13 @@ import logging
 import re
 
 from hellmholtz.core.config import get_settings
-from hellmholtz.providers.blablador_config import KNOWN_MODELS, BlabladorModel
+from hellmholtz.providers.blablador_config import (
+    DEFAULT_TOKEN_LIMIT,
+    KNOWN_MODELS,
+    BlabladorModel,
+    _extract_context_length_from_hf_model,
+    _fetch_huggingface_model_info,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +108,8 @@ def list_models() -> list[BlabladorModel]:  # noqa: C901
                     model_obj.name = best_match.name
                     model_obj.alias = best_match.alias
                     model_obj.source = best_match.source
+                    if model_obj.max_context_tokens == DEFAULT_TOKEN_LIMIT:
+                        model_obj.max_context_tokens = best_match.max_context_tokens
 
             # Try matching by Name (if ID didn't match or wasn't present)
             elif model_obj.name in known_by_name:
@@ -110,6 +118,22 @@ def list_models() -> list[BlabladorModel]:  # noqa: C901
                     model_obj.description = known.description
                 model_obj.alias = known.alias
                 model_obj.source = known.source
+                if model_obj.max_context_tokens == DEFAULT_TOKEN_LIMIT:
+                    model_obj.max_context_tokens = known.max_context_tokens
+
+            else:
+                # Unknown model: try to enrich from HuggingFace API
+                hf_info = _fetch_huggingface_model_info(model_obj.name)
+                if hf_info:
+                    if not model_obj.description:
+                        model_obj.description = (
+                            hf_info.get("description")
+                            or (hf_info.get("cardData") or {}).get("model_summary")
+                            or ""
+                        )
+                    context_length = _extract_context_length_from_hf_model(hf_info)
+                    if context_length and model_obj.max_context_tokens == DEFAULT_TOKEN_LIMIT:
+                        model_obj.max_context_tokens = context_length
 
             parsed_models.append(model_obj)
 
