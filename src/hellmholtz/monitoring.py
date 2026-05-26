@@ -15,7 +15,14 @@ import requests
 import yaml
 
 from hellmholtz.client import chat
-from hellmholtz.providers.blablador_config import KNOWN_MODELS, BlabladorModel
+from hellmholtz.providers.blablador import parse_api_model_ids
+from hellmholtz.providers.blablador_config import (
+    DEFAULT_TOKEN_LIMIT,
+    KNOWN_MODELS,
+    BlabladorModel,
+    _get_online_token_limit,
+    get_model_by_name,
+)
 
 
 class ModelAvailabilityMonitor:
@@ -100,7 +107,14 @@ class ModelAvailabilityMonitor:
         """
         print("🔍 Fetching current API models...")
         api_models = self.get_api_models()
-        api_model_ids = {model["id"]: model for model in api_models}
+        raw_model_ids = [model.get("id") for model in api_models if isinstance(model, dict)]
+        parsed_api_models = parse_api_model_ids(
+            [model_id for model_id in raw_model_ids if isinstance(model_id, str)]
+        )
+        api_model_ids = {model.api_id: model for model in parsed_api_models}
+        api_models_by_api_id: dict[str, dict[str, Any]] = {}
+        for raw_api_model, parsed_api_model in zip(api_models, parsed_api_models, strict=False):
+            api_models_by_api_id.setdefault(parsed_api_model.api_id, raw_api_model)
 
         print(f"📋 Found {len(api_models)} models in API")
         print(f"⚙️  Found {len(KNOWN_MODELS)} models in configuration")
@@ -130,8 +144,9 @@ class ModelAvailabilityMonitor:
                 configured_not_available.append((api_id, config_model))
 
         # Check API models not in configuration
-        for api_id, api_model in api_model_ids.items():
+        for api_id in api_model_ids:
             if api_id not in configured_models:
+                api_model = api_models_by_api_id.get(api_id, {"id": api_id, "object": "model"})
                 available_not_configured.append((api_id, api_model))
 
         return {
@@ -514,6 +529,161 @@ class ModelAvailabilityMonitor:
             f.write(report)
 
         return str(filepath)
+
+    def run_auto_config_agent(self, test_accessibility: bool = True) -> dict[str, Any]:
+        """Run end-to-end automatic model configuration workflow.
+
+        This agent performs all steps without manual intervention:
+        1) fetch current API models,
+        2) compare with configured models,
+        3) resolve context limits via Hugging Face when possible,
+        4) optionally test accessibility,
+        5) persist status and search configuration artifacts.
+
+        Args:
+            test_accessibility: Whether to run live chat accessibility checks.
+
+        Returns:
+            Dictionary containing summary and generated artifact paths.
+        """
+        print("🤖 Running automatic model configuration agent...")
+
+        api_models = self.get_api_models()
+        raw_model_ids = [model.get("id") for model in api_models if isinstance(model, dict)]
+        parsed_models = parse_api_model_ids(
+            [model_id for model_id in raw_model_ids if isinstance(model_id, str)]
+        )
+
+        configured_models = self.get_configured_models()
+        api_ids = {model.api_id for model in parsed_models}
+        configured_ids = set(configured_models.keys())
+
+        configured_not_available = sorted(configured_ids - api_ids)
+        available_not_configured = sorted(api_ids - configured_ids)
+
+        status_data: dict[str, Any] = {}
+        search_models: list[dict[str, Any]] = []
+        hf_found_count = 0
+        accessible_count = 0
+
+        for model in parsed_models:
+            known = get_model_by_name(model.name)
+            configured_limit = known.max_context_tokens if known else None
+            hf_limit = _get_online_token_limit(model.name, "huggingface")
+            if hf_limit is not None:
+                hf_found_count += 1
+
+            effective_limit = hf_limit or configured_limit or DEFAULT_TOKEN_LIMIT
+
+            accessible = None
+            latency = None
+            if test_accessibility:
+                print(f"  🧪 Testing {model.name}...")
+                is_accessible, value_latency = self.test_model_accessibility(model.name)
+                accessible = is_accessible
+                latency = round(value_latency, 3) if is_accessible else None
+                if is_accessible:
+                    accessible_count += 1
+
+            now_ts = time.time()
+            now_dt = datetime.fromtimestamp(now_ts).isoformat(sep=" ", timespec="seconds")
+            status_data[model.name] = {
+                "name": model.name,
+                "description": model.description,
+                "tokens": effective_limit,
+                "hf_tokens": hf_limit,
+                "configured_tokens": configured_limit,
+                "available": True,
+                "accessible": accessible,
+                "latency": latency,
+                "category": self._categorize_model(model.name),
+                "provider": "blablador",
+                "api_id": model.api_id,
+                "last_checked": now_ts,
+                "last_checked_datetime": now_dt,
+            }
+
+            search_models.append(
+                {
+                    "name": model.name,
+                    "api_id": model.api_id,
+                    "context_tokens": effective_limit,
+                    "hf_context_tokens": hf_limit,
+                    "configured_context_tokens": configured_limit,
+                    "accessible": accessible,
+                    "latency": latency,
+                    "aliases": [model.alias] if model.alias else [],
+                    "description": model.description,
+                }
+            )
+
+        # Save status in existing canonical status file.
+        self.save_model_status(status_data)
+
+        reports_dir = Path("reports")
+        reports_dir.mkdir(exist_ok=True)
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+
+        search_payload = {
+            "generated_at": datetime.now().isoformat(sep=" ", timespec="seconds"),
+            "api_models_count": len(parsed_models),
+            "configured_models_count": len(configured_models),
+            "configured_not_available": configured_not_available,
+            "available_not_configured": available_not_configured,
+            "hf_token_limits_found": hf_found_count,
+            "accessibility_tested": test_accessibility,
+            "accessible_models": accessible_count if test_accessibility else None,
+            "models": sorted(search_models, key=lambda item: item["name"].lower()),
+        }
+
+        latest_path = reports_dir / "model_search_config_latest.yaml"
+        timestamped_path = reports_dir / f"model_search_config_{timestamp}.yaml"
+        with open(latest_path, "w", encoding="utf-8") as f:
+            yaml.dump(search_payload, f, default_flow_style=False, sort_keys=False)
+        with open(timestamped_path, "w", encoding="utf-8") as f:
+            yaml.dump(search_payload, f, default_flow_style=False, sort_keys=False)
+
+        summary_lines = [
+            "🤖 Automatic Model Configuration Agent Report",
+            "=" * 55,
+            f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            "",
+            "📈 Summary:",
+            f"  • API Models: {len(parsed_models)}",
+            f"  • Configured Models: {len(configured_models)}",
+            f"  • Configured but Unavailable: {len(configured_not_available)}",
+            f"  • Available but Unconfigured: {len(available_not_configured)}",
+            f"  • HF Token Limits Found: {hf_found_count}/{len(parsed_models)}",
+        ]
+        if test_accessibility:
+            summary_lines.append(f"  • Accessible Models: {accessible_count}/{len(parsed_models)}")
+
+        if configured_not_available:
+            summary_lines.append("")
+            summary_lines.append("⚠️  Configured but currently unavailable:")
+            for api_id in configured_not_available:
+                summary_lines.append(f"  • {api_id}")
+
+        if available_not_configured:
+            summary_lines.append("")
+            summary_lines.append("🔍 Available but not in static configuration:")
+            for api_id in available_not_configured:
+                summary_lines.append(f"  • {api_id}")
+
+        summary_lines.append("")
+        summary_lines.append(f"💾 Search config (latest): {latest_path}")
+        summary_lines.append(f"💾 Search config (timestamped): {timestamped_path}")
+
+        report_path = reports_dir / f"model_agent_report_{timestamp}.txt"
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(summary_lines))
+
+        return {
+            "report": "\n".join(summary_lines),
+            "report_path": str(report_path),
+            "latest_config_path": str(latest_path),
+            "timestamped_config_path": str(timestamped_path),
+        }
 
 
 def monitor_models(

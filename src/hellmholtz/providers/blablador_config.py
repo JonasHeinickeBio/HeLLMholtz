@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Any, cast
 import urllib.error
+import urllib.parse
 import urllib.request
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,10 @@ class BlabladorModel(BaseModel):
         For models with short IDs, formats as "ID - Name - Description"
         For models without numeric IDs (aliases, new models), uses just the name.
         """
+        # Prefer the exact API identifier when available (e.g., from /models response).
+        if self.original_api_id:
+            return self.original_api_id
+
         # If ID contains spaces or commas, it's already a full formatted ID from API
         if " " in self.id or "," in self.id:
             return self.id
@@ -90,72 +95,7 @@ class BlabladorModel(BaseModel):
 
 # Models known to have specific IDs and descriptions
 KNOWN_MODELS: list[BlabladorModel] = [
-    # Newly available but not configured models (added from availability report)
-    BlabladorModel(
-        id="2 - Qwen3.5 122B, new multimodal model from Feb 2026, long context",
-        name="Qwen3.5 122B",
-        description="Multimodal model from Feb 2026 with long context and vision",
-        source="Blablador",
-        max_context_tokens=131072,
-    ),
-    BlabladorModel(
-        id="7 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026",
-        name="Qwen3.5-35B-A3B",
-        description="Multimodal model from Feb 2026",
-        source="Blablador",
-        max_context_tokens=131072,
-    ),
-    BlabladorModel(
-        id="8 - Qwen3.5-27B - Multimodal model from Feb 2026",
-        name="Qwen3.5-27B",
-        description="Multimodal model from Feb 2026",
-        source="Blablador",
-        max_context_tokens=131072,
-    ),
-    BlabladorModel(
-        id="9999 option-g-50",
-        name="option-g-50",
-        description="Experimental model checkpoint",
-        source="Blablador",
-        max_context_tokens=32768,
-    ),
-    BlabladorModel(
-        id="alias-code-27B",
-        name="alias-code-27B",
-        description="Optimized for coding tasks, 27B parameters",
-        source="Blablador",
-        max_context_tokens=131072,
-    ),
-    BlabladorModel(
-        id="alias-qwen3-8b-embeddings",
-        name="alias-qwen3-8b-embeddings",
-        description="Optimized for Qwen3 8B embeddings",
-        source="Blablador",
-        max_context_tokens=32000,
-    ),
-    BlabladorModel(
-        id="0 - Ministral-3-14B-Instruct-2512 - The latest Ministral from Dec.2.2025",
-        name="Ministral-3-14B-Instruct-2512",
-        description="The latest Ministral from Dec.2.2025",
-        source="Blablador",
-        max_context_tokens=131072,  # 128k context window
-    ),
-    BlabladorModel(
-        id="1 - GPT-OSS-120b - an open model released by OpenAI in August 2025",
-        name="GPT-OSS-120b",
-        description="an open model released by OpenAI in August 2025",
-        source="Blablador",
-        max_context_tokens=131072,  # 128k context window for large models
-    ),
-    # Note: ID conflict exists - both GPT-OSS-120b and MiniMax-M2.1 use ID starting with "1 - "
-    # This may cause routing issues. MiniMax-M2.1 may not be accessible.
-    BlabladorModel(
-        id="1 - MiniMax-M2.1 - our best model as of December 26, 2025",
-        name="MiniMax-M2.1",
-        description="our best model as of December 26, 2025",
-        source="Blablador",
-        max_context_tokens=131072,  # 128k context window
-    ),
+    # Models currently returned by the Blablador API
     BlabladorModel(
         id="15 - Apertus-8B-Instruct-2509 - A new swiss model from September 2025",
         name="Apertus-8B-Instruct-2509",
@@ -164,69 +104,81 @@ KNOWN_MODELS: list[BlabladorModel] = [
         max_context_tokens=32768,  # 32k context window typical for 8B models
     ),
     BlabladorModel(
-        id="2",
-        name="Qwen3 235",
-        description="a great model from Alibaba with a long context size",
+        id="20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains",
+        name="EVE-Instruct",
+        description="Expert Earth Observation and Earth Science domains",
         source="Blablador",
-        description_separator=", ",  # API uses comma separator for this model
-        max_context_tokens=131072,  # 128k+ context window, Qwen known for long context
+        max_context_tokens=32768,
     ),
     BlabladorModel(
-        id="7 - Qwen3-Coder-30B-A3B-Instruct - A code model from August 2025",
-        name="Qwen3-Coder-30B-A3B-Instruct",
-        description="A code model from August 2025",
+        id="01 - GPT-OSS-120b - an open model released by OpenAI in August 2025",
+        name="GPT-OSS-120b",
+        description="Open model released by OpenAI in August 2025",
         source="Blablador",
-        max_context_tokens=131072,  # 128k context window for code models
-    ),
-    # New December 2025 models - using exact API IDs
-    BlabladorModel(
-        id="999 NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
-        name="NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
-        description="NVIDIA's efficient 30B parameter model",
-        source="Blablador",
-        max_context_tokens=32768,  # 32k context window typical for NVIDIA models
+        max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="9999 option-g-2T-step-47250",
-        name="option-g-2T-step-47250",
-        description="Experimental model checkpoint",
+        id="01 - MiniMax-M2.7 - our best model as of April, 2026",
+        name="MiniMax-M2.7",
+        description="MiniMax best model as of April, 2026",
         source="Blablador",
-        max_context_tokens=32768,  # 32k context window (default for experimental)
+        max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="",  # No numeric ID, uses name directly
-        name="Devstral-Small-2-24B-Instruct-2512",
-        description="New Devstral model from December 2025",
+        id="02 - Qwen3.5-122B-A10B-FP8, general purpose large model",
+        name="Qwen3.5-122B-A10B-FP8",
+        description="General-purpose large multimodal model",
         source="Blablador",
-        max_context_tokens=131072,  # 128k context window for code models
+        max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="",  # No numeric ID, uses name directly
-        name="Phi-4-multimodal-instruct",
-        description="Multimodal model with vision capabilities",
+        id="09 - Qwen3-Coder-Next-FP8 from Feb 2026",
+        name="Qwen3-Coder-Next-FP8",
+        description="Code model from Feb 2026",
         source="Blablador",
-        max_context_tokens=16384,  # 16k context window typical for Phi models
+        max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="",  # No numeric ID, uses name directly
-        name="Qwen3-Next",
-        description="Latest Qwen3 model with enhanced capabilities",
+        id="07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026",
+        name="Qwen3.5-35B-A3B",
+        description="Multimodal model from Feb 2026",
         source="Blablador",
-        max_context_tokens=131072,  # 128k+ context window
+        max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="",  # No numeric ID, uses name directly
-        name="Qwen3-VL-32B-Instruct-FP8",
-        description="Vision-language model with 32B parameters",
+        id="999 - Mis",
+        name="Mis",
+        description="Internal miscellaneous model",
         source="Blablador",
-        max_context_tokens=131072,  # 128k+ context window for vision models
+        max_context_tokens=32768,
     ),
     BlabladorModel(
         id="",  # No numeric ID, uses name directly
-        name="Tongyi-DeepResearch-30B-A3B",
-        description="Alibaba's deep research model",
+        name="eve-instruct-4gpu",
+        description="EVE instruct deployment on 4 GPUs",
         source="Blablador",
-        max_context_tokens=131072,  # 128k+ context window
+        max_context_tokens=32768,
+    ),
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="faster-whisper-large-v3",
+        description="Whisper large-v3 speech model",
+        source="Blablador",
+        max_context_tokens=32768,
+    ),
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="nemotron-3-nano-omni-30b-bf16-262k-8gpu",
+        description="Nemotron omni 30B model",
+        source="Blablador",
+        max_context_tokens=262144,
+    ),
+    BlabladorModel(
+        id="08 - Qwen3.6-35B-A3B-FP8 - Multimodal model from Apr 2026",
+        name="Qwen3.6-35B-A3B-FP8",
+        description="Multimodal model from Apr 2026",
+        source="Blablador",
+        max_context_tokens=131072,
     ),
     # Alias models for optimized routing
     BlabladorModel(
@@ -271,11 +223,35 @@ KNOWN_MODELS: list[BlabladorModel] = [
     ),
     BlabladorModel(
         id="",  # No numeric ID, uses name directly
-        name="alias-function-call",
-        alias="function-call",
-        description="Optimized for function calling and tool use",
+        name="alias-eve",
+        alias="eve",
+        description="Alias for EVE-Instruct models",
         source="Blablador",
-        max_context_tokens=131072,  # 128k for function calling
+        max_context_tokens=32768,
+    ),
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="alias-qwen3-8b-embeddings",
+        alias="qwen3-8b-embeddings",
+        description="Optimized for Qwen3 8B embeddings",
+        source="Blablador",
+        max_context_tokens=32000,
+    ),
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="alias-qwen35-35b-a3b",
+        alias="qwen35-35b-a3b",
+        description="Alias for Qwen3.5-35B-A3B",
+        source="Blablador",
+        max_context_tokens=131072,
+    ),
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="alias-qwen36-35b",
+        alias="qwen36-35b",
+        description="Alias for Qwen3.6-35B-A3B-FP8",
+        source="Blablador",
+        max_context_tokens=131072,
     ),
     BlabladorModel(
         id="",  # No numeric ID, uses name directly
@@ -334,38 +310,99 @@ def _fetch_huggingface_model_info(model_name: str) -> dict[str, Any] | None:
     Returns:
         Model info dict if found, None otherwise
     """
-    # Clean up model name for API search
-    clean_name = model_name.replace("/", "--").replace(" ", "-").lower()
+    normalized_name = model_name.strip()
+    for pattern in _build_hf_search_patterns(normalized_name):
+        model_info = _fetch_hf_model_details(pattern)
+        if model_info is not None:
+            return model_info
 
-    # Try different search patterns
-    search_patterns = [
-        model_name,
+    for term in _build_hf_search_terms(normalized_name):
+        model_info = _search_hf_model_candidates(term)
+        if model_info is not None:
+            return model_info
+
+    return None
+
+
+def _build_hf_search_patterns(normalized_name: str) -> list[str]:
+    """Build direct Hugging Face model lookup patterns."""
+    clean_name = normalized_name.replace("/", "--").replace(" ", "-").lower()
+    return [
+        normalized_name,
         clean_name,
-        f"microsoft/{model_name}",
-        f"meta-llama/{model_name}",
-        f"mistralai/{model_name}",
-        f"Qwen/{model_name}",
+        normalized_name.lower(),
+        f"microsoft/{normalized_name}",
+        f"meta-llama/{normalized_name}",
+        f"mistralai/{normalized_name}",
+        f"Qwen/{normalized_name}",
     ]
 
-    for pattern in search_patterns:
-        try:
-            # Use Hugging Face API to search for models
-            url = f"https://huggingface.co/api/models/{pattern}"
-            logger.debug(f"Trying to fetch model info from: {url}")
 
-            with urllib.request.urlopen(url, timeout=5) as response:  # nosec B310
+def _build_hf_search_terms(normalized_name: str) -> list[str]:
+    """Build fallback Hugging Face search terms."""
+    clean_name = normalized_name.replace("/", "--").replace(" ", "-").lower()
+    return [normalized_name, clean_name, clean_name.replace("-", " ")]
+
+
+def _fetch_hf_model_details(pattern: str) -> dict[str, Any] | None:
+    """Fetch one Hugging Face model document directly by pattern."""
+    try:
+        url = f"https://huggingface.co/api/models/{pattern}"
+        logger.debug(f"Trying to fetch model info from: {url}")
+
+        with urllib.request.urlopen(url, timeout=5) as response:  # nosec B310
+            if response.status == 200:
+                data = json.loads(response.read().decode("utf-8"))
+                return cast(dict[str, Any], data)
+
+    except urllib.error.HTTPError as e:
+        if e.code != 404:
+            logger.debug(f"HTTP error fetching {pattern}: {e}")
+    except Exception as e:
+        logger.debug(f"Error fetching model info for {pattern}: {e}")
+
+    return None
+
+
+def _search_hf_model_candidates(term: str) -> dict[str, Any] | None:
+    """Search Hugging Face and probe top candidate model documents."""
+    try:
+        quoted_term = urllib.parse.quote(term)
+        search_url = f"https://huggingface.co/api/models?search={quoted_term}&limit=10"
+        logger.debug(f"Searching Hugging Face models via: {search_url}")
+
+        with urllib.request.urlopen(search_url, timeout=8) as response:  # nosec B310
+            if response.status != 200:
+                return None
+            hits = json.loads(response.read().decode("utf-8"))
+
+        if not isinstance(hits, list):
+            return None
+
+        candidate_ids = [
+            hit.get("id")
+            for hit in hits
+            if isinstance(hit, dict) and isinstance(hit.get("id"), str)
+        ]
+
+        return _fetch_first_hf_candidate(candidate_ids[:5])
+    except Exception as e:
+        logger.debug(f"HF search fallback failed for {term}: {e}")
+        return None
+
+
+def _fetch_first_hf_candidate(candidate_ids: list[str]) -> dict[str, Any] | None:
+    """Fetch the first valid Hugging Face candidate document."""
+    for candidate_id in candidate_ids:
+        detail_url = f"https://huggingface.co/api/models/{candidate_id}"
+        try:
+            with urllib.request.urlopen(detail_url, timeout=8) as response:  # nosec B310
                 if response.status == 200:
                     data = json.loads(response.read().decode("utf-8"))
-                    return cast(dict[str, Any], data)
-
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                continue  # Model not found, try next pattern
-            logger.debug(f"HTTP error fetching {pattern}: {e}")
+                    if isinstance(data, dict):
+                        return cast(dict[str, Any], data)
         except Exception as e:
-            logger.debug(f"Error fetching model info for {pattern}: {e}")
-            continue
-
+            logger.debug(f"Error fetching HF candidate {candidate_id}: {e}")
     return None
 
 
