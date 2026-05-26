@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish Package
 
 on:
   release:
@@ -14,179 +14,262 @@ on:
           - pypi
           - testpypi
 
-permissions:
-  contents: read
-
 env:
   PYTHON_VERSION: "3.12"
 
+permissions:
+  contents: read
+
 jobs:
-  test:
-    name: Run Tests Before Publishing
+  # ============================================================================
+  # CODE QUALITY CHECKS
+  # ============================================================================
+  quality-gate:
+    name: Quality Gate
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
-
+    outputs:
+      status: ${{ steps.checks.outputs.status }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
         with:
-          version: latest
+          version: "latest"
           virtualenvs-in-project: true
 
-      - name: Cache Poetry environment
-        uses: actions/cache@v4
+      - name: Cache Dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        id: cache
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            venv-${{ runner.os }}-${{ matrix.python-version }}-
+            ${{ runner.os }}-poetry-
 
-      - name: Install dependencies
-        run: poetry install
+      - name: Install Dependencies
+        run: poetry install --no-interaction
 
-      - name: Run linting
+      - name: Linting
         run: |
           poetry run ruff check .
           poetry run ruff format . --check
 
-      - name: Run type checking
+      - name: Type Checking
         run: poetry run mypy src/
 
-      - name: Run tests
-        run: poetry run pytest tests/ -v --cov=hellmholtz --cov-report=term-missing --cov-fail-under=50
+      - name: Security Scan
+        run: |
+          poetry run bandit -r src/ -ll
+          poetry run safety check
 
-  build:
-    name: Build Package
-    needs: test
+      - name: Documentation Validation
+        run: poetry run doc8 docs/ || true
+
+      - name: Export Quality Status
+        id: checks
+        run: echo "status=success" >> $GITHUB_OUTPUT
+
+  # ============================================================================
+  # TEST SUITE
+  # ============================================================================
+  test-suite:
+    name: Test Suite
     runs-on: ubuntu-latest
+    needs: quality-gate
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "poetry"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        with:
+          version: "latest"
+          virtualenvs-in-project: true
+
+      - name: Cache Dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .venv
+          key: ${{ runner.os }}-python-${{ matrix.python-version }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ matrix.python-version }}-poetry-
+
+      - name: Install Dependencies
+        run: poetry install --no-interaction
+
+      - name: Execute Test Suite
+        run: |
+          poetry run pytest \
+            tests/ \
+            -v \
+            --cov=src/hellmholtz \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=50
+
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-${{ matrix.python-version }}
+
+  # ============================================================================
+  # BUILD ARTIFACTS
+  # ============================================================================
+  build-package:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+    needs: [quality-gate, test-suite]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
         with:
-          version: latest
+          version: "latest"
 
-      - name: Build distribution
-        run: poetry build
+      - name: Build Distribution
+        run: poetry build --no-interaction
 
-      - name: Store distribution artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
+          retention-days: 7
 
-      - name: Display build artifacts
-        run: ls -lah dist/
-
-  publish-to-pypi:
+  # ============================================================================
+  # PUBLISH TO PYPI
+  # ============================================================================
+  publish-pypi:
     name: Publish to PyPI
-    if: (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
-    needs: build
+    if: (github.event_name == 'release' && github.event.action == 'published') ||
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
     runs-on: ubuntu-latest
+    needs: [quality-gate, test-suite, build-package]
     environment:
       name: pypi
       url: https://pypi.org/project/hellmholtz/
-
     permissions:
       id-token: write
 
     steps:
-      - name: Download distribution artifacts
-        uses: actions/download-artifact@v4
+      - name: Download Artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
           verbose: true
+          print-hash: true
 
-  publish-to-testpypi:
+  # ============================================================================
+  # PUBLISH TO TESTPYPI
+  # ============================================================================
+  publish-testpypi:
     name: Publish to TestPyPI
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'testpypi'
-    needs: build
     runs-on: ubuntu-latest
+    needs: [quality-gate, test-suite, build-package]
     environment:
       name: testpypi
       url: https://test.pypi.org/project/hellmholtz/
-
     permissions:
       id-token: write
 
     steps:
-      - name: Download distribution artifacts
-        uses: actions/download-artifact@v4
+      - name: Download Artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
 
       - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
+          print-hash: true
 
+  # ============================================================================
+  # CREATE GITHUB RELEASE
+  # ============================================================================
   create-release:
     name: Create GitHub Release
-    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi'
     runs-on: ubuntu-latest
-
+    needs: [quality-gate, test-suite, build-package]
+    outputs:
+      tag_name: ${{ steps.version.outputs.tag_name }}
     permissions:
       contents: write
       packages: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
         with:
-          version: latest
+          version: "latest"
           virtualenvs-in-project: true
 
-      - name: Get version from pyproject.toml
+      - name: Extract Version
         id: version
         run: |
           version=$(poetry version --short)
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Release version: $version"
+          tag_name="v${version}"
+          echo "tag_name=${tag_name}" >> $GITHUB_OUTPUT
+          echo "Release Version: ${tag_name}"
 
-      - name: Create tag
-        id: tag
-        uses: actions/github-script@v7
+      - name: Create Git Tag
+        id: create-tag
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const tag = `v${{ steps.version.outputs.version }}`;
+            const tag = "${{ steps.version.outputs.tag_name }}";
             try {
               await github.rest.git.createRef({
                 owner: context.repo.owner,
@@ -194,57 +277,60 @@ jobs:
                 ref: `refs/tags/${tag}`,
                 sha: context.sha
               });
-              core.setOutput('tag_created', true);
               core.info(`Created tag ${tag}`);
             } catch (error) {
               if (error.status === 422) {
                 core.info(`Tag ${tag} already exists`);
-                core.setOutput('tag_created', false);
               } else {
                 throw error;
               }
             }
-            core.setOutput('tag', tag);
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          name: Release ${{ steps.version.outputs.tag_name }}
           generate_release_notes: true
           prerelease: false
           make_latest: true
           fail_on_unmatched_files: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  github-release-artifacts:
-    name: Upload Artifacts to GitHub Release
-    needs: build
+  # ============================================================================
+  # UPLOAD RELEASE ARTIFACTS
+  # ============================================================================
+  upload-release-artifacts:
+    name: Upload Release Artifacts
     runs-on: ubuntu-latest
-
+    needs: [quality-gate, test-suite, build-package, create-release]
     permissions:
       contents: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
-      - name: Download distribution artifacts
-        uses: actions/download-artifact@v4
+      - name: Download Artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: python-package-distributions
+          name: dist
           path: dist/
 
-      - name: Get version from pyproject.toml
+      - name: Get Version
         id: version
         run: |
-          version=$(poetry version --short)
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Release version: $version"
+          # Prefer tag from create-release outputs (if available), then github.release, else derive from poetry
+          if [ -n "${{ needs.create-release.outputs.tag_name }}" ]; then
+            echo "tag_name=${{ needs.create-release.outputs.tag_name }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag_name=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            version=$(poetry version --short)
+            echo "tag_name=v${version}" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Upload artifacts to release
+      - name: Upload to Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload v${{ steps.version.outputs.version }} dist/* --clobber
+          gh release upload ${{ steps.version.outputs.tag_name }} dist/* --clobber

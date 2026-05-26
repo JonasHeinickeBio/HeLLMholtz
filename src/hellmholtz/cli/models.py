@@ -41,6 +41,21 @@ def register_models_commands(app: typer.Typer) -> None:
         """
         _monitor_impl(test_accessibility, save_report)
 
+    @app.command("agent")
+    def auto_agent(
+        test_accessibility: bool = typer.Option(
+            True, help="Test live accessibility/latency for each available model"
+        ),
+    ) -> None:
+        """Run automatic model sync + token-limit + search-config workflow.
+
+        This command is fully automatic and produces:
+        - model status update,
+        - search configuration YAML,
+        - concise sync report.
+        """
+        _auto_agent_impl(test_accessibility)
+
 
 # ============================================================================
 # Implementation Functions
@@ -114,3 +129,16 @@ def _monitor_impl(test_accessibility: bool, save_report: bool) -> None:
 
     except Exception as e:
         handle_error(e, "Monitoring error")
+
+
+def _auto_agent_impl(test_accessibility: bool) -> None:
+    """Implementation for automatic model configuration agent."""
+    from hellmholtz.monitoring import ModelAvailabilityMonitor
+
+    try:
+        monitor = ModelAvailabilityMonitor()
+        result = monitor.run_auto_config_agent(test_accessibility=test_accessibility)
+        typer.echo(result["report"])
+        typer.echo(f"\n💾 Agent report saved to: {result['report_path']}")
+    except Exception as e:
+        handle_error(e, "Automatic model agent error")

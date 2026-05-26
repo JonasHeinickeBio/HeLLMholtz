@@ -1,0 +1,244 @@
+generated_at: '2026-05-26 14:37:42'
+api_models_count: 25
+configured_models_count: 25
+configured_not_available: []
+available_not_configured: []
+hf_token_limits_found: 3
+accessibility_tested: true
+accessible_models: 10
+models:
+- name: alias-apertus
+  api_id: alias-apertus
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: true
+  latency: 0.632
+  aliases:
+  - apertus
+  description: Alias for Apertus models
+- name: alias-code
+  api_id: alias-code
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: true
+  latency: 0.136
+  aliases:
+  - code
+  description: Optimized for coding tasks
+- name: alias-embeddings
+  api_id: alias-embeddings
+  context_tokens: 8192
+  hf_context_tokens: null
+  configured_context_tokens: 8192
+  accessible: false
+  latency: null
+  aliases:
+  - embeddings
+  description: Optimized for text embeddings
+- name: alias-eve
+  api_id: alias-eve
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: true
+  latency: 0.199
+  aliases:
+  - eve
+  description: Alias for EVE-Instruct models
+- name: alias-fast
+  api_id: alias-fast
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: false
+  latency: null
+  aliases:
+  - fast
+  description: Optimized for speed - fastest available model
+- name: alias-huge
+  api_id: alias-huge
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: true
+  latency: 0.143
+  aliases:
+  - huge
+  description: Optimized for maximum capability - largest available model
+- name: alias-large
+  api_id: alias-large
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: false
+  latency: null
+  aliases:
+  - large
+  description: Optimized for capability - most capable available model
+- name: alias-qwen3-8b-embeddings
+  api_id: alias-qwen3-8b-embeddings
+  context_tokens: 32000
+  hf_context_tokens: null
+  configured_context_tokens: 32000
+  accessible: false
+  latency: null
+  aliases:
+  - qwen3-8b-embeddings
+  description: Optimized for Qwen3 8B embeddings
+- name: alias-qwen35-35b-a3b
+  api_id: alias-qwen35-35b-a3b
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: true
+  latency: 0.127
+  aliases:
+  - qwen35-35b-a3b
+  description: Alias for Qwen3.5-35B-A3B
+- name: alias-qwen36-35b
+  api_id: alias-qwen36-35b
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: false
+  latency: null
+  aliases:
+  - qwen36-35b
+  description: Alias for Qwen3.6-35B-A3B-FP8
+- name: Apertus-8B-Instruct-2509
+  api_id: 15 - Apertus-8B-Instruct-2509 - A new swiss model from September 2025
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: true
+  latency: 0.121
+  aliases: []
+  description: A new swiss model from September 2025
+- name: EVE-Instruct
+  api_id: 20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: true
+  latency: 0.251
+  aliases: []
+  description: Expert Earth Observation and Earth Science (ES) domains
+- name: eve-instruct-4gpu
+  api_id: eve-instruct-4gpu
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: true
+  latency: 0.191
+  aliases: []
+  description: EVE instruct deployment on 4 GPUs
+- name: faster-whisper-large-v3
+  api_id: faster-whisper-large-v3
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: 32768
+  accessible: false
+  latency: null
+  aliases: []
+  description: Whisper large-v3 speech model
+- name: gpt-3.5-turbo
+  api_id: gpt-3.5-turbo
+  context_tokens: 16384
+  hf_context_tokens: null
+  configured_context_tokens: 16384
+  accessible: false
+  latency: null
+  aliases: []
+  description: Legacy GPT-3.5 Turbo model
+- name: GPT-OSS-120b
+  api_id: 01 - GPT-OSS-120b - an open model released by OpenAI in August 2025
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: false
+  latency: null
+  aliases: []
+  description: an open model released by OpenAI in August 2025
+- name: MiniMax-M2.7
+  api_id: 01 - MiniMax-M2.7 - our best model as of April, 2026
+  context_tokens: 131072
+  hf_context_tokens: null
+  configured_context_tokens: 131072
+  accessible: true
+  latency: 0.152
+  aliases: []
+  description: our best model as of April, 2026
+- name: Mis
+  api_id: 999 - Mis
+  context_tokens: 32768
+  hf_context_tokens: 32768
+  configured_context_tokens: 32768
+  accessible: false
+  latency: null
+  aliases: []
+  description: Internal miscellaneous model
+- name: nemotron-3-nano-omni-30b-bf16-262k-8gpu
+  api_id: nemotron-3-nano-omni-30b-bf16-262k-8gpu
+  context_tokens: 262144
+  hf_context_tokens: null
+  configured_context_tokens: 262144
+  accessible: false
+  latency: null
+  aliases: []
+  description: Nemotron omni 30B model
+- name: Qwen3-Coder-Next-FP8 from Feb 2026
+  api_id: 09 - Qwen3-Coder-Next-FP8 from Feb 2026
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: null
+  accessible: false
+  latency: null
+  aliases: []
+  description: ''
+- name: Qwen3.5-122B-A10B-FP8, general purpose large model
+  api_id: 02 - Qwen3.5-122B-A10B-FP8, general purpose large model
+  context_tokens: 32768
+  hf_context_tokens: null
+  configured_context_tokens: null
+  accessible: false
+  latency: null
+  aliases: []
+  description: ''
+- name: Qwen3.5-35B-A3B
+  api_id: 07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026
+  context_tokens: 131072
+  hf_context_tokens: 131072
+  configured_context_tokens: 131072
+  accessible: true
+  latency: 0.121
+  aliases: []
+  description: Multimodal model from Feb 2026
+- name: Qwen3.6-35B-A3B-FP8
+  api_id: 08 - Qwen3.6-35B-A3B-FP8 - Multimodal model from Apr 2026
+  context_tokens: 131072
+  hf_context_tokens: 131072
+  configured_context_tokens: 131072
+  accessible: false
+  latency: null
+  aliases: []
+  description: Multimodal model from Apr 2026
+- name: text-davinci-003
+  api_id: text-davinci-003
+  context_tokens: 4096
+  hf_context_tokens: null
+  configured_context_tokens: 4096
+  accessible: false
+  latency: null
+  aliases: []
+  description: Legacy text generation model
+- name: text-embedding-ada-002
+  api_id: text-embedding-ada-002
+  context_tokens: 8192
+  hf_context_tokens: null
+  configured_context_tokens: 8192
+  accessible: false
+  latency: null
+  aliases: []
+  description: Legacy text embedding model

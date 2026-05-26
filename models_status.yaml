@@ -1,271 +1,354 @@
 models:
-  Ministral-3-14B-Instruct-2512:
-    name: Ministral-3-14B-Instruct-2512
-    description: The latest Ministral from Dec.2.2025
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055712.7704747
-    latency_ms: 2700
-    category: general
-    provider: Ministral
-    latency: 0.92
-  GPT-OSS-120b:
-    name: GPT-OSS-120b
-    description: an open model released by OpenAI in August 2025
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055712.986953
-    latency_ms: 1000
-    category: general
-    provider: OpenAI
-    latency: null
-  MiniMax-M2.1:
-    name: MiniMax-M2.1
-    description: our best model as of December 26, 2025
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055713.3620477
-    latency_ms: 2000
-    category: general
-    provider: MiniMax
-    latency: 0.375
-  Apertus-8B-Instruct-2509:
-    name: Apertus-8B-Instruct-2509
-    description: A new swiss model from September 2025
-    source: Blablador
-    tokens: 32000
-    available: true
-    last_checked: 1770055713.6393209
-    latency_ms: 1500
-    category: general
-    provider: Apertus
-    latency: 0.277
-  Qwen3-Coder-30B-A3B-Instruct:
-    name: Qwen3-Coder-30B-A3B-Instruct
-    description: A code model from August 2025
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055713.8839176
-    latency_ms: 4500
-    category: coding
-    provider: Qwen
-    latency: 0.245
-  8 GLM-4.7-Flash:
-    name: 8 GLM-4.7-Flash
-    description: ''
-    source: Blablador
-    tokens: 32000
-    available: true
-    last_checked: '2026-02-02T18:40:00Z'
-    latency_ms: 800
-    category: general
-    provider: GLM
-  NVIDIA-Nemotron-3-Nano-30B-A3B-BF16:
-    name: NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
-    description: NVIDIA's efficient 30B parameter model
-    source: Blablador
-    tokens: 32000
-    available: true
-    last_checked: 1770055714.4552839
-    latency_ms: 3000
-    category: general
-    provider: NVIDIA
-    latency: 0.571
-  Devstral-Small-2-24B-Instruct-2512:
-    name: Devstral-Small-2-24B-Instruct-2512
-    description: New Devstral model from December 2025
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055714.4556277
-    latency_ms: null
-    category: general
-    provider: Devstral
-    latency: null
-  Phi-4-multimodal-instruct:
-    name: Phi-4-multimodal-instruct
-    description: Multimodal model with vision capabilities
-    source: Blablador
-    tokens: 16000
-    available: true
-    last_checked: 1770055714.4557846
-    latency_ms: null
-    category: multimodal
-    provider: Microsoft
-    latency: null
-  Qwen3-VL-32B-Instruct-FP8:
-    name: Qwen3-VL-32B-Instruct-FP8
-    description: Vision-language model with 32B parameters
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055714.4559226
-    latency_ms: null
-    category: multimodal
-    provider: Qwen
-    latency: null
   alias-apertus:
     name: alias-apertus
     description: Alias for Apertus models
-    source: Blablador
-    tokens: 32000
-    available: true
-    last_checked: 1770055714.4563763
-    latency_ms: null
-    category: alias
-    provider: Alias
-    latency: null
-  alias-code:
-    name: alias-code
-    description: Optimized for coding tasks
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055714.4562802
-    latency_ms: null
-    category: alias
-    provider: Alias
-    latency: null
-  alias-embeddings:
-    name: alias-embeddings
-    description: Optimized for text embeddings
-    source: Blablador
-    tokens: 8000
-    available: true
-    last_checked: 1770055714.4564793
-    latency_ms: null
-    category: alias
-    provider: Alias
-    latency: null
-  alias-fast:
-    name: alias-fast
-    description: Optimized for speed - fastest available model
-    source: Blablador
-    tokens: 32000
-    available: true
-    last_checked: 1770055714.4560525
-    latency_ms: null
-    category: alias
-    provider: Alias
-    latency: null
-  alias-huge:
-    name: alias-huge
-    description: Optimized for maximum capability - largest available model
-    source: Blablador
-    tokens: 128000
-    available: true
-    last_checked: 1770055714.4561691
-    latency_ms: null
-    category: alias
-    provider: Alias
-    latency: null
-  alias-qwen3-8b-emdeddings:
-    name: alias-qwen3-8b-emdeddings
-    description: ''
-    source: Blablador
-    tokens: 32000
-    available: false
-    last_checked: '2026-02-02T18:40:00Z'
-    latency_ms: null
-    category: alias
-    provider: Alias
-  gpt-3.5-turbo:
-    name: gpt-3.5-turbo
-    description: Legacy GPT-3.5 Turbo model
-    source: Blablador
-    tokens: 16000
-    available: true
-    last_checked: 1770055714.4565732
-    latency_ms: null
-    category: legacy
-    provider: OpenAI
-    latency: null
-  text-davinci-003:
-    name: text-davinci-003
-    description: Legacy text generation model
-    source: Blablador
-    tokens: 4000
-    available: true
-    last_checked: 1770055714.4566684
-    latency_ms: null
-    category: legacy
-    provider: OpenAI
-    latency: null
-  text-embedding-ada-002:
-    name: text-embedding-ada-002
-    description: Legacy text embedding model
-    source: Blablador
-    tokens: 8000
-    available: true
-    last_checked: 1770055714.456763
-    latency_ms: null
-    category: legacy
-    provider: OpenAI
-    latency: null
-  Qwen3 235:
-    name: Qwen3 235
-    description: a great model from Alibaba with a long context size
-    tokens: 131072
-    available: false
-    latency: null
-    category: other
-    provider: blablador
-    api_id: 2 - Qwen3 235, a great model from Alibaba with a long context size
-    last_checked: 1770055713.6393242
-  option-g-2T-step-47250:
-    name: option-g-2T-step-47250
-    description: Experimental model checkpoint
     tokens: 32768
-    available: false
-    latency: null
-    category: other
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: true
+    latency: 0.632
+    category: alias
     provider: blablador
-    api_id: 9999 option-g-2T-step-47250
-    last_checked: 1770055714.4552882
-  Qwen3-Next:
-    name: Qwen3-Next
-    description: Latest Qwen3 model with enhanced capabilities
-    tokens: 131072
-    available: false
-    latency: null
-    category: other
+    api_id: alias-apertus
+    last_checked: 1779799029.5531998
+    last_checked_datetime: '2026-05-26 14:37:09'
+  Apertus-8B-Instruct-2509:
+    name: Apertus-8B-Instruct-2509
+    description: A new swiss model from September 2025
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: true
+    latency: 0.121
+    category: instruction_tuned
     provider: blablador
-    api_id: Qwen3-Next
-    last_checked: 1770055714.4557855
-  Tongyi-DeepResearch-30B-A3B:
-    name: Tongyi-DeepResearch-30B-A3B
-    description: Alibaba's deep research model
+    api_id: 15 - Apertus-8B-Instruct-2509 - A new swiss model from September 2025
+    last_checked: 1779799030.9410203
+    last_checked_datetime: '2026-05-26 14:37:10'
+  alias-eve:
+    name: alias-eve
+    description: Alias for EVE-Instruct models
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: true
+    latency: 0.199
+    category: alias
+    provider: blablador
+    api_id: alias-eve
+    last_checked: 1779799032.626031
+    last_checked_datetime: '2026-05-26 14:37:12'
+  EVE-Instruct:
+    name: EVE-Instruct
+    description: Expert Earth Observation and Earth Science (ES) domains
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: true
+    latency: 0.251
+    category: instruction_tuned
+    provider: blablador
+    api_id: 20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains
+    last_checked: 1779799034.158698
+    last_checked_datetime: '2026-05-26 14:37:14'
+  GPT-OSS-120b:
+    name: GPT-OSS-120b
+    description: an open model released by OpenAI in August 2025
     tokens: 131072
-    available: false
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: false
     latency: null
     category: base_model
     provider: blablador
-    api_id: Tongyi-DeepResearch-30B-A3B
-    last_checked: 1770055714.455924
+    api_id: 01 - GPT-OSS-120b - an open model released by OpenAI in August 2025
+    last_checked: 1779799035.546368
+    last_checked_datetime: '2026-05-26 14:37:15'
+  alias-fast:
+    name: alias-fast
+    description: Optimized for speed - fastest available model
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-fast
+    last_checked: 1779799037.0465481
+    last_checked_datetime: '2026-05-26 14:37:17'
+  MiniMax-M2.7:
+    name: MiniMax-M2.7
+    description: our best model as of April, 2026
+    tokens: 131072
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: true
+    latency: 0.152
+    category: other
+    provider: blablador
+    api_id: 01 - MiniMax-M2.7 - our best model as of April, 2026
+    last_checked: 1779799038.4583604
+    last_checked_datetime: '2026-05-26 14:37:18'
+  alias-huge:
+    name: alias-huge
+    description: Optimized for maximum capability - largest available model
+    tokens: 131072
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: true
+    latency: 0.143
+    category: alias
+    provider: blablador
+    api_id: alias-huge
+    last_checked: 1779799040.2004478
+    last_checked_datetime: '2026-05-26 14:37:20'
+  Qwen3.5-122B-A10B-FP8, general purpose large model:
+    name: Qwen3.5-122B-A10B-FP8, general purpose large model
+    description: ''
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: null
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 02 - Qwen3.5-122B-A10B-FP8, general purpose large model
+    last_checked: 1779799040.7708428
+    last_checked_datetime: '2026-05-26 14:37:20'
   alias-large:
     name: alias-large
     description: Optimized for capability - most capable available model
     tokens: 131072
-    available: false
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: false
     latency: null
     category: alias
     provider: blablador
     api_id: alias-large
-    last_checked: 1770055714.4560535
-  alias-function-call:
-    name: alias-function-call
-    description: Optimized for function calling and tool use
+    last_checked: 1779799042.3300998
+    last_checked_datetime: '2026-05-26 14:37:22'
+  alias-code:
+    name: alias-code
+    description: Optimized for coding tasks
     tokens: 131072
-    available: false
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: true
+    latency: 0.136
+    category: alias
+    provider: blablador
+    api_id: alias-code
+    last_checked: 1779799043.8246956
+    last_checked_datetime: '2026-05-26 14:37:23'
+  Qwen3-Coder-Next-FP8 from Feb 2026:
+    name: Qwen3-Coder-Next-FP8 from Feb 2026
+    description: ''
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: null
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 09 - Qwen3-Coder-Next-FP8 from Feb 2026
+    last_checked: 1779799044.382375
+    last_checked_datetime: '2026-05-26 14:37:24'
+  alias-embeddings:
+    name: alias-embeddings
+    description: Optimized for text embeddings
+    tokens: 8192
+    hf_tokens: null
+    configured_tokens: 8192
+    available: true
+    accessible: false
     latency: null
     category: alias
     provider: blablador
-    api_id: alias-function-call
-    last_checked: 1770055714.4563773
+    api_id: alias-embeddings
+    last_checked: 1779799045.8686147
+    last_checked_datetime: '2026-05-26 14:37:25'
+  gpt-3.5-turbo:
+    name: gpt-3.5-turbo
+    description: Legacy GPT-3.5 Turbo model
+    tokens: 16384
+    hf_tokens: null
+    configured_tokens: 16384
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: gpt-3.5-turbo
+    last_checked: 1779799047.1679578
+    last_checked_datetime: '2026-05-26 14:37:27'
+  text-davinci-003:
+    name: text-davinci-003
+    description: Legacy text generation model
+    tokens: 4096
+    hf_tokens: null
+    configured_tokens: 4096
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: text-davinci-003
+    last_checked: 1779799048.4811444
+    last_checked_datetime: '2026-05-26 14:37:28'
+  text-embedding-ada-002:
+    name: text-embedding-ada-002
+    description: Legacy text embedding model
+    tokens: 8192
+    hf_tokens: null
+    configured_tokens: 8192
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: text-embedding-ada-002
+    last_checked: 1779799049.7729359
+    last_checked_datetime: '2026-05-26 14:37:29'
+  alias-qwen3-8b-embeddings:
+    name: alias-qwen3-8b-embeddings
+    description: Optimized for Qwen3 8B embeddings
+    tokens: 32000
+    hf_tokens: null
+    configured_tokens: 32000
+    available: true
+    accessible: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3-8b-embeddings
+    last_checked: 1779799051.1853857
+    last_checked_datetime: '2026-05-26 14:37:31'
+  Qwen3.5-35B-A3B:
+    name: Qwen3.5-35B-A3B
+    description: Multimodal model from Feb 2026
+    tokens: 131072
+    hf_tokens: 131072
+    configured_tokens: 131072
+    available: true
+    accessible: true
+    latency: 0.121
+    category: base_model
+    provider: blablador
+    api_id: 07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026
+    last_checked: 1779799052.2739074
+    last_checked_datetime: '2026-05-26 14:37:32'
+  alias-qwen35-35b-a3b:
+    name: alias-qwen35-35b-a3b
+    description: Alias for Qwen3.5-35B-A3B
+    tokens: 131072
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: true
+    latency: 0.127
+    category: alias
+    provider: blablador
+    api_id: alias-qwen35-35b-a3b
+    last_checked: 1779799053.882633
+    last_checked_datetime: '2026-05-26 14:37:33'
+  Mis:
+    name: Mis
+    description: Internal miscellaneous model
+    tokens: 32768
+    hf_tokens: 32768
+    configured_tokens: 32768
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 999 - Mis
+    last_checked: 1779799055.2611487
+    last_checked_datetime: '2026-05-26 14:37:35'
+  eve-instruct-4gpu:
+    name: eve-instruct-4gpu
+    description: EVE instruct deployment on 4 GPUs
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: true
+    latency: 0.191
+    category: instruction_tuned
+    provider: blablador
+    api_id: eve-instruct-4gpu
+    last_checked: 1779799056.8530982
+    last_checked_datetime: '2026-05-26 14:37:36'
+  faster-whisper-large-v3:
+    name: faster-whisper-large-v3
+    description: Whisper large-v3 speech model
+    tokens: 32768
+    hf_tokens: null
+    configured_tokens: 32768
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: faster-whisper-large-v3
+    last_checked: 1779799058.1632547
+    last_checked_datetime: '2026-05-26 14:37:38'
+  nemotron-3-nano-omni-30b-bf16-262k-8gpu:
+    name: nemotron-3-nano-omni-30b-bf16-262k-8gpu
+    description: Nemotron omni 30B model
+    tokens: 262144
+    hf_tokens: null
+    configured_tokens: 262144
+    available: true
+    accessible: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: nemotron-3-nano-omni-30b-bf16-262k-8gpu
+    last_checked: 1779799059.7550566
+    last_checked_datetime: '2026-05-26 14:37:39'
+  Qwen3.6-35B-A3B-FP8:
+    name: Qwen3.6-35B-A3B-FP8
+    description: Multimodal model from Apr 2026
+    tokens: 131072
+    hf_tokens: 131072
+    configured_tokens: 131072
+    available: true
+    accessible: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: 08 - Qwen3.6-35B-A3B-FP8 - Multimodal model from Apr 2026
+    last_checked: 1779799060.8705904
+    last_checked_datetime: '2026-05-26 14:37:40'
+  alias-qwen36-35b:
+    name: alias-qwen36-35b
+    description: Alias for Qwen3.6-35B-A3B-FP8
+    tokens: 131072
+    hf_tokens: null
+    configured_tokens: 131072
+    available: true
+    accessible: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen36-35b
+    last_checked: 1779799062.4182243
+    last_checked_datetime: '2026-05-26 14:37:42'
 Ministral-3-14B-Instruct-2512:
   name: Ministral-3-14B-Instruct-2512
   description: The latest Ministral from Dec.2.2025
@@ -497,7 +580,7 @@ text-embedding-ada-002:
   api_id: text-embedding-ada-002
   last_checked: 1770054414.3435717
 '# This file is automatically updated by the model availability checker': null
-'# Last updated': '2026-02-02'
+'# Last updated': '2026-05-26'
 '# Total models': 25
-'# Working': 18
-'# Broken': 7
+'# Working': 25
+'# Broken': 0
