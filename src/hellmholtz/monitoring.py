@@ -6,6 +6,7 @@ in the Blablador API and compare them with the configured models.
 """
 
 from datetime import datetime
+import logging
 import os
 from pathlib import Path
 import time
@@ -105,7 +106,8 @@ class ModelAvailabilityMonitor:
         Returns:
             Dictionary containing analysis results.
         """
-        print("🔍 Fetching current API models...")
+        logger = logging.getLogger(__name__)
+        logger.info("🔍 Fetching current API models...")
         api_models = self.get_api_models()
         raw_model_ids = [model.get("id") for model in api_models if isinstance(model, dict)]
         parsed_api_models = parse_api_model_ids(
@@ -116,8 +118,8 @@ class ModelAvailabilityMonitor:
         for raw_api_model, parsed_api_model in zip(api_models, parsed_api_models, strict=False):
             api_models_by_api_id.setdefault(parsed_api_model.api_id, raw_api_model)
 
-        print(f"📋 Found {len(api_models)} models in API")
-        print(f"⚙️  Found {len(KNOWN_MODELS)} models in configuration")
+        logger.info(f"📋 Found {len(api_models)} models in API")
+        logger.info(f"⚙️  Found {len(KNOWN_MODELS)} models in configuration")
 
         configured_models = self.get_configured_models()
 
@@ -128,12 +130,12 @@ class ModelAvailabilityMonitor:
         accessibility_results = {}
 
         # Check configured models
-        print("\n🔎 Checking configured models...")
+        logger.info("\n🔎 Checking configured models...")
         for api_id, config_model in configured_models.items():
             if api_id in api_model_ids:
                 configured_and_available.append((api_id, config_model))
                 if test_accessibility:
-                    print(f"  🧪 Testing {config_model.name}...")
+                    logger.info(f"  🧪 Testing {config_model.name}...")
                     accessible, latency = self.test_model_accessibility(config_model.name)
                     accessibility_results[config_model.name] = {
                         "accessible": accessible,
@@ -270,7 +272,8 @@ class ModelAvailabilityMonitor:
                 result = data.get("models", data) if isinstance(data, dict) else {}
                 return result if isinstance(result, dict) else {}
         except Exception as e:
-            print(f"⚠️  Warning: Could not load model status from YAML: {e}")
+            logger = logging.getLogger(__name__)
+            logger.warning(f"⚠️  Warning: Could not load model status from YAML: {e}")
             return {}
 
     def save_model_status(self, status_data: dict[str, Any]) -> None:
@@ -309,9 +312,11 @@ class ModelAvailabilityMonitor:
         try:
             with open(yaml_path, "w", encoding="utf-8") as f:
                 yaml.dump(existing_data, f, default_flow_style=False, sort_keys=False)
-            print(f"💾 Model status saved to: {yaml_path}")
+            logger = logging.getLogger(__name__)
+            logger.info(f"💾 Model status saved to: {yaml_path}")
         except Exception as e:
-            print(f"❌ Error saving model status to YAML: {e}")
+            logger = logging.getLogger(__name__)
+            logger.error(f"❌ Error saving model status to YAML: {e}")
 
     def check_all_models_automatically(self) -> dict[str, Any]:
         """Automatically check all models and update YAML status.
@@ -319,7 +324,8 @@ class ModelAvailabilityMonitor:
         Returns:
             Updated model status dictionary.
         """
-        print("🔄 Starting automatic model availability check...")
+        logger = logging.getLogger(__name__)
+        logger.info("🔄 Starting automatic model availability check...")
 
         # Load existing status
         status_data = self.load_model_status()
@@ -329,7 +335,7 @@ class ModelAvailabilityMonitor:
             api_models = self.get_api_models()
             api_model_ids = {model["id"]: model for model in api_models}
         except Exception as e:
-            print(f"❌ Failed to fetch API models: {e}")
+            logger.error(f"❌ Failed to fetch API models: {e}")
             return status_data
 
         # Update status for all models
@@ -360,7 +366,7 @@ class ModelAvailabilityMonitor:
             now_ts = time.time()
             now_dt = datetime.fromtimestamp(now_ts).isoformat(sep=" ", timespec="seconds")
             if is_available:
-                print(f"  🧪 Testing {model.name}...")
+                logger.info(f"  🧪 Testing {model.name}...")
                 accessible, latency = self.test_model_accessibility(model.name)
                 status_data[model_key]["latency"] = round(latency, 3) if accessible else None
                 status_data[model_key]["last_checked"] = now_ts
@@ -374,7 +380,7 @@ class ModelAvailabilityMonitor:
         # Save updated status
         self.save_model_status(status_data)
 
-        print(f"✅ Checked {updated_count} models, status updated in YAML")
+        logger.info(f"✅ Checked {updated_count} models, status updated in YAML")
         return status_data
 
     def _categorize_model(self, model_name: str) -> str:

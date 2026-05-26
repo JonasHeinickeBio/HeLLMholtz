@@ -97,49 +97,49 @@ class BlabladorModel(BaseModel):
 KNOWN_MODELS: list[BlabladorModel] = [
     # Models currently returned by the Blablador API
     BlabladorModel(
-        id="15 - Apertus-8B-Instruct-2509 - A new swiss model from September 2025",
+        id="15",
         name="Apertus-8B-Instruct-2509",
         description="A new swiss model from September 2025",
         source="Blablador",
         max_context_tokens=32768,  # 32k context window typical for 8B models
     ),
     BlabladorModel(
-        id="20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains",
+        id="20",
         name="EVE-Instruct",
         description="Expert Earth Observation and Earth Science domains",
         source="Blablador",
         max_context_tokens=32768,
     ),
     BlabladorModel(
-        id="01 - GPT-OSS-120b - an open model released by OpenAI in August 2025",
+        id="01",
         name="GPT-OSS-120b",
         description="Open model released by OpenAI in August 2025",
         source="Blablador",
         max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="01 - MiniMax-M2.7 - our best model as of April, 2026",
+        id="01",
         name="MiniMax-M2.7",
         description="MiniMax best model as of April, 2026",
         source="Blablador",
         max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="02 - Qwen3.5-122B-A10B-FP8, general purpose large model",
+        id="02",
         name="Qwen3.5-122B-A10B-FP8",
         description="General-purpose large multimodal model",
         source="Blablador",
         max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="09 - Qwen3-Coder-Next-FP8 from Feb 2026",
+        id="09",
         name="Qwen3-Coder-Next-FP8",
         description="Code model from Feb 2026",
         source="Blablador",
         max_context_tokens=131072,
     ),
     BlabladorModel(
-        id="07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026",
+        id="07",
         name="Qwen3.5-35B-A3B",
         description="Multimodal model from Feb 2026",
         source="Blablador",
@@ -174,7 +174,7 @@ KNOWN_MODELS: list[BlabladorModel] = [
         max_context_tokens=262144,
     ),
     BlabladorModel(
-        id="08 - Qwen3.6-35B-A3B-FP8 - Multimodal model from Apr 2026",
+        id="08",
         name="Qwen3.6-35B-A3B-FP8",
         description="Multimodal model from Apr 2026",
         source="Blablador",
