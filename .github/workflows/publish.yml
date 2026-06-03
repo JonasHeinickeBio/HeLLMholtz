@@ -331,20 +331,23 @@ jobs:
       - name: Get Version
         id: version
         run: |
-          # Get tag from release event, workflow_dispatch outputs, or derive from poetry
+          # Get tag from release event or workflow_dispatch outputs
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "tag_name=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          else
             tag_name="${{ needs.create-release.outputs.tag_name }}"
             if [ -n "$tag_name" ]; then
               echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
             else
-              version=$(poetry version --short)
-              echo "tag_name=v${version}" >> $GITHUB_OUTPUT
+              # Fallback: try to derive from git tags if available
+              current_tag=$(git describe --tags --exact-match 2>/dev/null || echo "")
+              if [ -n "$current_tag" ]; then
+                echo "tag_name=$current_tag" >> $GITHUB_OUTPUT
+              else
+                echo "ERROR: No tag found. Please run create-release first." >&2
+                exit 1
+              fi
             fi
-          else
-            version=$(poetry version --short)
-            echo "tag_name=v${version}" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload to Release
