@@ -40,7 +40,7 @@ jobs:
           cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        uses: snok/install-poetry@v1
         with:
           version: "latest"
           virtualenvs-in-project: true
@@ -100,7 +100,7 @@ jobs:
           cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        uses: snok/install-poetry@v1
         with:
           version: "latest"
           virtualenvs-in-project: true
@@ -153,7 +153,7 @@ jobs:
           cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        uses: snok/install-poetry@v1
         with:
           version: "latest"
 
@@ -250,7 +250,7 @@ jobs:
           cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        uses: snok/install-poetry@v1
         with:
           version: "latest"
           virtualenvs-in-project: true
@@ -318,7 +318,7 @@ jobs:
           cache: "poetry"
 
       - name: Install Poetry
-        uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a
+        uses: snok/install-poetry@v1
         with:
           version: "latest"
 
