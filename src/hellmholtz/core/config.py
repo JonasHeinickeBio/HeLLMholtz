@@ -15,8 +15,8 @@ def _load_user_config() -> None:
     if USER_CONFIG_FILE.exists():
         load_dotenv(USER_CONFIG_FILE, override=False)
 
-    # Then load project-local .env (can override user config)
-    load_dotenv()
+    # Then load project-local .env with override=True so it replaces user config
+    load_dotenv(override=True)
 
 
 # Load configuration with user-level support
