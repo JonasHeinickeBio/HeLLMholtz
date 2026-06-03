@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# hellm-config - Configure hellmholtz CLI for user-level persistence
+# Usage: hellm-config --set-api-key <key> --set-base-url <url>
+
+set -e
+
+CONFIG_DIR="$HOME/.config/hellmholtz"
+CONFIG_FILE="$CONFIG_DIR/.env"
+
+# Ensure config directory exists
+mkdir -p "$CONFIG_DIR"
+
+# Parse arguments
+API_KEY=""
+BASE_URL=""
+DEFAULT_MODELS=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --set-api-key)
+            API_KEY="$2"
+            shift 2
+            ;;
+        --set-base-url)
+            BASE_URL="$2"
+            shift 2
+            ;;
+        --set-default-models)
+            DEFAULT_MODELS="$2"
+            shift 2
+            ;;
+        --help)
+            echo "Usage: hellm-config [options]"
+            echo ""
+            echo "Configure hellmholtz CLI with persistent settings"
+            echo ""
+            echo "Options:"
+            echo "  --set-api-key <key>      Set Blablador API key"
+            echo "  --set-base-url <url>     Set Blablador Base URL"
+            echo "  --set-default-models <list>  Set default models (comma-separated)"
+            echo "  --show                   Show current configuration"
+            echo "  --help                   Show this help message"
+            exit 0
+            ;;
+        --show)
+            if [[ -f "$CONFIG_FILE" ]]; then
+                echo "Current hellmholtz configuration ($CONFIG_FILE):"
+                cat "$CONFIG_FILE"
+            else
+                echo "No configuration found at $CONFIG_FILE"
+            fi
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Create .env file
+echo "# Helmholtz Blablador Configuration (managed by hellm-config)" > "$CONFIG_FILE"
+echo "# Last updated: $(date)" >> "$CONFIG_FILE"
+echo "" >> "$CONFIG_FILE"
+
+if [[ -n "$API_KEY" ]]; then
+    echo "BLABLADOR_API_KEY=\"$API_KEY\"" >> "$CONFIG_FILE"
+    echo "✓ API key configured"
+else
+    echo "# BLABLADOR_API_KEY=\"your-api-key-here\"" >> "$CONFIG_FILE"
+    echo "⚠ API key not set (edit $CONFIG_FILE to add)"
+fi
+
+if [[ -n "$BASE_URL" ]]; then
+    echo "BLABLADOR_API_BASE=\"$BASE_URL\"" >> "$CONFIG_FILE"
+    echo "✓ Base URL configured"
+else
+    echo "# BLABLADOR_API_BASE=\"https://api.blablador.example.com/v1\"" >> "$CONFIG_FILE"
+    echo "⚠ Base URL not set (edit $CONFIG_FILE to add)"
+fi
+
+if [[ -n "$DEFAULT_MODELS" ]]; then
+    echo "AISUITE_DEFAULT_MODELS=\"$DEFAULT_MODELS\"" >> "$CONFIG_FILE"
+    echo "✓ Default models configured"
+else
+    echo "# AISUITE_DEFAULT_MODELS=\"meta-llama/Meta-Llama-3.1-8B-Instruct\"" >> "$CONFIG_FILE"
+fi
+
+echo ""
+echo "Configuration saved to: $CONFIG_FILE"
+echo ""
+echo "To use this configuration, add the following to your ~/.bashrc or ~/.zshrc:"
+echo ""
+echo "  # Load hellmholtz configuration"
+echo "  export DOTENV_FILE=\"$CONFIG_FILE\""
+echo "  export BLABLADOR_API_KEY=\"\$(grep BLABLADOR_API_KEY $CONFIG_FILE | cut -d'\"' -f2)\""
+echo "  export BLABLADOR_API_BASE=\"\$(grep BLABLADOR_API_BASE $CONFIG_FILE | cut -d'\"' -f2)\""
+echo ""
+echo "Or simply source the config file before running hellm:"
+echo "  source $CONFIG_FILE"
+echo "  hellm models"

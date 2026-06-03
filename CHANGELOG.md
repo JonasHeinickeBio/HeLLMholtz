@@ -5,6 +5,27 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-06-03
+
+### Added
+
+- **User-Level Configuration**: Persistent configuration via `~/.config/hellmholtz/.env`
+- **hellm-setup CLI**: Easy one-time setup script for user-level configuration
+- **hellm-config CLI**: Alternative configuration management script
+- **Configuration Precedence**: Project `.env` overrides user config for per-project overrides
+- **User Config Tests**: Comprehensive test coverage for user-level configuration
+
+### Changed
+
+- Configuration system now loads user config first, then project config
+- Improved error handling for missing API key configuration
+
+### Documentation
+
+- Added comprehensive [Configuration Guide](docs/configuration.md)
+- Updated README with user-level configuration instructions
+- Documented configuration precedence and troubleshooting
+
 ## [0.3.0] - 2026-03-18
 
 ### Fixed

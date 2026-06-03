@@ -1,10 +1,26 @@
 from dataclasses import dataclass, field
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Load environment variables from .env file if present
-load_dotenv()
+# Configuration directories
+USER_CONFIG_DIR = Path.home() / ".config" / "hellmholtz"
+USER_CONFIG_FILE = USER_CONFIG_DIR / ".env"
+
+
+def _load_user_config() -> None:
+    """Load user-level configuration if available."""
+    # First, try to load from user config directory
+    if USER_CONFIG_FILE.exists():
+        load_dotenv(USER_CONFIG_FILE, override=False)
+
+    # Then load project-local .env (can override user config)
+    load_dotenv()
+
+
+# Load configuration with user-level support
+_load_user_config()
 
 
 @dataclass
