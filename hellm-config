@@ -59,33 +59,60 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Create .env file
-echo "# Helmholtz Blablador Configuration (managed by hellm-config)" > "$CONFIG_FILE"
-echo "# Last updated: $(date)" >> "$CONFIG_FILE"
-echo "" >> "$CONFIG_FILE"
+# Helper function to update a key in the config file
+# Usage: update_config_key "KEY_NAME" "value" "commented_default"
+update_config_key() {
+    local key_name="$1"
+    local new_value="$2"
+    local default_value="$3"
 
-if [[ -n "$API_KEY" ]]; then
-    echo "BLABLADOR_API_KEY=\"$API_KEY\"" >> "$CONFIG_FILE"
-    echo "✓ API key configured"
-else
-    echo "# BLABLADOR_API_KEY=\"your-api-key-here\"" >> "$CONFIG_FILE"
+    if [[ -n "$new_value" ]]; then
+        # Key provided via CLI - update or add
+        if grep -q "^${key_name}=" "$CONFIG_FILE" 2>/dev/null; then
+            # Replace existing line
+            sed -i "s|^${key_name}=.*|${key_name}=\"${new_value}\"|" "$CONFIG_FILE"
+        else
+            # Add new line
+            echo "${key_name}=\"${new_value}\"" >> "$CONFIG_FILE"
+        fi
+        return 0
+    else
+        # No key provided - check if key exists, if not add commented default
+        if ! grep -q "^${key_name}=" "$CONFIG_FILE" 2>/dev/null; then
+            echo "# ${key_name}=\"${default_value}\"" >> "$CONFIG_FILE"
+        fi
+        return 1
+    fi
+}
+
+# Load or create CONFIG_FILE if missing
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    {
+        echo "# Helmholtz Blablador Configuration (managed by hellm-config)"
+        echo "# Last updated: $(date)"
+        echo ""
+    } > "$CONFIG_FILE"
+fi
+
+# Update keys - preserve existing values and only update passed arguments
+UPDATED=0
+
+update_config_key "BLABLADOR_API_KEY" "$API_KEY" "your-api-key-here" && UPDATED=1
+if [[ $UPDATED -eq 0 && -z "$API_KEY" ]]; then
     echo "⚠ API key not set (edit $CONFIG_FILE to add)"
-fi
+fi || echo "✓ API key configured"
 
-if [[ -n "$BASE_URL" ]]; then
-    echo "BLABLADOR_API_BASE=\"$BASE_URL\"" >> "$CONFIG_FILE"
-    echo "✓ Base URL configured"
-else
-    echo "# BLABLADOR_API_BASE=\"https://api.blablador.example.com/v1\"" >> "$CONFIG_FILE"
+UPDATED=0
+update_config_key "BLABLADOR_API_BASE" "$BASE_URL" "https://api.blablador.example.com/v1" && UPDATED=1
+if [[ $UPDATED -eq 0 && -z "$BASE_URL" ]]; then
     echo "⚠ Base URL not set (edit $CONFIG_FILE to add)"
-fi
+fi || echo "✓ Base URL configured"
 
-if [[ -n "$DEFAULT_MODELS" ]]; then
-    echo "AISUITE_DEFAULT_MODELS=\"$DEFAULT_MODELS\"" >> "$CONFIG_FILE"
-    echo "✓ Default models configured"
-else
-    echo "# AISUITE_DEFAULT_MODELS=\"meta-llama/Meta-Llama-3.1-8B-Instruct\"" >> "$CONFIG_FILE"
-fi
+UPDATED=0
+update_config_key "AISUITE_DEFAULT_MODELS" "$DEFAULT_MODELS" "meta-llama/Meta-Llama-3.1-8B-Instruct" && UPDATED=1
+if [[ $UPDATED -eq 0 && -z "$DEFAULT_MODELS" ]]; then
+    echo "⚠ Default models not set (edit $CONFIG_FILE to add)"
+fi || echo "✓ Default models configured"
 
 echo ""
 echo "Configuration saved to: $CONFIG_FILE"
