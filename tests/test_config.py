@@ -6,11 +6,12 @@ including environment variable parsing, default values, and settings validation.
 """
 
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from hellmholtz.core.config import get_settings
+from hellmholtz.core.config import USER_CONFIG_FILE, get_settings
 
 
 class TestSettings:
@@ -161,3 +162,8 @@ class TestSettings:
                 "ollama:llama3.2:3b",
             ]
             assert settings.default_models == expected_models
+
+    def test_user_config_file_path(self) -> None:
+        """Test that USER_CONFIG_FILE points to correct location."""
+        expected_path = Path.home() / ".config" / "hellmholtz" / ".env"
+        assert str(USER_CONFIG_FILE) == str(expected_path)

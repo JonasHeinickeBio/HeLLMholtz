@@ -61,6 +61,10 @@ poetry install --with eval,proxy
 
 ## Configuration
 
+HeLLMholtz supports both project-level and user-level configuration.
+
+### Project-Level Configuration (`.env`)
+
 1. Copy the example environment file:
 ```bash
 cp .env.example .env
@@ -84,6 +88,25 @@ BLABLADOR_API_BASE=https://your-blablador-instance.com
 # Optional: Default models
 AISUITE_DEFAULT_MODELS='{"openai": "gpt-4o", "anthropic": "claude-3-haiku"}'
 ```
+
+### User-Level Configuration (Recommended for pipx users)
+
+For persistent configuration across all projects, use the `hellm-setup` tool:
+
+```bash
+# Configure once (works globally)
+hellm-setup --api-key "your-blablador-key" \
+            --base-url "https://api.blablador.ai/v1" \
+            --default-models "meta-llama/Meta-Llama-3.1-8B-Instruct,gpt-4"
+```
+
+**Configuration Location:** `~/.config/hellmholtz/.env`
+
+This is automatically loaded for all `hellm` commands, regardless of your current directory.
+
+**Configuration Precedence:** Project `.env` overrides user config (useful for per-project overrides).
+
+See [Configuration Guide](docs/CONFIGURATION.md) for more details.
 
 ## Usage
 
