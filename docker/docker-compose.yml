@@ -1,0 +1,66 @@
+# HeLLMholtz + AnythingLLM – Docker Compose
+#
+# SECURITY NOTES
+# ──────────────
+# 1. Copy docker/.env.example → docker/.env and fill in every value before
+#    starting the stack.  NEVER commit .env to version control.
+# 2. The .env file is passed to the container exclusively via `env_file`; no
+#    secrets appear in this YAML file.
+# 3. JWT_SECRET must be ≥ 20 random characters.  Generate one with:
+#       python -c "import secrets; print(secrets.token_hex(32))"
+# 4. ANYTHINGLLM_API_KEY is set in the container and must be copied into
+#    docker/.env so that HeLLMholtz CLI can call the AnythingLLM API.
+# 5. SYS_ADMIN capability is required by AnythingLLM's Chromium sandbox.
+#    All other capabilities are dropped.
+# 6. Storage is mounted from the host so data persists across restarts.
+#    Update the `device:` path under `anythingllm_storage` to a directory
+#    on your host that already exists.
+
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    container_name: anythingllm
+    restart: on-failure:5
+    ports:
+      - "127.0.0.1:3001:3001"   # bind to loopback only – use a reverse proxy for TLS
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_ADMIN               # required for Chromium sandbox used by AnythingLLM
+    security_opt:
+      - no-new-privileges:true
+    read_only: false            # AnythingLLM writes to /app/server/storage
+    env_file:
+      - .env                    # load secrets from docker/.env (never committed)
+    environment:
+      # These non-secret values can live here; everything with a secret value
+      # MUST come from the .env file instead.
+      STORAGE_DIR: /app/server/storage
+      VECTOR_DB: lancedb        # built-in – no external vector DB needed
+      WHISPER_PROVIDER: local
+      TTS_PROVIDER: native
+      PASSWORDMINCHAR: "12"
+    volumes:
+      - anythingllm_storage:/app/server/storage
+    networks:
+      - hellmholtz_internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  anythingllm_storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # ↓ Change this to an absolute path on your host machine
+      device: /opt/anythingllm/storage
+
+networks:
+  hellmholtz_internal:
+    driver: bridge
+    internal: false   # set to true if no outbound internet access is needed
