@@ -197,3 +197,6 @@ MODULAR_BENCHMARK_RESULTS.json
 examples/rdf_output
 PMC3258128.xml
 .continue/agents/new-config.yaml
+
+# Config converter output (may contain API keys)
+src/config_converter/opencode.yaml
