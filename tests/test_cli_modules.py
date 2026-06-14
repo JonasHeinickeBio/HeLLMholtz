@@ -235,23 +235,25 @@ class TestBenchmarkCommands:
 
     @patch("hellmholtz.reporting.generate_markdown_report")
     def test_report_command_markdown(
-        self, mock_gen: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_gen: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test report command with markdown format."""
         mock_gen.return_value = "# Report"
 
-        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "markdown"])
+        output = tmp_path / "report.md"
+        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "markdown", "--output", str(output)])
 
         assert result.exit_code == 0
 
     @patch("hellmholtz.reporting.generate_html_report")
     def test_report_command_html(
-        self, mock_gen: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_gen: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test report command with HTML format."""
         mock_gen.return_value = "<html></html>"
 
-        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "html"])
+        output = tmp_path / "report.html"
+        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "html", "--output", str(output)])
 
         assert result.exit_code == 0
 

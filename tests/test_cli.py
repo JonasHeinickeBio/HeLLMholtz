@@ -93,11 +93,12 @@ class TestCLI:
 
     @patch("hellmholtz.reporting.generate_markdown_report")
     def test_report_markdown_command(
-        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test markdown report generation."""
         mock_generate.return_value = "# Test Report\n\nContent here."
 
+        output = tmp_path / "test_report.md"
         result = runner.invoke(
             app,
             [
@@ -106,7 +107,7 @@ class TestCLI:
                 "--format",
                 "markdown",
                 "--output",
-                "test_report.md",
+                str(output),
             ],
         )
 
@@ -119,14 +120,15 @@ class TestCLI:
 
     @patch("hellmholtz.reporting.generate_html_report")
     def test_report_html_command(
-        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test HTML report generation."""
         mock_generate.return_value = "<html><body>Test Report</body></html>"
 
+        output = tmp_path / "test_report.html"
         result = runner.invoke(
             app,
-            ["report", str(temp_results_file), "--format", "html", "--output", "test_report.html"],
+            ["report", str(temp_results_file), "--format", "html", "--output", str(output)],
         )
 
         assert result.exit_code == 0
@@ -134,25 +136,29 @@ class TestCLI:
 
     @patch("hellmholtz.reporting.generate_html_report_simple")
     def test_report_html_simple_command(
-        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test simple HTML report generation."""
         mock_generate.return_value = "<html><body>Simple Report</body></html>"
 
-        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "html-simple"])
+        output = tmp_path / "test_simple.html"
+        result = runner.invoke(
+            app, ["report", str(temp_results_file), "--format", "html-simple", "--output", str(output)]
+        )
 
         assert result.exit_code == 0
         assert mock_generate.called
 
     @patch("hellmholtz.reporting.generate_html_report_detailed")
     def test_report_html_detailed_command(
-        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test detailed HTML report generation."""
         mock_generate.return_value = "<html><body>Detailed Report</body></html>"
 
+        output = tmp_path / "test_detailed.html"
         result = runner.invoke(
-            app, ["report", str(temp_results_file), "--format", "html-detailed"]
+            app, ["report", str(temp_results_file), "--format", "html-detailed", "--output", str(output)]
         )
 
         assert result.exit_code == 0
@@ -160,24 +166,30 @@ class TestCLI:
 
     @patch("hellmholtz.reporting.generate_html_report_full")
     def test_report_html_full_command(
-        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path
+        self, mock_generate: MagicMock, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test full HTML report generation."""
         mock_generate.return_value = "<html><body>Full Report</body></html>"
 
-        result = runner.invoke(app, ["report", str(temp_results_file), "--format", "html-full"])
+        output = tmp_path / "test_full.html"
+        result = runner.invoke(
+            app, ["report", str(temp_results_file), "--format", "html-full", "--output", str(output)]
+        )
 
         assert result.exit_code == 0
         assert mock_generate.called
 
     def test_report_command_invalid_format(
-        self, runner: CliRunner, temp_results_file: Path
+        self, runner: CliRunner, temp_results_file: Path, tmp_path: Path
     ) -> None:
         """Test report command with invalid format defaults to markdown."""
         with patch("hellmholtz.reporting.generate_markdown_report") as mock_generate:
             mock_generate.return_value = "# Test Report"
 
-            result = runner.invoke(app, ["report", str(temp_results_file), "--format", "invalid"])
+            output = tmp_path / "test_invalid.md"
+            result = runner.invoke(
+                app, ["report", str(temp_results_file), "--format", "invalid", "--output", str(output)]
+            )
 
             assert result.exit_code == 0
             assert mock_generate.called
