@@ -6,7 +6,12 @@ from .exporters import (
     ContinueExporter,
     CursorExporter,
     GenericOpenAIExporter,
+    GPT4AllExporter,
+    HermesAgentExporter,
+    JanAIExporter,
+    LangChainExporter,
     OpenCodeExporter,
+    PiAgentExporter,
 )
 from .model_manager import BlabladorManager, Model, ModelConfig
 from .prompts import Message, Prompt
@@ -23,4 +28,9 @@ __all__ = [
     "AiderExporter",
     "CursorExporter",
     "GenericOpenAIExporter",
+    "GPT4AllExporter",
+    "HermesAgentExporter",
+    "JanAIExporter",
+    "LangChainExporter",
+    "PiAgentExporter",
 ]

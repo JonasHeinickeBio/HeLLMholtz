@@ -102,7 +102,8 @@ def info(
 @manager_app.command()
 def export(
     tool: str = typer.Argument(
-        help="Target tool (opencode, claude-code, continue, aider, cursor)"
+        help="Target tool: opencode, claude-code, continue, aider, "
+        "cursor, generic-openai, hermes, jan, langchain, gpt4all, pi"
     ),
     models: str = typer.Option(
         "alias-code",
@@ -156,13 +157,29 @@ def tools() -> None:
     """List all supported AI tools for export."""
     exporters = list_exporters()
 
+    TOOL_DESCRIPTIONS = {
+        "opencode": "OpenCode (JSON config)",
+        "claude-code": "Claude Code (settings.json)",
+        "continue": "Continue.dev (YAML config.yaml)",
+        "aider": "Aider (.aider.conf.yml)",
+        "cursor": "Cursor (.env file)",
+        "generic-openai": "Generic OpenAI-compatible (JSON)",
+        "hermes": "Hermes Agent (config.json)",
+        "jan": "Jan.AI (models provider)",
+        "langchain": "LangChain (env vars)",
+        "gpt4all": "GPT4All (reference config)",
+        "pi": "Pi Agent (models.json)",
+    }
+
     table = Table(title="Supported AI Tools")
     table.add_column("Tool Name", style="cyan")
-    table.add_column("Config File", style="green")
+    table.add_column("Description", style="green")
+    table.add_column("Config File", style="dim")
 
     for name in exporters:
         exporter = get_exporter(name)
-        table.add_row(name, str(exporter.config_path))
+        description = TOOL_DESCRIPTIONS.get(name, name)
+        table.add_row(name, description, str(exporter.config_path))
 
     console.print(table)
 

@@ -7,6 +7,11 @@ Supports exporting Blablador configurations to:
 - Aider (YAML .aider.conf.yml)
 - Cursor (Environment variables)
 - Generic OpenAI-compatible (JSON)
+- Hermes Agent (JSON ~/.hermes/config.json)
+- Jan.AI (JSON models provider config)
+- LangChain (Python env vars script)
+- GPT4All (reference config)
+- Pi Agent (JSON ~/.pi/agent/models.json)
 """
 
 from __future__ import annotations
@@ -379,6 +384,226 @@ class GenericOpenAIExporter(ConfigExporter):
         return output
 
 
+class HermesAgentExporter(ConfigExporter):
+    """Export configuration for Hermes Agent (Nous Research)."""
+
+    @property
+    def tool_name(self) -> str:
+        return "hermes"
+
+    @property
+    def config_path(self) -> Path:
+        return Path.home() / ".hermes" / "config.json"
+
+    def export(
+        self,
+        models: list[ModelConfig],
+        output_path: Path | None = None,
+        merge: bool = True,
+    ) -> Path:
+        """Export Hermes Agent configuration."""
+        output = output_path or self.config_path
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+        config: dict[str, Any] = {}
+        if merge:
+            existing = self._load_existing(output)
+            if existing:
+                config = existing
+
+        if models:
+            primary = models[0]
+            config["provider"] = "custom"
+            config["base_url"] = primary.api_base
+            config["api_key"] = primary.api_key
+            config["model"] = primary.model
+            config["display_name"] = "Blablador"
+
+            # Add all models as available
+            config["models"] = [{"id": m.model, "name": m.name} for m in models]
+
+        output.write_text(json.dumps(config, indent=2))
+        return output
+
+
+class JanAIExporter(ConfigExporter):
+    """Export configuration for Jan.AI."""
+
+    @property
+    def tool_name(self) -> str:
+        return "jan"
+
+    @property
+    def config_path(self) -> Path:
+        return Path.home() / ".config" / "jan" / "models" / "blablador.json"
+
+    def export(
+        self,
+        models: list[ModelConfig],
+        output_path: Path | None = None,
+        merge: bool = True,
+    ) -> Path:
+        """Export Jan.AI model provider configuration."""
+        output = output_path or self.config_path
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+        config: dict[str, Any] = {}
+        if merge:
+            existing = self._load_existing(output)
+            if existing:
+                config = existing
+
+        if models:
+            primary = models[0]
+            config["id"] = "blablador"
+            config["type"] = "openai"
+            config["name"] = "Blablador"
+            config["base_url"] = primary.api_base
+            config["api_key"] = primary.api_key
+            config["models"] = [
+                {
+                    "id": m.model,
+                    "name": m.name,
+                    "context_length": m.context_length or 98304,
+                }
+                for m in models
+            ]
+
+        output.write_text(json.dumps(config, indent=2))
+        return output
+
+
+class LangChainExporter(ConfigExporter):
+    """Export LangChain-compatible environment variable configuration."""
+
+    @property
+    def tool_name(self) -> str:
+        return "langchain"
+
+    @property
+    def config_path(self) -> Path:
+        return Path.home() / ".config" / "hellmholtz" / "langchain.env"
+
+    def export(
+        self,
+        models: list[ModelConfig],
+        output_path: Path | None = None,
+        merge: bool = True,
+    ) -> Path:
+        """Export environment variables for LangChain (OpenAI-compatible)."""
+        output = output_path or self.config_path
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+        lines: list[str] = []
+        if merge and output.exists():
+            existing_lines = output.read_text().splitlines()
+            lines = [
+                line
+                for line in existing_lines
+                if not line.startswith("OPENAI_API_KEY=")
+                and not line.startswith("OPENAI_API_BASE=")
+            ]
+
+        if models:
+            primary = models[0]
+            lines.append(f"OPENAI_API_KEY={primary.api_key}")
+            lines.append(f"OPENAI_API_BASE={primary.api_base}")
+            lines.append(f"# Default model: {primary.model}")
+
+        output.write_text("\n".join(lines) + "\n")
+        return output
+
+
+class GPT4AllExporter(ConfigExporter):
+    """Export reference configuration for GPT4All."""
+
+    @property
+    def tool_name(self) -> str:
+        return "gpt4all"
+
+    @property
+    def config_path(self) -> Path:
+        return Path.home() / ".config" / "hellmholtz" / "gpt4all-reference.json"
+
+    def export(
+        self,
+        models: list[ModelConfig],
+        output_path: Path | None = None,
+        merge: bool = True,
+    ) -> Path:
+        """Export GPT4All reference configuration (GUI setup required)."""
+        output = output_path or self.config_path
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+        config: dict[str, Any] = {}
+        if merge:
+            existing = self._load_existing(output)
+            if existing:
+                config = existing
+
+        if models:
+            primary = models[0]
+            # GPT4All uses GUI - this is a reference config for manual setup
+            config["provider"] = "openai-compatible"
+            config["base_url"] = primary.api_base
+            config["api_key"] = primary.api_key
+            config["default_model"] = primary.model
+            config["setup_instructions"] = {
+                "step_1": "Open GPT4All and go to Models",
+                "step_2": "Click 'Add Model' → 'OpenAI Compatible'",
+                "step_3": f"API Key: {primary.api_key}",
+                "step_4": f"Base URL: {primary.api_base}",
+                "step_5": f"Model Name: {primary.model}",
+            }
+            config["available_models"] = [{"id": m.model, "name": m.name} for m in models]
+
+        output.write_text(json.dumps(config, indent=2))
+        return output
+
+
+class PiAgentExporter(ConfigExporter):
+    """Export configuration for Pi Agent."""
+
+    @property
+    def tool_name(self) -> str:
+        return "pi"
+
+    @property
+    def config_path(self) -> Path:
+        return Path.home() / ".pi" / "agent" / "models.json"
+
+    def export(
+        self,
+        models: list[ModelConfig],
+        output_path: Path | None = None,
+        merge: bool = True,
+    ) -> Path:
+        """Export Pi Agent models.json configuration."""
+        output = output_path or self.config_path
+        output.parent.mkdir(parents=True, exist_ok=True)
+
+        config: dict[str, Any] = {}
+        if merge:
+            existing = self._load_existing(output)
+            if existing:
+                config = existing
+
+        if models:
+            primary = models[0]
+            if "providers" not in config:
+                config["providers"] = {}
+
+            config["providers"]["blablador"] = {
+                "baseUrl": primary.api_base,
+                "api": "openai-completions",
+                "apiKey": primary.api_key,
+                "models": [{"id": m.model} for m in models],
+            }
+
+        output.write_text(json.dumps(config, indent=2))
+        return output
+
+
 # Registry of all exporters
 EXPORTERS: dict[str, type[ConfigExporter]] = {
     "opencode": OpenCodeExporter,
@@ -387,6 +612,11 @@ EXPORTERS: dict[str, type[ConfigExporter]] = {
     "aider": AiderExporter,
     "cursor": CursorExporter,
     "generic-openai": GenericOpenAIExporter,
+    "hermes": HermesAgentExporter,
+    "jan": JanAIExporter,
+    "langchain": LangChainExporter,
+    "gpt4all": GPT4AllExporter,
+    "pi": PiAgentExporter,
 }
 
 
