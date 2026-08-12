@@ -204,7 +204,7 @@ def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
         console.print(f"  API Models: {summary.get('api_models_count', 0)}")
         console.print(f"  Configured Models: {summary.get('config_models_count', 0)}")
         console.print(f"  New Models: {summary.get('new_count', 0)}")
-        console.print(f"  Removed Models: {summary.get('removed_count', 0)}")
+        console.print(f"  Models Marked Unavailable: {summary.get('removed_count', 0)}")
         console.print(f"  Unchanged Models: {summary.get('unchanged_count', 0)}")
         console.print(f"  Status: {summary.get('sync_status', 'unknown')}")
         console.print()

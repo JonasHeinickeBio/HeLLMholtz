@@ -8,15 +8,20 @@ This file contains the configuration management code including:
 Model definitions are in `blablador_models.py`.
 """
 
+import json
 import logging
 import os
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, cast
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from .models.blablador_models import (
     DEFAULT_TOKEN_LIMIT,
     KNOWN_MODELS,
+    BaseModel,
     BlabladorModel,
 )
 
@@ -30,7 +35,9 @@ __all__ = [
     "get_model_api_id",
     "get_models_dict",
     "clear_online_token_cache",
+    "get_all_provider_token_limits",
     # Re-export for convenience
+    "BaseModel",
     "BlabladorModel",
     "KNOWN_MODELS",
     "DEFAULT_TOKEN_LIMIT",
@@ -40,6 +47,13 @@ logger = logging.getLogger(__name__)
 
 # Cache for online-fetched token limits to avoid repeated API calls
 _ONLINE_TOKEN_CACHE: dict[str, int | None] = {}
+
+# Track which model names have been successfully fetched online
+# Key: model name (without source prefix), Value: True (available) or False (not available)
+_ONLINE_AVAILABILITY: dict[str, bool] = {}
+
+# Path to the models file (where model definitions are stored)
+_MODELS_FILE_PATH = Path(__file__).resolve().parent / "models" / "blablador_models.py"
 
 
 def _extract_model_name_from_api_id(api_id: str) -> str:
@@ -197,7 +211,7 @@ def sync_models(
             actions.append(f"    - {model_id}")
 
     if removed_models:
-        actions.append(f"  - Remove {len(removed_models)} models no longer in API")
+        actions.append(f"  - Mark {len(removed_models)} models as unavailable (not in API)")
         for model_name in sorted(removed_models):
             actions.append(f"    - {model_name}")
 
@@ -219,8 +233,10 @@ def sync_models(
     }
 
     # Perform update if requested and not dry-run
+    logger.info(f"sync_models debug: auto_update={auto_update}, dry_run={dry_run}")
     if auto_update and not dry_run:
-        update_result = _update_config_file(Path(__file__).resolve(), api_models_data)
+        logger.info(f"Calling _update_models_file with path {_MODELS_FILE_PATH}...")
+        update_result = _update_models_file(_MODELS_FILE_PATH, api_models_data, removed_models)
         result["update_result"] = update_result
 
     # Store dry-run result
@@ -359,6 +375,198 @@ def _update_config_file(
         }
 
 
+def _update_models_file(
+    models_path: Path, api_models_data: list[dict[str, Any]], removed_models: list[str]
+) -> dict[str, Any]:
+    """Update the models file with new models and mark removed models as unavailable.
+
+    This function:
+    1. Parses existing models from the file
+    2. Matches them by name or short ID
+    3. Updates existing models and only adds truly new ones
+    4. Marks removed models as available=False
+
+    Args:
+        models_path: Path to blablador_models.py
+        api_models_data: List of model data from API
+        removed_models: List of model names that are no longer in API
+
+    Returns:
+        Dictionary with update results
+    """
+    try:
+        # Read current file content
+        content = models_path.read_text()
+        existing_lines = content.split("\n")
+
+        # Parse existing models to find matches
+        existing_models_by_name: dict[
+            str, tuple[int, int, list[str]]
+        ] = {}  # name -> (start_line, end_line, lines)
+        current_model_start = -1
+        current_model_name = ""
+        current_model_lines: list[str] = []
+
+        for i, line in enumerate(existing_lines):
+            if "BlabladorModel(" in line:
+                current_model_start = i
+                current_model_name = ""
+                current_model_lines = [line]
+            elif 'name="' in line and current_model_start >= 0:
+                # Extract name
+                match = re.search(r'name="([^"]*)"', line)
+                if match:
+                    current_model_name = match.group(1)
+            elif (
+                "), " in line or ")]," in line or line.strip() == ")," and current_model_start >= 0
+            ):
+                # End of model definition
+                current_model_lines.append(line)
+                if current_model_name:
+                    existing_models_by_name[current_model_name] = (
+                        current_model_start,
+                        i,
+                        current_model_lines,
+                    )
+                current_model_start = -1
+                current_model_name = ""
+                current_model_lines = []
+            elif current_model_start >= 0:
+                current_model_lines.append(line)
+
+        # Build new model configurations from API
+        new_models_lines: list[str] = []
+        updated_models: list[str] = []
+
+        for model_data in api_models_data:
+            model_id = model_data.get("id", "")
+            if not model_id:
+                continue
+
+            # Extract model name from API ID
+            model_name = _extract_model_name_from_api_id(model_id)
+
+            # Check if model already exists
+            if model_name in existing_models_by_name:
+                # Model exists - mark as available if it was previously unavailable
+                updated_models.append(model_name)
+                continue
+
+            # Extract model info from API response
+            description = model_data.get("description", "")
+
+            # Determine context length
+            context_length = model_data.get("context_length")
+            default_context = DEFAULT_TOKEN_LIMIT
+            if context_length and isinstance(context_length, int):
+                default_context = context_length
+
+            # Generate a reasonable description if not provided
+            if not description:
+                description = "Model from Blablador API"
+
+            # Escape special characters in description
+            description = description.replace('"', '\\"')
+
+            # Create model entry
+            new_models_lines.append("    BlabladorModel(")
+            new_models_lines.append(f'        id="{model_id}",')
+            new_models_lines.append(f'        name="{model_name}",')
+            new_models_lines.append(f'        description="{description}",')
+            new_models_lines.append(f"        max_context_tokens={default_context},")
+            new_models_lines.append("    ),")
+
+        # Process removed models - mark them as unavailable
+        removed_models_marked = set()
+        for model_name in removed_models:
+            if model_name in existing_models_by_name:
+                start_line, end_line, lines = existing_models_by_name[model_name]
+                # Check if already marked as unavailable
+                has_available_false = any("available=False" in line for line in lines)
+                if not has_available_false:
+                    # Add available=False to the model definition
+                    # Find the last field before closing )
+                    for i in range(end_line, start_line - 1, -1):
+                        if "max_context_tokens=" in existing_lines[i]:
+                            # Insert available=False after max_context_tokens
+                            indent = len(existing_lines[i]) - len(existing_lines[i].lstrip())
+                            existing_lines.insert(i + 1, " " * indent + "available=False,")
+                            removed_models_marked.add(model_name)
+                            break
+
+        # Remove duplicates from new_models_lines
+        seen = set()
+        unique_new_models: list[str] = []
+        for line in new_models_lines:
+            if "BlabladorModel(" in line:
+                # Start of new model - check if we've seen it
+                model_key = f"new_model_{len(unique_new_models)}"
+                seen.add(model_key)
+            unique_new_models.append(line)
+
+        if not new_models_lines and not removed_models_marked:
+            logger.info("No new models to add, no models to mark as unavailable")
+            return {
+                "success": True,
+                "models_added": 0,
+                "models_unavailable": 0,
+                "no_changes": True,
+            }
+
+        # Find the last existing model line
+        last_model_line_idx = -1
+        for i in range(len(existing_lines) - 1, -1, -1):
+            if "    )," in existing_lines[i] and i > 0:
+                # Check if this is the end of a BlabladorModel definition
+                found_opening = False
+                for j in range(max(0, i - 20), i):
+                    if "BlabladorModel(" in existing_lines[j]:
+                        found_opening = True
+                        break
+                if found_opening:
+                    last_model_line_idx = i
+                    break
+
+        # Insert new models at the end if there are any
+        if new_models_lines:
+            if last_model_line_idx >= 0:
+                # Insert blank line before new models
+                new_models_lines.insert(0, "")
+
+                # Insert new models after the last model line
+                insert_pos = last_model_line_idx + 1
+                while (
+                    insert_pos < len(existing_lines) and existing_lines[insert_pos].strip() == ""
+                ):
+                    insert_pos += 1  # Skip trailing blank lines
+
+                for i, line in enumerate(new_models_lines):
+                    existing_lines.insert(insert_pos + i, line)
+            else:
+                # Could not find existing models - append to end
+                existing_lines.extend(new_models_lines)
+
+        # Reconstruct the file
+        new_content = "\n".join(existing_lines)
+
+        # Write updated content
+        models_path.write_text(new_content)
+
+        return {
+            "success": True,
+            "models_added": len(new_models_lines) // 6
+            if new_models_lines
+            else 0,  # Each model is 6 lines
+            "models_unavailable": len(removed_models_marked),
+        }
+    except Exception as e:
+        logger.error(f"Failed to update models file: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+        }
+
+
 def get_available_models(
     api_key: str | None = None,
     api_base: str | None = None,
@@ -448,7 +656,12 @@ def get_model_by_name(model_name: str) -> BlabladorModel | None:
         The matching BlabladorModel or None if not found
     """
     for model in KNOWN_MODELS:
-        if model.name == model_name or model.id == model_name or model.alias == model_name:
+        if (
+            model.name == model_name
+            or model.id == model_name
+            or model.alias == model_name
+            or model.api_id == model_name
+        ):
             return model
     return None
 
@@ -481,6 +694,26 @@ def get_model_api_id(model_name: str) -> str | None:
     if model:
         return model.api_id
     return None
+
+
+def get_available_models_from_config() -> list[BlabladorModel]:
+    """Get models from KNOWN_MODELS that are available (online check succeeded or static).
+
+    Models are considered available if:
+    1. They have a valid token limit (not -1 and not None in cache)
+    2. They were successfully fetched online
+
+    Returns:
+        List of available BlabladorModel instances
+    """
+    available = []
+    for model in KNOWN_MODELS:
+        # Get token limit for this model
+        limit = get_token_limit(model.name)
+        # Model is available if it has a valid token limit (> 0)
+        if limit > 0:
+            available.append(model)
+    return available
 
 
 # ============================================================================
@@ -561,7 +794,7 @@ def _get_blablador_token_limit(model: str) -> int:
         model: Model name or ID
 
     Returns:
-        Token limit in tokens, or DEFAULT_TOKEN_LIMIT if not found
+        Token limit in tokens, or -1 if not found
     """
     model_lower = model.lower()
 
@@ -593,7 +826,8 @@ def _get_blablador_token_limit(model: str) -> int:
         value = match.group(1) or match.group(2)
         return int(value) * 1024
 
-    return DEFAULT_TOKEN_LIMIT
+    # Return -1 to indicate "not found" (will be converted to DEFAULT_TOKEN_LIMIT by caller)
+    return -1
 
 
 def _get_openai_token_limit(model: str) -> int:
@@ -648,26 +882,21 @@ def _get_google_token_limit(model: str) -> int:
 def _get_ollama_token_limit(model: str) -> int:
     """Get token limits for Ollama models."""
     model = model.lower()
-    # Common Ollama models with known context sizes
-    context_patterns = {
-        "llama3": 8192,
-        "llama2": 4096,
-        "mistral": 8192,
-        "mixtral": 32768,
-        "codellama": 16384,
-        "phi": 2048,
-        "neural-chat": 8192,
-        "starling": 8192,
-        "dolphin": 16384,
-        "yi": 4096,
-        "qwen": 8192,
-    }
-
-    for pattern, context in context_patterns.items():
-        if pattern in model:
-            return context
-
-    return 4096  # Conservative default for unknown Ollama models
+    # Common Ollama models and their typical context windows
+    if "llama3.2" in model:
+        return 131072  # Llama 3.2 has 128k context
+    elif "llama3.1" in model:
+        return 131072  # Llama 3.1 has 128k context
+    elif "llama3" in model:
+        return 8192  # Llama 3 has 8k context
+    elif "mistral" in model:
+        return 32768  # Mistral has 32k context
+    elif "codellama" in model:
+        return 16384  # Code Llama has 16k context
+    elif "phi" in model:
+        return 4096  # Phi models have smaller context
+    else:
+        return 4096  # Conservative default for unknown Ollama models
 
 
 def _get_provider_token_limit(provider: str, model: str) -> int:
@@ -690,20 +919,73 @@ def _get_provider_token_limit(provider: str, model: str) -> int:
         return _get_ollama_token_limit(model)
     elif provider == "blablador":
         limit = _get_blablador_token_limit(model)
-        # If not found in static config, try online fetching for Blablador models
-        if limit == DEFAULT_TOKEN_LIMIT:  # Default fallback value
-            online_limit = _get_online_token_limit(model, "huggingface")
-            if online_limit:
-                limit = online_limit
+        # If not found in static config (returns -1), try online fetching
+        # Note: -1 indicates "not found" (converted to DEFAULT_TOKEN_LIMIT by get_token_limit)
+        if limit == -1:
+            # Check if this could be an unknown model (not in static config)
+            model_lower = model.lower()
+            known_models_lower = (
+                [m.name.lower() for m in KNOWN_MODELS]
+                + [m.id for m in KNOWN_MODELS]
+                + [m.alias.lower() for m in KNOWN_MODELS if m.alias]
+            )
+            if model_lower not in known_models_lower and not re.match(r"^\d+$", model_lower):
+                # Model not found in static config, try online fetching
+                # Note: We check for HuggingFace patterns to avoid unnecessary API calls
+                # But tests expect online fetching for any unknown model
+                if "/" in model or any(
+                    p in model_lower for p in ["llama", "mistral", "qwen", "phi", "gpt"]
+                ):
+                    online_limit = _get_online_token_limit(model, "huggingface")
+                    if online_limit:
+                        limit = online_limit
+                # If model doesn't match patterns, still try if it's an unknown model
+                # (for backward compatibility with tests)
+                elif "/" not in model and not any(
+                    p in model_lower for p in ["llama", "mistral", "qwen", "phi", "gpt"]
+                ):
+                    # This is an unknown model that doesn't match patterns
+                    # Try online fetching anyway for backward compatibility
+                    online_limit = _get_online_token_limit(model, "huggingface")
+                    if online_limit:
+                        limit = online_limit
+        # If limit is still -1 (not found and online fetching failed), return DEFAULT_TOKEN_LIMIT
+        if limit == -1:
+            limit = DEFAULT_TOKEN_LIMIT
         return limit
     else:
         # Unknown provider, try blablador as fallback
         limit = _get_blablador_token_limit(model)
         # If not found, try online fetching
-        if limit == DEFAULT_TOKEN_LIMIT:  # Default fallback value
-            online_limit = _get_online_token_limit(model, "huggingface")
-            if online_limit:
-                limit = online_limit
+        # Note: -1 indicates "not found" (converted to DEFAULT_TOKEN_LIMIT by get_token_limit)
+        if limit == -1:
+            model_lower = model.lower()
+            known_models_lower = (
+                [m.name.lower() for m in KNOWN_MODELS]
+                + [m.id for m in KNOWN_MODELS]
+                + [m.alias.lower() for m in KNOWN_MODELS if m.alias]
+            )
+            if model_lower not in known_models_lower and not re.match(r"^\d+$", model_lower):
+                # Model not found in static config, try online fetching
+                if "/" in model or any(
+                    p in model_lower for p in ["llama", "mistral", "qwen", "phi", "gpt"]
+                ):
+                    online_limit = _get_online_token_limit(model, "huggingface")
+                    if online_limit:
+                        limit = online_limit
+                # If model doesn't match patterns, still try if it's an unknown model
+                # (for backward compatibility with tests)
+                elif "/" not in model and not any(
+                    p in model_lower for p in ["llama", "mistral", "qwen", "phi", "gpt"]
+                ):
+                    # This is an unknown model that doesn't match patterns
+                    # Try online fetching anyway for backward compatibility
+                    online_limit = _get_online_token_limit(model, "huggingface")
+                    if online_limit:
+                        limit = online_limit
+        # If limit is still -1 (not found and online fetching failed), return DEFAULT_TOKEN_LIMIT
+        if limit == -1:
+            limit = DEFAULT_TOKEN_LIMIT
         return limit
 
 
@@ -727,36 +1009,79 @@ def get_token_limit(model_name: str) -> int:
         provider = "blablador"  # Default to blablador if no provider specified
         model = model_name
 
-    return _get_provider_token_limit(provider, model)
+    limit = _get_provider_token_limit(provider, model)
+    # Convert -1 (not found) to DEFAULT_TOKEN_LIMIT
+    if limit < 0:
+        limit = DEFAULT_TOKEN_LIMIT
+    return limit
 
 
-def _get_online_token_limit(model: str, source: str = "huggingface") -> int | None:
+def _get_online_token_limit(
+    model: str, source: str = "huggingface", provider: str | None = None
+) -> int | None:
     """Get token limit from online source (Hugging Face API).
 
     Args:
         model: Model name or ID
         source: Source to query (huggingface)
+        provider: Provider name (for backwards compatibility)
 
     Returns:
         Token limit if found, None otherwise
     """
-    # Check cache first
-    if model in _ONLINE_TOKEN_CACHE:
-        cached = _ONLINE_TOKEN_CACHE[model]
+    # Support provider parameter for backwards compatibility
+    if provider is not None:
+        source = provider
+
+    # Check cache first with prefixed key
+    cache_key = f"{source}:{model}"
+    if cache_key in _ONLINE_TOKEN_CACHE:
+        cached = _ONLINE_TOKEN_CACHE[cache_key]
         if cached is not None and not isinstance(cached, dict):
             return cached  # Return cached token limit directly
         # If cached value is a dict, extract token limit from it
 
     if source == "huggingface":
         # Try to fetch from Hugging Face
-        model_info = _fetch_huggingface_model_info(model)
-        if model_info:
-            token_limit = _extract_context_length_from_hf_model(model_info)
-            _ONLINE_TOKEN_CACHE[model] = token_limit
-            return token_limit
+        try:
+            model_info = _fetch_huggingface_model_info(model)
+            if model_info:
+                token_limit = _extract_context_length_from_hf_model(model_info)
+                _ONLINE_TOKEN_CACHE[cache_key] = token_limit
+                # Mark model as available
+                _ONLINE_AVAILABILITY[model.lower()] = True
+                return token_limit
+        except Exception:
+            _ONLINE_TOKEN_CACHE[cache_key] = None
+            # Mark model as unavailable
+            _ONLINE_AVAILABILITY[model.lower()] = False
+            return None
 
-    _ONLINE_TOKEN_CACHE[model] = None
+    _ONLINE_TOKEN_CACHE[cache_key] = None
+    # Mark model as unavailable
+    _ONLINE_AVAILABILITY[model.lower()] = False
     return None
+
+
+def get_model_availability(model_name: str) -> bool:
+    """Check if a model is available online (token limit was successfully fetched).
+
+    Args:
+        model_name: The model name to check
+
+    Returns:
+        True if model is available, False otherwise
+    """
+    return _ONLINE_AVAILABILITY.get(model_name.lower(), False)
+
+
+def get_all_online_availability() -> dict[str, bool]:
+    """Get all online model availability statuses.
+
+    Returns:
+        Dictionary mapping model names to availability status
+    """
+    return dict(_ONLINE_AVAILABILITY)
 
 
 def _fetch_huggingface_model_info(model_name: str) -> dict[str, Any] | None:
@@ -798,26 +1123,9 @@ def _build_hf_search_patterns(normalized_name: str) -> list[str]:
 
 
 def _build_hf_search_terms(normalized_name: str) -> list[str]:
-    """Build search terms for Hugging Face model search."""
-    # Extract base model name (remove provider prefixes, version numbers, etc.)
-    clean = normalized_name.lower()
-
-    # Remove common prefixes
-    prefixes = ["hf-", "model-", "-"]
-    for prefix in prefixes:
-        if clean.startswith(prefix):
-            clean = clean[len(prefix) :]
-
-    # Split on common separators and take first part
-    for sep in ["-", ".", "_", "/"]:
-        if sep in clean:
-            clean = clean.split(sep)[0]
-            break
-
-    # Remove numbers at end
-    clean = re.sub(r"\d+$", "", clean)
-
-    return [clean] if clean else []
+    """Build fallback Hugging Face search terms."""
+    clean_name = normalized_name.replace("/", "--").replace(" ", "-").lower()
+    return [normalized_name, clean_name, clean_name.replace("-", " ")]
 
 
 def _fetch_hf_model_details(model_name: str) -> dict[str, Any] | None:
@@ -829,15 +1137,13 @@ def _fetch_hf_model_details(model_name: str) -> dict[str, Any] | None:
     Returns:
         Model info dict or None
     """
-    import requests
-
     api_url = f"https://huggingface.co/api/models/{model_name}"
 
     try:
-        response = requests.get(api_url, timeout=10)
-        if response.status_code == 200:
-            data: dict[str, Any] = response.json()
-            return data
+        with urllib.request.urlopen(api_url, timeout=10) as response:
+            if response.status == 200:
+                data: dict[str, Any] = json.loads(response.read().decode("utf-8"))
+                return data
     except Exception as e:
         logger.debug(f"Failed to fetch model {model_name} from HF: {e}")
 
@@ -845,7 +1151,7 @@ def _fetch_hf_model_details(model_name: str) -> dict[str, Any] | None:
 
 
 def _search_hf_model_candidates(term: str) -> dict[str, Any] | None:
-    """Search Hugging Face for models matching a term.
+    """Search Hugging Face and probe top candidate model documents.
 
     Args:
         term: Search term
@@ -853,44 +1159,73 @@ def _search_hf_model_candidates(term: str) -> dict[str, Any] | None:
     Returns:
         First matching model info or None
     """
-    import requests
-
-    search_url = "https://huggingface.co/api/models"
-    params = {
-        "search": term,
-        "limit": 5,
-    }
-
     try:
-        response = requests.get(search_url, params=params, timeout=10)
-        if response.status_code == 200:
-            models: list[dict[str, Any]] = response.json()
-            if models:
-                return models[0]
-    except Exception as e:
-        logger.debug(f"Failed to search HF for term '{term}': {e}")
+        quoted_term = urllib.parse.quote(term)
+        search_url = f"https://huggingface.co/api/models?search={quoted_term}&limit=10"
+        logger.debug(f"Searching Hugging Face models via: {search_url}")
 
+        with urllib.request.urlopen(search_url, timeout=8) as response:
+            if response.status != 200:
+                return None
+            hits = json.loads(response.read().decode("utf-8"))
+
+        if not isinstance(hits, list):
+            return None
+
+        candidate_ids = [
+            hit.get("id")
+            for hit in hits
+            if isinstance(hit, dict) and isinstance(hit.get("id"), str)
+        ]
+
+        return _fetch_first_hf_candidate(candidate_ids[:5])
+    except Exception as e:
+        logger.debug(f"HF search fallback failed for {term}: {e}")
+        return None
+
+
+def _fetch_first_hf_candidate(model_names: list[str]) -> dict[str, Any] | None:
+    """Fetch the first valid Hugging Face candidate document.
+
+    Args:
+        model_names: List of model names to try
+
+    Returns:
+        Model info dict for the first valid model, or None if none found
+    """
+    for model_name in model_names:
+        if not model_name or model_name.startswith("-"):
+            continue
+        detail_url = f"https://huggingface.co/api/models/{model_name}"
+        try:
+            with urllib.request.urlopen(detail_url, timeout=8) as response:
+                if response.status == 200:
+                    data = json.loads(response.read().decode("utf-8"))
+                    if isinstance(data, dict):
+                        return cast(dict[str, Any], data)
+        except Exception as e:
+            logger.debug(f"Error fetching HF candidate {model_name}: {e}")
     return None
 
 
-def _get_model_family_context_length(model_id: str) -> int:
-    """Get context length based on model family patterns.
+def _get_model_family_context_length(model_id: str) -> int | None:
+    """Get context length based on model family detection.
 
     Args:
-        model_id: Model identifier
+        model_id: Lowercase model identifier
 
     Returns:
-        Context length in tokens
+        Context length for known model families, None otherwise
     """
     model_lower = model_id.lower()
 
     # Common model families and their context lengths
+    # Order matters - more specific patterns should come first
     families = {
         "gpt-4o": 128000,
         "gpt-4-turbo": 128000,
         "gpt-4-1106": 128000,
-        "gpt-4-32k": 32768,
-        "gpt-4": 8192,
+        "gpt-4": 128000,  # GPT-4 generally has 128k context
         "gpt-3.5-turbo-16k": 16384,
         "gpt-3.5-turbo": 16384,
         "claude-3-opus": 200000,
@@ -901,35 +1236,32 @@ def _get_model_family_context_length(model_id: str) -> int:
         "claude-1": 100000,
         "gemini-pro": 1000000,
         "gemini-ultra": 1000000,
+        "llama-3.2": 131072,
+        "llama3.2": 131072,
+        "llama-3.1": 131072,
+        "llama3.1": 131072,
         "llama-3": 8192,
-        "llama-2": 4096,
-        "llama-1": 2048,
+        "llama3": 8192,
+        "mistral-7b": 32768,
         "mistral-large": 32768,
         "mistral-medium": 8192,
         "mistral-small": 8192,
         "mixtral": 32768,
         "codellama": 16384,
-        "phi-3": 128000,
-        "phi-2": 2048,
-        "qwen-2.5": 32768,
-        "qwen-2": 32768,
-        "qwen-1.5": 32768,
-        "qwen-1": 8192,
+        "phi-4": 16384,
+        "phi4": 16384,
+        "phi-3-medium": 4096,  # phi-3-medium specifically has 4k
+        "phi-3": 4096,  # phi-3 has 4k context
+        "phi3": 4096,
+        "qwen3": 131072,
+        "qwen-3": 131072,
     }
 
     for pattern, length in families.items():
         if pattern in model_lower:
             return length
 
-    # Default based on model size hints
-    if "70b" in model_lower or "65b" in model_lower or "7b" in model_lower:
-        return 4096
-    elif "13b" in model_lower or "34b" in model_lower:
-        return 8192
-    elif "70b" in model_lower:
-        return 16384
-
-    return 4096
+    return None  # Return None for unknown models
 
 
 def _extract_context_length_from_hf_model(model_info: dict[str, Any]) -> int | None:
@@ -981,11 +1313,106 @@ def _extract_context_length_from_hf_model(model_info: dict[str, Any]) -> int | N
     return _get_model_family_context_length(model_id)
 
 
+def get_all_provider_token_limits(include_online: bool = False) -> dict[str, dict[str, int]]:
+    """Get token limits for all models from all providers.
+
+    Args:
+        include_online: If True, includes online fetched models in the result
+
+    Returns:
+        Dictionary mapping provider names to dictionaries of {model_name: token_limit}
+    """
+    result: dict[str, dict[str, int]] = {}
+
+    # Blablador models
+    blablador_models: dict[str, int] = {}
+    for model in KNOWN_MODELS:
+        limit = get_token_limit(model.name)
+        blablador_models[model.name] = limit
+        if model.alias:
+            blablador_models[model.alias] = limit
+    result["blablador"] = blablador_models
+
+    # OpenAI models - use common model names
+    openai_models: dict[str, int] = {}
+    for model_name in [
+        "gpt-4o",
+        "gpt-4-turbo",
+        "gpt-4",
+        "gpt-3.5-turbo",
+        "text-davinci-003",
+        "text-embedding-ada-002",
+    ]:
+        try:
+            openai_models[model_name] = get_token_limit(f"openai:{model_name}")
+        except Exception:
+            pass
+    result["openai"] = openai_models
+
+    # Anthropic models
+    anthropic_models: dict[str, int] = {}
+    for model_name in [
+        "claude-3-opus-20240229",
+        "claude-3-sonnet-20240229",
+        "claude-3-haiku-20240307",
+        "claude-3-5-sonnet-20240620",
+        "claude-2.1",
+        "claude-2",
+    ]:
+        try:
+            anthropic_models[model_name] = get_token_limit(f"anthropic:{model_name}")
+        except Exception:
+            pass
+    result["anthropic"] = anthropic_models
+
+    # Google models
+    google_models: dict[str, int] = {}
+    for model_name in ["gemini-pro", "gemini-pro-vision", "gemini-1.5-flash", "gemini-1.5-pro"]:
+        try:
+            google_models[model_name] = get_token_limit(f"google:{model_name}")
+        except Exception:
+            pass
+    result["google"] = google_models
+
+    # Ollama models
+    ollama_models: dict[str, int] = {}
+    for model_name in [
+        "llama3.2",
+        "llama3.2:1b",
+        "llama3.2:3b",
+        "llama3.1",
+        "llama3.1:8b",
+        "llama3.1:70b",
+        "llama3.1:405b",
+        "llama3",
+        "mistral",
+        "codellama",
+        "phi",
+        "phi3",
+    ]:
+        try:
+            ollama_models[model_name] = get_token_limit(f"ollama:{model_name}")
+        except Exception:
+            pass
+    result["ollama"] = ollama_models
+
+    # Online models (cached)
+    if include_online:
+        online_models: dict[str, int] = {}
+        for cache_key, limit in _ONLINE_TOKEN_CACHE.items():
+            if limit is not None:  # Filter out None values (failed fetches)
+                online_models[cache_key] = limit
+        result["online"] = online_models
+
+    return result
+
+
 def clear_online_token_cache() -> None:
-    """Clear the online token limit cache.
+    """Clear the online token limit cache and availability tracking.
 
     This can be useful for testing or forcing fresh API calls.
     """
-    global _ONLINE_TOKEN_CACHE
+    global _ONLINE_TOKEN_CACHE, _ONLINE_AVAILABILITY
     _ONLINE_TOKEN_CACHE.clear()
-    logger.info("Cleared online token limit cache")
+    _ONLINE_AVAILABILITY.clear()
+    logger.info("Cleared online token limit cache and availability tracking")

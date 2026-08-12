@@ -918,8 +918,9 @@ class TestGetBlabladorTokenLimit:
         assert result == 32768
 
     def test_unknown_model(self):
+        # Unknown models return -1 to indicate "not found" (converted to DEFAULT_TOKEN_LIMIT by caller)
         result = _get_blablador_token_limit("totally-fake-model")
-        assert result == DEFAULT_TOKEN_LIMIT
+        assert result == -1
 
     def test_known_model_by_id(self):
         result = _get_blablador_token_limit("15")
