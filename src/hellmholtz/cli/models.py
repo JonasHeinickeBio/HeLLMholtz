@@ -194,7 +194,7 @@ def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
         result = sync_models(
             api_key=None,
             api_base=None,
-            auto_update=False,  # We're doing dry-run or manual review first
+            auto_update=not dry_run,  # Update config if not in dry-run mode
             dry_run=dry_run,
         )
 
