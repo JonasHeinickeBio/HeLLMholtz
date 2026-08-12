@@ -6,6 +6,7 @@ This package organizes CLI commands into logical groups:
 - models: Model management and monitoring (models, check, monitor)
 - integrations: Third-party integrations (lm_eval, proxy, bench_throughput)
 - manager: Blablador Model Manager and Config Exporters
+- setup: Setup and configuration commands
 """
 
 import typer
@@ -16,6 +17,7 @@ from hellmholtz.cli.common import configure_logging
 from hellmholtz.cli.integrations import register_integration_commands
 from hellmholtz.cli.model_manager import register_model_manager_commands
 from hellmholtz.cli.models import register_models_commands
+from hellmholtz.cli.setup import register_setup_commands
 
 __all__ = ["app", "main"]
 
@@ -30,6 +32,7 @@ def create_app() -> typer.Typer:
     register_models_commands(app)
     register_integration_commands(app)
     register_model_manager_commands(app)
+    register_setup_commands(app)
 
     return app
 

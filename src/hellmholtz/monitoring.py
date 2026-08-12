@@ -699,6 +699,7 @@ def monitor_models(
     api_base: str | None = None,
     update_yaml: bool = False,
     enhanced_report: bool = False,
+    auto_sync: bool = False,
 ) -> str:
     """Convenience function to monitor model availability.
 
@@ -709,10 +710,13 @@ def monitor_models(
         api_base: Optional API base URL override.
         update_yaml: Whether to update the YAML status file with current availability.
         enhanced_report: Whether to generate enhanced report with YAML status data.
+        auto_sync: Whether to automatically sync configuration with API models.
 
     Returns:
         The generated report content.
     """
+    from hellmholtz.providers.blablador_config import sync_models
+
     monitor = ModelAvailabilityMonitor(api_key=api_key, api_base=api_base)
 
     if update_yaml:
@@ -724,6 +728,20 @@ def monitor_models(
     else:
         analysis = monitor.analyze_availability(test_accessibility=test_accessibility)
         report = monitor.generate_report(analysis, test_accessibility=test_accessibility)
+
+    if auto_sync:
+        print("\n🔄 Running automatic model configuration sync...")
+        sync_result = sync_models(
+            api_key=api_key,
+            api_base=api_base,
+            auto_update=True,
+            dry_run=False,
+        )
+        print(f"Sync status: {sync_result['summary']['sync_status']}")
+        if sync_result["summary"].get("new_count", 0) > 0:
+            print(f"Added {sync_result['summary']['new_count']} new models")
+        if sync_result["summary"].get("removed_count", 0) > 0:
+            print(f"Removed {sync_result['summary']['removed_count']} unavailable models")
 
     if save_report:
         filepath = monitor.save_report(report)

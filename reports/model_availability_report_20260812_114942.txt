@@ -1,0 +1,64 @@
+📊 Blablador Model Availability Report
+==================================================
+Generated: 2026-08-12 11:49:41
+
+📈 Summary:
+  • API Models: 32
+  • Configured Models: 25
+  • Available & Configured: 15
+  • Configured but Unavailable: 10
+  • Available but Unconfigured: 17
+
+✅ Available & Configured Models:
+  • Apertus-8B-Instruct-2509
+  • faster-whisper-large-v3
+  • Qwen3.6-35B-A3B-FP8
+  • alias-fast
+  • alias-large
+  • alias-huge
+  • alias-code
+  • alias-apertus
+  • alias-eve
+  • alias-qwen3-8b-embeddings
+  • alias-qwen36-35b
+  • alias-embeddings
+  • gpt-3.5-turbo
+  • text-davinci-003
+  • text-embedding-ada-002
+
+⚠️  Configured but Not Available:
+  • EVE-Instruct (API ID: 20 - EVE-Instruct - Expert Earth Observation and Earth Science domains)
+  • GPT-OSS-120b (API ID: 01 - GPT-OSS-120b - Open model released by OpenAI in August 2025)
+  • MiniMax-M2.7 (API ID: 01 - MiniMax-M2.7 - MiniMax best model as of April, 2026)
+  • Qwen3.5-122B-A10B-FP8 (API ID: 02 - Qwen3.5-122B-A10B-FP8 - General-purpose large multimodal model)
+  • Qwen3-Coder-Next-FP8 (API ID: 09 - Qwen3-Coder-Next-FP8 - Code model from Feb 2026)
+  • Qwen3.5-35B-A3B (API ID: 07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026)
+  • Mis (API ID: 999 - Mis)
+  • eve-instruct-4gpu (API ID: eve-instruct-4gpu)
+  • nemotron-3-nano-omni-30b-bf16-262k-8gpu (API ID: nemotron-3-nano-omni-30b-bf16-262k-8gpu)
+  • alias-qwen35-35b-a3b (API ID: alias-qwen35-35b-a3b)
+
+🔍 Available but Not Configured:
+  • 20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains - model
+  • 01 - GPT-OSS-120b - an open model released by OpenAI in August 2025 - model
+  • 01 - MiniMax-M2.7 - our best model as of April, 2026 - model
+  • 02 - Qwen3.5-122B-A10B-FP8, general purpose large model - model
+  • 09 - Qwen3-Coder-Next-FP8 from Feb 2026 - model
+  • 10 - Muse Glimmer 30b - the newest META model as of August 11, 2026 - model
+  • 10 - Qwen3.5-397B-A17B - model
+  • 90 - MiniMax-M3-AWQ-INT4 (strube1-booster) - model
+  • 99 - GLM-5.2-AWQ-INT4 - model
+  • DeepSeek-V4-Flash-0731 - model
+  • Kimi-K3-1M - model
+  • alias-deepseek-v4-flash-0731 - model
+  • alias-glm-huge - model
+  • alias-kimi-k3-1m - model
+  • alias-minimax-m3-awq-int4 - model
+  • alias-muse - model
+  • alias-qwen-huge - model
+
+💡 Recommendations:
+  • Review configured models that are no longer available
+  • Consider removing or updating these configurations
+  • Consider adding newly available models to configuration
+  • Test new models for compatibility and performance

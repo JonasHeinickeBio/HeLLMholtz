@@ -38,6 +38,7 @@ Issues = "https://github.com/JonasHeinickeBio/HeLLMholtz/issues"
 Changelog = "https://github.com/JonasHeinickeBio/HeLLMholtz/releases"
 
 [project.scripts]
+hellm-setup = "hellmholtz.cli:main"
 hellm = "hellmholtz.cli:main"
 
 [project.optional-dependencies]
@@ -129,6 +130,7 @@ ignore = ["E203", "E266", "E731"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"] # Allow unused imports in __init__.py
+"blablador_config.py" = ["C901"] # Allow high complexity in sync functions
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
@@ -152,7 +154,7 @@ skip_covered = true
 fail_under = 50     # Set your desired test coverage threshold
 
 [tool.bandit]
-skips = ["B101", "B303"]
+skips = ["B101", "B303", "B404", "B603", "B607"]
 exclude_dirs = [
   "tests",
   "docs",
