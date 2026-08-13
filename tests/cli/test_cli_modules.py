@@ -298,17 +298,22 @@ class TestModelsCommands:
         mock_list.return_value = [mock_model]
         mock_tokens.return_value = 128000
 
-        result = runner.invoke(app, ["models"])
+        result = runner.invoke(app, ["models", "list"])
 
         assert result.exit_code == 0
         assert "Test Model" in result.output
+        # get_token_limit is called for all models in both config and API
+        assert mock_tokens.called
+        # Verify it was called with "Test Model" (at least once)
+        calls = mock_tokens.call_args_list
+        assert any(call[0][0] == "Test Model" for call in calls)
 
     @patch("hellmholtz.client.check_model_availability")
     def test_check_command_available(self, mock_check: MagicMock, runner: CliRunner) -> None:
         """Test check command with available model."""
         mock_check.return_value = True
 
-        result = runner.invoke(app, ["check", "openai:gpt-4o"])
+        result = runner.invoke(app, ["models", "check", "openai:gpt-4o"])
 
         assert result.exit_code == 0
         assert "available" in result.output.lower()
@@ -318,7 +323,7 @@ class TestModelsCommands:
         """Test check command with unavailable model."""
         mock_check.return_value = False
 
-        result = runner.invoke(app, ["check", "openai:gpt-4o"])
+        result = runner.invoke(app, ["models", "check", "openai:gpt-4o"])
 
         assert result.exit_code == 1
 
@@ -378,15 +383,14 @@ class TestCLIIntegration:
         result = runner.invoke(app, ["--help"])
 
         assert result.exit_code == 0
-        # Should list all command groups
+        # Should list all command groups (top-level only, subcommands like "models list" not shown)
         assert "chat" in result.output
         assert "bench" in result.output
         assert "report" in result.output
         assert "models" in result.output
-        assert "check" in result.output
-        assert "monitor" in result.output
         assert "lm-eval" in result.output
         assert "proxy" in result.output
+        # monitor is in the description, not a top-level command
 
     def test_invalid_command(self, runner: CliRunner) -> None:
         """Test that invalid command exits with error."""

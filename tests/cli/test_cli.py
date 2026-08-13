@@ -269,13 +269,17 @@ class TestCLI:
         mock_list_models.return_value = [mock_model]
         mock_get_token_limit.return_value = 128000
 
-        result = runner.invoke(app, ["models"])
+        result = runner.invoke(app, ["models", "list"])
 
         assert result.exit_code == 0
         assert "Test Model" in result.output
         assert "125k" in result.output  # 128000 / 1024 = 125
         mock_list_models.assert_called_once()
-        mock_get_token_limit.assert_called_once_with("Test Model")
+        # get_token_limit is called for all models in both config and API
+        assert mock_get_token_limit.called
+        # Verify it was called with "Test Model" (at least once)
+        calls = mock_get_token_limit.call_args_list
+        assert any(call[0][0] == "Test Model" for call in calls)
 
     @patch("hellmholtz.evaluation_analysis.analyze_evaluations_cli")
     def test_analyze_command(self, mock_analyze: MagicMock, runner: CliRunner, temp_results_file: Path) -> None:

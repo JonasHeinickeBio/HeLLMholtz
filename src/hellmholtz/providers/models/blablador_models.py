@@ -213,9 +213,9 @@ KNOWN_MODELS: list[BlabladorModel] = [
         id="",
         name="alias-code",
         alias="code",
-        description="Optimized for coding tasks",
+        description="Optimized for coding tasks (128k context, 32768 output)",
         source="Blablador",
-        max_context_tokens=262144,  # 256k native (Qwen3-Coder family), extensible up to 1M
+        max_context_tokens=131072,
     ),
     BlabladorModel(
         id="",  # No numeric ID, uses name directly
@@ -298,15 +298,6 @@ KNOWN_MODELS: list[BlabladorModel] = [
         description="Legacy text embedding model",
         source="Blablador",
         max_context_tokens=8192,  # 8k typical for embeddings
-    ),
-    # Test model with formatted ID
-    BlabladorModel(
-        id="0",
-        name="Ministral-3-14B-Instruct-2512",
-        description="The latest Ministral from Dec.2.2025",
-        source="Blablador",
-        max_context_tokens=131072,  # 128k context for ministral
-        available=False,
     ),
     BlabladorModel(
         id="",  # No numeric ID, uses name directly

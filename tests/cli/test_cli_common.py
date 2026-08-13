@@ -68,6 +68,13 @@ class TestFormatTokenLimit:
     def test_odd_k_value(self) -> None:
         assert format_token_limit(3072) == "3k"
 
+    def test_none_value(self) -> None:
+        assert format_token_limit(None) == "0"
+
+    def test_huge_value(self) -> None:
+        # 100 * 1024 * 1024 = 104857600 bytes = 100M
+        assert format_token_limit(104857600) == "100M"
+
 
 class TestHandleError:
     """Tests for handle_error."""

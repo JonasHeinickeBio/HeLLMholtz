@@ -340,7 +340,7 @@ class TestBlabladorAPI:
             assert models[0].source == "Blablador"
 
             assert models[1].id == "2"
-            assert models[1].name == "Qwen3 235"  # From KNOWN_MODELS
+            assert models[1].name == "Ministral-3-14B"  # From API response
             assert models[1].description == "Ministral-3-14B model"  # Keeps API description
 
     @patch("httpx.get")
