@@ -54,8 +54,10 @@ def configure_logging() -> None:
 # ============================================================================
 
 
-def format_token_limit(token_limit: int) -> str:
+def format_token_limit(token_limit: int | None) -> str:
     """Format token limit in human-readable form using binary (1024) units."""
+    if token_limit is None:
+        return "0"
     if token_limit < 1024:
         return str(token_limit)
 

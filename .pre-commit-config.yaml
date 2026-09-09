@@ -24,7 +24,7 @@ repos:
         types: [python]
         pass_filenames: false
         language_version: python3.12
-        args: [-r, ./src, --exclude, "tests,.venv,.git,.mypy_cache,.pytest_cache"]
+        args: [-c, pyproject.toml, -r, ./src, --exclude, "tests,.venv,.git,.mypy_cache,.pytest_cache"]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0

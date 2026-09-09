@@ -87,8 +87,8 @@ class TestGetModelByName:
 
     def test_get_model_by_id(self) -> None:
         """Test retrieving a model by its ID."""
-        # Test with the full formatted ID
-        model = get_model_by_name("0 - Ministral-3-14B-Instruct-2512 - The latest Ministral from Dec.2.2025")
+        # Test with the name
+        model = get_model_by_name("Ministral-3-14B-Instruct-2512")
         assert model is not None
         assert model.name == "Ministral-3-14B-Instruct-2512"
 
