@@ -1,7 +1,7 @@
 # Test Structure - 2026-08-13
 
-**Project**: helmholtz_llm_suite  
-**Branch**: `feature/blablador-model-manager`  
+**Project**: helmholtz_llm_suite
+**Branch**: `feature/blablador-model-manager`
 **Date**: 2026-08-13
 
 ---
@@ -247,7 +247,7 @@ class TestNewCommand:
         # Test successful execution
         result = new_command_impl("test")
         assert result is not None
-    
+
     def test_new_command_with_invalid_input(self):
         # Test error handling
         with pytest.raises(ValueError):

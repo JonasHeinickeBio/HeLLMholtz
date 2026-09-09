@@ -2,9 +2,9 @@
 
 ## Summary
 
-**Date**: 2026-08-13  
-**Project**: helmholtz_llm_suite  
-**Status**: ✅ Complete  
+**Date**: 2026-08-13
+**Project**: helmholtz_llm_suite
+**Status**: ✅ Complete
 **Branch**: `feature/blablador-model-manager`
 
 All tests passing with **82% code coverage**, exceeding the 80% target.
@@ -55,7 +55,7 @@ Passed: 1078
 XFAIL: 1 (expected failure)
 ```
 
-**XFAIL Test**: `tests/benchmark/test_stats.py::TestGenerateInsights::test_empty`  
+**XFAIL Test**: `tests/benchmark/test_stats.py::TestGenerateInsights::test_empty`
 **Reason**: `generate_insights` crashes on empty results (known bug)
 
 ---
@@ -95,7 +95,7 @@ XFAIL: 1 (expected failure)
 #### Lower Coverage Modules (Future Improvement)
 
 - `cli/models.py`: 61% - Main CLI models command logic
-- `cli/setup.py`: 18% - Setup command implementation  
+- `cli/setup.py`: 18% - Setup command implementation
 - `providers/blablador_config.py`: 49% - Model configuration and lookup logic
 
 ---
@@ -196,8 +196,8 @@ poetry run mypy src/
 
 ## Git Changes
 
-**Commit**: `f981537`  
-**Branch**: `feature/blablador-model-manager`  
+**Commit**: `f981537`
+**Branch**: `feature/blablador-model-manager`
 **Status**: ✅ Pushed to remote
 
 ---

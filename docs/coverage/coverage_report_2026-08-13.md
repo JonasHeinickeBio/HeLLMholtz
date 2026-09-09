@@ -1,7 +1,7 @@
 # Code Coverage Report - 2026-08-13
 
-**Session**: Test reorganization and coverage improvement  
-**Branch**: `feature/blablador-model-manager`  
+**Session**: Test reorganization and coverage improvement
+**Branch**: `feature/blablador-model-manager`
 **Date**: 2026-08-13
 
 ---
@@ -93,8 +93,8 @@
 
 ### 1. providers/blablador_config.py (49%)
 
-**Missed Lines**: 308  
-**Issues**: 
+**Missed Lines**: 308
+**Issues**:
 - Large block of try/except blocks for model lookup
 - Complex configuration loading logic
 - Multiple fallback mechanisms
@@ -106,7 +106,7 @@
 
 ### 2. providers/blablador.py (77%)
 
-**Missed Lines**: 26  
+**Missed Lines**: 26
 **Issues**:
 - API error handling paths
 - Response parsing edge cases
@@ -118,7 +118,7 @@
 
 ### 3. cli/models.py (61%)
 
-**Missed Lines**: ~50 (estimated)  
+**Missed Lines**: ~50 (estimated)
 **Issues**:
 - Table rendering logic
 - Column width calculations
@@ -131,7 +131,7 @@
 
 ### 4. cli/setup.py (18%)
 
-**Missed Lines**: ~80 (estimated)  
+**Missed Lines**: ~80 (estimated)
 **Issues**:
 - Interactive prompts
 - Configuration file generation
