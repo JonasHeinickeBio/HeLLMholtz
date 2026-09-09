@@ -3,9 +3,9 @@ import os
 import time
 from typing import Any
 
-from aisuite.provider import LLMError, Provider
 import openai
 
+from aisuite.provider import LLMError, Provider
 from hellmholtz.providers.blablador import list_models
 from hellmholtz.providers.blablador_config import KNOWN_MODELS
 

@@ -15,7 +15,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
-from click.exceptions import Exit
+from typer.exceptions import Exit
 from typer.testing import CliRunner
 
 from hellmholtz.cli import app
