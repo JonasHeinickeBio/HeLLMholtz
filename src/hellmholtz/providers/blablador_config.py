@@ -8,6 +8,7 @@ This file contains the configuration management code including:
 Model definitions are in `blablador_models.py`.
 """
 
+import contextlib
 import json
 import logging
 import os
@@ -1140,7 +1141,7 @@ def _fetch_hf_model_details(model_name: str) -> dict[str, Any] | None:
     api_url = f"https://huggingface.co/api/models/{model_name}"
 
     try:
-        with urllib.request.urlopen(api_url, timeout=10) as response:
+        with urllib.request.urlopen(api_url, timeout=10) as response:  # noqa: B310  # nosec
             if response.status == 200:
                 data: dict[str, Any] = json.loads(response.read().decode("utf-8"))
                 return data
@@ -1164,7 +1165,7 @@ def _search_hf_model_candidates(term: str) -> dict[str, Any] | None:
         search_url = f"https://huggingface.co/api/models?search={quoted_term}&limit=10"
         logger.debug(f"Searching Hugging Face models via: {search_url}")
 
-        with urllib.request.urlopen(search_url, timeout=8) as response:
+        with urllib.request.urlopen(search_url, timeout=8) as response:  # nosec
             if response.status != 200:
                 return None
             hits = json.loads(response.read().decode("utf-8"))
@@ -1198,7 +1199,7 @@ def _fetch_first_hf_candidate(model_names: list[str]) -> dict[str, Any] | None:
             continue
         detail_url = f"https://huggingface.co/api/models/{model_name}"
         try:
-            with urllib.request.urlopen(detail_url, timeout=8) as response:
+            with urllib.request.urlopen(detail_url, timeout=8) as response:  # nosec
                 if response.status == 200:
                     data = json.loads(response.read().decode("utf-8"))
                     if isinstance(data, dict):
@@ -1343,10 +1344,8 @@ def get_all_provider_token_limits(include_online: bool = False) -> dict[str, dic
         "text-davinci-003",
         "text-embedding-ada-002",
     ]:
-        try:
+        with contextlib.suppress(Exception):
             openai_models[model_name] = get_token_limit(f"openai:{model_name}")
-        except Exception:
-            pass
     result["openai"] = openai_models
 
     # Anthropic models
@@ -1359,19 +1358,15 @@ def get_all_provider_token_limits(include_online: bool = False) -> dict[str, dic
         "claude-2.1",
         "claude-2",
     ]:
-        try:
+        with contextlib.suppress(Exception):
             anthropic_models[model_name] = get_token_limit(f"anthropic:{model_name}")
-        except Exception:
-            pass
     result["anthropic"] = anthropic_models
 
     # Google models
     google_models: dict[str, int] = {}
     for model_name in ["gemini-pro", "gemini-pro-vision", "gemini-1.5-flash", "gemini-1.5-pro"]:
-        try:
+        with contextlib.suppress(Exception):
             google_models[model_name] = get_token_limit(f"google:{model_name}")
-        except Exception:
-            pass
     result["google"] = google_models
 
     # Ollama models
@@ -1390,18 +1385,17 @@ def get_all_provider_token_limits(include_online: bool = False) -> dict[str, dic
         "phi",
         "phi3",
     ]:
-        try:
+        with contextlib.suppress(Exception):
             ollama_models[model_name] = get_token_limit(f"ollama:{model_name}")
-        except Exception:
-            pass
     result["ollama"] = ollama_models
 
     # Online models (cached)
     if include_online:
         online_models: dict[str, int] = {}
-        for cache_key, limit in _ONLINE_TOKEN_CACHE.items():
-            if limit is not None:  # Filter out None values (failed fetches)
-                online_models[cache_key] = limit
+        for _cache_key, maybe_limit in _ONLINE_TOKEN_CACHE.items():
+            if maybe_limit is None:
+                continue
+            online_models[_cache_key] = maybe_limit
         result["online"] = online_models
 
     return result

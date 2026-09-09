@@ -1,9 +1,8 @@
 from collections.abc import Mapping, Sequence
 import logging
-from typing import Any, cast
+from typing import Any
 
 import aisuite as ai
-
 from hellmholtz.core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -47,10 +46,10 @@ class ClientManager:
                 if hasattr(original_get_supported_providers, "cache_clear"):
                     original_get_supported_providers.cache_clear()
 
-                providers = cast(set[str], original_get_supported_providers())
+                providers = original_get_supported_providers()
                 return providers | {"blablador"}
 
-            ProviderFactory.get_supported_providers = patched_get_supported_providers
+            ProviderFactory.get_supported_providers = patched_get_supported_providers  # type: ignore[assignment]
 
             # Standard client using env vars
             # We configure blablador provider here so it's available in the default client

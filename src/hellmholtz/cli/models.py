@@ -127,7 +127,7 @@ def _available_impl() -> None:
         table.add_column("Tokens", style="yellow", width=10)
         table.add_column("Description", style="white")
 
-        for model in sorted(api_models, key=lambda m: (m.name or "")):
+        for model in sorted(api_models, key=lambda m: m.name or ""):
             token_limit = get_token_limit(model.name)
             token_display = format_token_limit(token_limit)
 
@@ -292,7 +292,7 @@ def _auto_agent_impl(test_accessibility: bool) -> None:
         handle_error(e, "Automatic model agent error")
 
 
-def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
+def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:  # noqa: C901
     """Implementation for sync command."""
     from rich.console import Console
     from rich.panel import Panel
@@ -342,12 +342,6 @@ def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
 
         # Show detailed comparison
         if result.get("api_models") or result.get("config_models"):
-            # Get API model names
-            api_model_names = set(result.get("api_models", []))
-
-            # Get configured model names (from config_models key)
-            config_model_names = set(result.get("config_models", []))
-
             # Build comparison table
             table = Table(title="_comparison of API vs Config")
             table.add_column("Status", style="bold", width=12)
@@ -390,7 +384,8 @@ def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
                 console.print(
                     Panel(
                         "[yellow]⚠️  This is a dry-run. No changes will be made.[/yellow]\n"
-                        "[green]💡 Use 'hellm models sync' without --dry-run to apply changes[/green]",
+                        "[green]💡 Use 'hellm models sync' without --dry-run "
+                        "to apply changes[/green]",
                         expand=False,
                     )
                 )
@@ -414,7 +409,7 @@ def _sync_impl(dry_run: bool, test_accessibility: bool) -> None:
             else:
                 console.print(
                     Panel(
-                        "[yellow]⚠️  Run with --dry-run to preview changes before applying[/yellow]\n"
+                        "[yellow]⚠️  Run with --dry-run to preview changes before applying\n"
                         "[green]💡 Configuration sync completed.[/green]",
                         expand=False,
                     )
