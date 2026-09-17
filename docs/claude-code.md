@@ -63,6 +63,13 @@ claude
 `--name claude` is optional — without it, the alias is the full model string
 (`openai:gpt-4o`), which is what Claude Code sends as the model name.
 
+**Tip: name the alias after a model in Claude Code's own catalog** (e.g.
+`--name claude-sonnet-4-6`). Claude Code recognizes catalog names and applies
+the correct context window. Any other alias (e.g. a plain `claude`) still
+works, but Claude Code prints an `unrecognized_model` notice and assumes a
+200k-token context window. The alias is otherwise arbitrary — the proxy maps
+it to the upstream model internally.
+
 ## Manual master key
 
 Generate or provide your own key instead of the auto-generated one:
@@ -137,6 +144,12 @@ repository. If your team shares a proxy, give each member their own key.
   `ollama:llama3.2`, `blablador:…`).
 - Claude Code's small/fast background model also uses `ANTHROPIC_MODEL` via
   the proxy, so the same model handles everything.
+- **Prefer a catalog name for the alias** (e.g. `--name claude-sonnet-4-6`):
+  Claude Code then applies the model's real context window. With a non-catalog
+  alias it still works but logs `[claude-code:unrecognized_model]` and assumes
+  a 200k context. To override that assumption without renaming, set
+  `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to the upstream model's real window, or
+  `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1`.
 
 ## Caveats
 

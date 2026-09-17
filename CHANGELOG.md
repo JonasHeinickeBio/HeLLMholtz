@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New [Claude Code guide](docs/claude-code.md)
 - Updated [Usage](docs/usage.md) proxy section with all available flags
+- Claude Code guide: recommend naming the `--name` alias after a model in
+  Claude Code's catalog (e.g. `claude-sonnet-4-6`) so the CLI applies the
+  correct context window instead of logging `unrecognized_model` and assuming
+  200k tokens; includes `CLAUDE_CODE_MAX_CONTEXT_TOKENS` workaround
 
 ## [0.4.0] - 2026-06-03
 
