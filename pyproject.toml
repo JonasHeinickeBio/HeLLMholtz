@@ -43,7 +43,7 @@ hellm = "hellmholtz.cli:main"
 
 [project.optional-dependencies]
 eval = ["lm-eval"]
-proxy = ["litellm"]
+proxy = ["litellm[proxy]"]
 reporting = ["matplotlib", "scipy", "seaborn"]
 
 [tool.poetry]
@@ -58,7 +58,7 @@ typer = "^0.27.2"
 jinja2 = "^3.1.6"
 requests = "^2.34.2"
 lm-eval = { version = "^0.4.13", optional = true }
-litellm = { version = "^1.100.0", optional = true }
+litellm = { version = "^1.100.0", extras = ["proxy"], optional = true }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"

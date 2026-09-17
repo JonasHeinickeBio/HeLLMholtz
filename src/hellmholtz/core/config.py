@@ -11,12 +11,24 @@ USER_CONFIG_FILE = USER_CONFIG_DIR / ".env"
 
 def _load_user_config() -> None:
     """Load user-level configuration if available."""
+    # Real (non-empty) environment variables take precedence over .env files,
+    # so remember them before the .env files get a chance to clobber them.
+    preexisting = {k: v for k, v in os.environ.items() if v}
+
     # First, try to load from user config directory
     if USER_CONFIG_FILE.exists():
         load_dotenv(USER_CONFIG_FILE, override=False)
 
     # Then load project-local .env with override=True so it replaces user config
     load_dotenv(override=True)
+
+    # Restore real environment values that a .env file replaced with an empty
+    # one (e.g. a placeholder ``OPENAI_API_KEY=""`` must not wipe out a key
+    # exported in the shell - this matters for ``hellm proxy``, where the
+    # litellm subprocess inherits the resolved environment).
+    for key, value in preexisting.items():
+        if not os.environ.get(key):
+            os.environ[key] = value
 
 
 # Load configuration with user-level support

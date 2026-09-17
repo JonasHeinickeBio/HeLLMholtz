@@ -11,7 +11,8 @@ from unittest.mock import patch
 
 import pytest
 
-from hellmholtz.core.config import USER_CONFIG_FILE, get_settings
+from hellmholtz.core import config
+from hellmholtz.core.config import USER_CONFIG_FILE, get_settings, _load_user_config
 
 
 class TestSettings:
@@ -167,3 +168,68 @@ class TestSettings:
         """Test that USER_CONFIG_FILE points to correct location."""
         expected_path = Path.home() / ".config" / "hellmholtz" / ".env"
         assert str(USER_CONFIG_FILE) == str(expected_path)
+
+
+class TestLoadUserConfig:
+    """Test suite for _load_user_config .env loading behavior."""
+
+    @pytest.fixture(autouse=True)
+    def project_dir(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> Path:
+        """Isolate .env loading from the real user config and repo .env.
+
+        python-dotenv discovers the project file relative to the source tree
+        (not the CWD), so the project-layer ``load_dotenv()`` call is
+        redirected to a temp .env instead of chdir-ing.
+        """
+        project_dir = tmp_path / "project"
+        project_dir.mkdir()
+        monkeypatch.setattr(config, "USER_CONFIG_FILE", tmp_path / "user.env")
+
+        real_load_dotenv = config.load_dotenv
+
+        def load_dotenv(dotenv_path=None, override: bool = False, **kwargs: object):
+            if dotenv_path is None:  # project-layer call
+                dotenv_path = project_dir / ".env"
+            return real_load_dotenv(dotenv_path, override=override, **kwargs)
+
+        monkeypatch.setattr(config, "load_dotenv", load_dotenv)
+        return project_dir
+
+    def test_empty_env_value_does_not_clobber_real_env(
+        self, monkeypatch: pytest.MonkeyPatch, project_dir: Path
+    ) -> None:
+        """A real (non-empty) environment variable survives an empty .env
+        placeholder - e.g. ``OPENAI_API_KEY=""`` must not wipe out a key
+        exported in the shell (critical for ``hellm proxy`` upstream keys)."""
+        (project_dir / ".env").write_text("SOME_API_KEY=\n")
+        monkeypatch.setenv("SOME_API_KEY", "real-key")
+
+        _load_user_config()
+
+        assert os.environ["SOME_API_KEY"] == "real-key"
+
+    def test_nonempty_env_value_still_overrides(
+        self, monkeypatch: pytest.MonkeyPatch, project_dir: Path
+    ) -> None:
+        """A non-empty project .env value still replaces the environment
+        value (documented precedence: project .env > user config)."""
+        (project_dir / ".env").write_text("SOME_API_KEY=from-dotenv\n")
+        monkeypatch.setenv("SOME_API_KEY", "from-shell")
+
+        _load_user_config()
+
+        assert os.environ["SOME_API_KEY"] == "from-dotenv"
+
+    def test_missing_variable_filled_from_env_file(
+        self, monkeypatch: pytest.MonkeyPatch, project_dir: Path
+    ) -> None:
+        """Variables absent from the environment are loaded from the project
+        .env as before."""
+        (project_dir / ".env").write_text("SOME_MODEL=openai:gpt-4o\n")
+        monkeypatch.delenv("SOME_MODEL", raising=False)
+
+        _load_user_config()
+
+        assert os.environ["SOME_MODEL"] == "openai:gpt-4o"

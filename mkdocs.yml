@@ -9,6 +9,7 @@ nav:
   - Installation: installation.md
   - Configuration: configuration.md
   - Usage: usage.md
+  - Claude Code: claude-code.md
   - Available Models: models.md
   - Model Monitoring: monitoring.md
   - Publishing: publishing.md

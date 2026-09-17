@@ -129,11 +129,30 @@ hellm lm-eval --model openai:gpt-4o --tasks mmlu --limit 10
 
 ### LiteLLM Proxy
 
-Start an OpenAI-compatible proxy server (requires `[proxy]` extra):
+Start a local proxy server that exposes a model through both an
+OpenAI-compatible (`POST /v1/chat/completions`) and an Anthropic-compatible
+(`POST /v1/messages`) endpoint (requires `[proxy]` extra):
 
 ```bash
-hellm proxy --model ollama:llama3.2 --port 4000
+# Simple proxy
+hellm proxy ollama:llama3.2 --port 4000
+
+# Expose a model under an alias and point Claude Code at it
+hellm proxy openai:gpt-4o --name claude --claude-code
 ```
+
+| Flag | Description |
+| ---- | ----------- |
+| `--port` | Port to listen on (default `4000`) |
+| `--host` | Host to bind the proxy to (default `127.0.0.1`) |
+| `--name` | Alias to expose the model under |
+| `--master-key` | Proxy auth key (or set `LITELLM_MASTER_KEY`) |
+| `--config` | Use an existing LiteLLM config file |
+| `--claude-code` | Print the Claude Code snippet; auto-generates a master key |
+| `--debug` | Run the proxy in debug mode |
+
+See [Claude Code](claude-code.md) for the full guide on using the proxy with
+Claude Code.
 
 ## Python API
 

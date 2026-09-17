@@ -235,7 +235,16 @@ class TestCLI:
         result = runner.invoke(app, ["proxy", "openai:gpt-4o"])
 
         assert result.exit_code == 0
-        mock_start_proxy.assert_called_once_with("openai:gpt-4o", port=4000, debug=False)
+        mock_start_proxy.assert_called_once_with(
+            "openai:gpt-4o",
+            port=4000,
+            config_path=None,
+            debug=False,
+            host="127.0.0.1",
+            model_name=None,
+            master_key=None,
+            claude_code=False,
+        )
 
     @patch("hellmholtz.benchmark.run_throughput_benchmark")
     def test_bench_throughput_command(self, mock_run_throughput: MagicMock, runner: CliRunner) -> None:

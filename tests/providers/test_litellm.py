@@ -13,7 +13,7 @@ class TestStartProxy:
         mock_subprocess.run.return_value = MagicMock(returncode=0)
         start_proxy("gpt-4")
         mock_subprocess.run.assert_called_once_with(
-            ["litellm", "--model", "gpt-4", "--port", "4000"],
+            ["litellm", "--model", "gpt-4", "--port", "4000", "--host", "127.0.0.1"],
             check=True,
         )
 

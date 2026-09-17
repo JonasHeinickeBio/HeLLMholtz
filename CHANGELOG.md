@@ -5,6 +5,41 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-09-17
+
+### Added
+
+- **Claude Code support for the built-in proxy**: `hellm proxy <model> --claude-code`
+  auto-generates a master key and prints a shell snippet that points Claude Code
+  at the proxy via `ANTHROPIC_BASE_URL`, so any routed model (OpenAI, Gemini,
+  Ollama, Blablador, ...) works as an Anthropic-compatible endpoint
+- **New proxy flags**: `--host`, `--name`, `--master-key`, `--config`, `--claude-code`
+- **Automatic proxy config generation**: `--name`/`--master-key` (or the
+  `LITELLM_MASTER_KEY` environment variable) produce a temporary LiteLLM config
+  file that is cleaned up when the proxy stops
+- **docs/claude-code.md**: complete guide for running Claude Code against the proxy
+
+### Changed
+
+- **CLI**: `proxy` options `--port` and `--debug` are now options; passing them
+  positionally is no longer supported (minor breaking change)
+- **Packaging**: the optional `proxy` extra now installs `litellm[proxy]` so the
+  proxy server dependencies (e.g. `websockets`, `uvicorn`) are present; the
+  generated config rewrites `provider:model` to the config-compatible
+  `provider/model` form (the LiteLLM CLI accepts both, but its config loader
+  does not recognize the colon form)
+- **Config loading**: a `.env` file can no longer replace a non-empty
+  environment variable with an empty one (e.g. a placeholder
+  `OPENAI_API_KEY=""` in the project `.env` no longer wipes out a key exported
+  in the shell — previously this silently broke `hellm proxy` upstream calls).
+  Non-empty `.env` values keep the documented precedence (project `.env` >
+  user config).
+
+### Documentation
+
+- New [Claude Code guide](docs/claude-code.md)
+- Updated [Usage](docs/usage.md) proxy section with all available flags
+
 ## [0.4.0] - 2026-06-03
 
 ### Added

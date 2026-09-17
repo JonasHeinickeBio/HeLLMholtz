@@ -52,19 +52,88 @@ class TestProxyImpl:
     @patch("hellmholtz.cli.integrations.handle_error")
     @patch("hellmholtz.integrations.litellm.start_proxy")
     def test_starts_proxy_with_defaults(self, mock_start: MagicMock, mock_err: MagicMock) -> None:
-        _proxy_impl("openai:gpt-4o", port=4000, debug=False)
-        mock_start.assert_called_once_with("openai:gpt-4o", port=4000, debug=False)
+        _proxy_impl(
+            "openai:gpt-4o",
+            port=4000,
+            host="127.0.0.1",
+            name=None,
+            master_key=None,
+            config=None,
+            claude_code=False,
+            debug=False,
+        )
+        mock_start.assert_called_once_with(
+            "openai:gpt-4o",
+            port=4000,
+            config_path=None,
+            debug=False,
+            host="127.0.0.1",
+            model_name=None,
+            master_key=None,
+            claude_code=False,
+        )
 
     @patch("hellmholtz.cli.integrations.handle_error")
     @patch("hellmholtz.integrations.litellm.start_proxy")
     def test_starts_proxy_with_debug(self, mock_start: MagicMock, mock_err: MagicMock) -> None:
-        _proxy_impl("model", port=8080, debug=True)
-        mock_start.assert_called_once_with("model", port=8080, debug=True)
+        _proxy_impl(
+            "model",
+            port=8080,
+            host="127.0.0.1",
+            name=None,
+            master_key=None,
+            config=None,
+            claude_code=False,
+            debug=True,
+        )
+        mock_start.assert_called_once_with(
+            "model",
+            port=8080,
+            config_path=None,
+            debug=True,
+            host="127.0.0.1",
+            model_name=None,
+            master_key=None,
+            claude_code=False,
+        )
+
+    @patch("hellmholtz.cli.integrations.handle_error")
+    @patch("hellmholtz.integrations.litellm.start_proxy")
+    def test_starts_proxy_forwards_claude_code_options(self, mock_start: MagicMock, mock_err: MagicMock) -> None:
+        _proxy_impl(
+            "openai:gpt-4o",
+            port=4000,
+            host="0.0.0.0",
+            name="claude",
+            master_key="sk-test",
+            config="proxy.yaml",
+            claude_code=True,
+            debug=False,
+        )
+        mock_start.assert_called_once_with(
+            "openai:gpt-4o",
+            port=4000,
+            config_path="proxy.yaml",
+            debug=False,
+            host="0.0.0.0",
+            model_name="claude",
+            master_key="sk-test",
+            claude_code=True,
+        )
 
     @patch("hellmholtz.cli.integrations.handle_error")
     @patch("hellmholtz.integrations.litellm.start_proxy", side_effect=OSError("port in use"))
     def test_proxy_error_calls_handle_error(self, mock_start: MagicMock, mock_err: MagicMock) -> None:
-        _proxy_impl("model", port=4000, debug=False)
+        _proxy_impl(
+            "model",
+            port=4000,
+            host="127.0.0.1",
+            name=None,
+            master_key=None,
+            config=None,
+            claude_code=False,
+            debug=False,
+        )
         mock_err.assert_called_once()
 
 

@@ -124,7 +124,7 @@ print(response)
 # With conversation history
 messages = [
     {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "Explain quantum computing in simple terms."}
+    {"role": "user", "content": "Explain quantum computing in simple terms."},
 ]
 response = chat("anthropic:claude-3-sonnet", messages)
 ```
@@ -143,11 +143,12 @@ results = run_benchmarks(
     models=["openai:gpt-4o", "anthropic:claude-3-haiku", "blablador:gpt-4o"],
     prompts=prompts,
     temperatures=[0.1, 0.7, 1.0],
-    replications=3
+    replications=3,
 )
 
 # Analyze results
 from hellmholtz.evaluation_analysis import EvaluationAnalyzer
+
 analyzer = EvaluationAnalyzer()
 analysis = analyzer.analyze_evaluation_results("results/benchmark_latest.json")
 analyzer.print_analysis_summary(analysis)

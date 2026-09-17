@@ -20,9 +20,24 @@ def register_integration_commands(app: typer.Typer) -> None:
         _lm_eval_impl(model, tasks, num_fewshot, limit)
 
     @app.command()
-    def proxy(model: str, port: int = 4000, debug: bool = False) -> None:
-        """Start LiteLLM Proxy."""
-        _proxy_impl(model, port, debug)
+    def proxy(
+        model: str,
+        port: int = typer.Option(4000, help="Port to listen on"),
+        host: str = typer.Option("127.0.0.1", help="Host to bind the proxy to"),
+        name: str | None = typer.Option(None, "--name", help="Alias to expose the model under"),
+        master_key: str | None = typer.Option(
+            None, "--master-key", help="Proxy master key (generated in --claude-code mode)"
+        ),
+        config: str | None = typer.Option(
+            None, "--config", help="Path to an existing LiteLLM config file"
+        ),
+        claude_code: bool = typer.Option(
+            False, "--claude-code", help="Print snippet that points Claude Code at the proxy"
+        ),
+        debug: bool = typer.Option(False, help="Run the proxy in debug mode"),
+    ) -> None:
+        """Start LiteLLM Proxy (OpenAI- and Anthropic-compatible endpoints)."""
+        _proxy_impl(model, port, host, name, master_key, config, claude_code, debug)
 
     @app.command()
     def bench_throughput(
@@ -50,12 +65,30 @@ def _lm_eval_impl(model: str, tasks: str, num_fewshot: int | None, limit: float 
         handle_error(e, "LM Eval error")
 
 
-def _proxy_impl(model: str, port: int, debug: bool) -> None:
+def _proxy_impl(
+    model: str,
+    port: int,
+    host: str,
+    name: str | None,
+    master_key: str | None,
+    config: str | None,
+    claude_code: bool,
+    debug: bool,
+) -> None:
     """Implementation for proxy command."""
     from hellmholtz.integrations.litellm import start_proxy
 
     try:
-        start_proxy(model, port=port, debug=debug)
+        start_proxy(
+            model,
+            port=port,
+            config_path=config,
+            debug=debug,
+            host=host,
+            model_name=name,
+            master_key=master_key,
+            claude_code=claude_code,
+        )
     except Exception as e:
         handle_error(e, "Proxy error")
 
