@@ -5,6 +5,39 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-09-23
+
+### Added
+
+- **PII Anonymization** (`hellmholtz.anonymizer`): entity-aware text anonymization
+  powered by the ShinrAI PII 1.3 model (any `blablador:` chat endpoint)
+  - Detects and redacts personal data (names, emails, phone numbers, addresses,
+    account numbers, dates, ...) with optional fuzzy matching
+  - Pluggable prompt strategies: `default`, `strict`, `framed`, `footer_off`,
+    `multilingual`
+  - Long-text support via sentence-aware chunking, configurable retries, and
+    optional footer validation for reliable entity reports
+- **Python API**: `Anonymizer`, `anonymize_text()`, and `anonymize_file()`
+  (writes an `.anonymized` output file plus a JSON sidecar report)
+- **CLI**: `hellm anonymize <file>` (print result, write output, JSON report)
+  and `hellm anonymize-benchmark` (compare prompt strategies against the
+  fixture corpus with ground-truth recall / leak-rate metrics)
+- **Benchmark corpus**: anonymizer fixtures with ground-truth entity labels
+  (`tests/anonymizer/fixtures/`) and an offline test suite for the whole module
+
+### Documentation
+
+- README: PII Anonymization sections (Python API + CLI usage)
+- `reports/anonymizer/prompt-comparison-20260923-131346.md`: live benchmark of
+  all five prompt strategies on the ShinrAI PII 1.3 model
+
+### Known limitations
+
+- German dot-separated dates (e.g. `12.03.2025`) may leak with every prompt
+  strategy (model limitation; live benchmark: recall 0.944, leak rate 0.056)
+- `framed`, `strict`, and `footer_off` are ~5x faster than `default`
+  (p50 ≈ 0.3s vs ≈ 1.6s) at equal recall
+
 ## [0.5.0] - 2026-09-17
 
 ### Added
