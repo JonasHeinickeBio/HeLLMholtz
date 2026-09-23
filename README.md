@@ -164,9 +164,9 @@ from hellmholtz.anonymizer import anonymize_file, anonymize_text
 
 # Anonymize an in-memory text
 result = anonymize_text("Patient John Doe was admitted on 12.03.2025.")
-print(result.text)                      # anonymized text
-print(result.entities)                  # PII entities that were replaced
-print(result.validation.summary)        # leak validation summary
+print(result.text)  # anonymized text
+print(result.entities)  # PII entities that were replaced
+print(result.validation.summary)  # leak validation summary
 
 # Anonymize a file; writes <stem>.anonymized<suffix> plus a JSON sidecar
 # (entities, mapping, validation) next to the output
