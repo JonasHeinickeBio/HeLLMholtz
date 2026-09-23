@@ -1,0 +1,3 @@
+The quick brown fox jumps over the lazy dog.
+This document contains no personal data, only public information
+about the weather on a certain day in March.

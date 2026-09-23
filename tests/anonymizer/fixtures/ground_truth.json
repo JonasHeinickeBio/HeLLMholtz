@@ -1,0 +1,21 @@
+{
+  "sample_short_en": [
+    {"type": "PERSON", "value": "John Smith"},
+    {"type": "PHONE", "value": "030-123456"},
+    {"type": "STREET", "value": "Musterstraße 12"},
+    {"type": "CITY", "value": "Berlin"},
+    {"type": "EMAIL", "value": "john.smith@example.com"},
+    {"type": "CARD", "value": "4242 4242 4242 4242"},
+    {"type": "IBAN", "value": "DE89370400440532013000"},
+    {"type": "DATE", "value": "12.03.2025"},
+    {"type": "ORG", "value": "Helmholtz Centre"}
+  ],
+  "sample_german": [
+    {"type": "PERSON", "value": "Maria Müller"},
+    {"type": "ORG", "value": "Max-Delbrück-Centrum"},
+    {"type": "CITY", "value": "Berlin"},
+    {"type": "IBAN", "value": "DE02120300000000202051"},
+    {"type": "EMAIL", "value": "maria.mueller@example.de"},
+    {"type": "PHONE", "value": "030-987654"}
+  ]
+}
