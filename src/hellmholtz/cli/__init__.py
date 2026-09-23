@@ -2,6 +2,7 @@
 
 This package organizes CLI commands into logical groups:
 - chat: Direct chat interactions
+- anonymize: PII anonymization (anonymize, anonymize-benchmark)
 - benchmark: Benchmarking and reporting (bench, report, chart, analyze)
 - models: Model management and monitoring (models, check, monitor)
 - integrations: Third-party integrations (lm_eval, proxy, bench_throughput)
@@ -11,6 +12,7 @@ This package organizes CLI commands into logical groups:
 
 import typer
 
+from hellmholtz.cli.anonymize import register_anonymize_commands
 from hellmholtz.cli.benchmark import register_benchmark_commands
 from hellmholtz.cli.chat import register_chat_commands
 from hellmholtz.cli.common import configure_logging
@@ -28,6 +30,7 @@ def create_app() -> typer.Typer:
 
     # Register all command groups
     register_chat_commands(app)
+    register_anonymize_commands(app)
     register_benchmark_commands(app)
     register_models_commands(app)
     register_integration_commands(app)

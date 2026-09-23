@@ -1,0 +1,242 @@
+{
+  "default": {
+    "description": "Body + entity footer, single user message (smoke-test contract).",
+    "footer": true,
+    "n_runs": 3,
+    "mean_ms": 2678.2,
+    "p50_ms": 1612.1,
+    "p95_ms": 5213.2,
+    "validation_pass_rate": 1.0,
+    "mean_recall": 0.944,
+    "mean_leak_rate": 0.056,
+    "per_text": {
+      "sample_short_en": {
+        "p50_ms": 5613.3,
+        "p95_ms": 5613.3,
+        "throughput_chars_per_s": 67.9,
+        "entity_counts": [
+          9
+        ],
+        "pass_rate": 1.0,
+        "recall": 0.889,
+        "leaked": [
+          "12.03.2025"
+        ],
+        "consistent": true
+      },
+      "sample_german": {
+        "p50_ms": 1612.1,
+        "p95_ms": 1612.1,
+        "throughput_chars_per_s": 189.2,
+        "entity_counts": [
+          8
+        ],
+        "pass_rate": 1.0,
+        "recall": 1.0,
+        "leaked": [],
+        "consistent": true
+      },
+      "sample_no_pii": {
+        "p50_ms": 809.2,
+        "p95_ms": 809.2,
+        "throughput_chars_per_s": 191.5,
+        "entity_counts": [
+          0
+        ],
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "framed": {
+    "description": "System message carries the contract; user message is the bare text.",
+    "footer": true,
+    "n_runs": 3,
+    "mean_ms": 294.3,
+    "p50_ms": 296.2,
+    "p95_ms": 430.2,
+    "validation_pass_rate": 1.0,
+    "mean_recall": 0.944,
+    "mean_leak_rate": 0.056,
+    "per_text": {
+      "sample_short_en": {
+        "p50_ms": 445.1,
+        "p95_ms": 445.1,
+        "throughput_chars_per_s": 856.0,
+        "entity_counts": [
+          9
+        ],
+        "pass_rate": 1.0,
+        "recall": 0.889,
+        "leaked": [
+          "12.03.2025"
+        ],
+        "consistent": true
+      },
+      "sample_german": {
+        "p50_ms": 296.2,
+        "p95_ms": 296.2,
+        "throughput_chars_per_s": 1029.8,
+        "entity_counts": [
+          8
+        ],
+        "pass_rate": 1.0,
+        "recall": 1.0,
+        "leaked": [],
+        "consistent": true
+      },
+      "sample_no_pii": {
+        "p50_ms": 141.7,
+        "p95_ms": 141.7,
+        "throughput_chars_per_s": 1093.6,
+        "entity_counts": [
+          0
+        ],
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "strict": {
+    "description": "Hardened wording: verbatim preservation, no commentary, no additions.",
+    "footer": true,
+    "n_runs": 3,
+    "mean_ms": 342.4,
+    "p50_ms": 309.0,
+    "p95_ms": 435.7,
+    "validation_pass_rate": 1.0,
+    "mean_recall": 0.944,
+    "mean_leak_rate": 0.056,
+    "per_text": {
+      "sample_short_en": {
+        "p50_ms": 449.7,
+        "p95_ms": 449.7,
+        "throughput_chars_per_s": 847.2,
+        "entity_counts": [
+          9
+        ],
+        "pass_rate": 1.0,
+        "recall": 0.889,
+        "leaked": [
+          "12.03.2025"
+        ],
+        "consistent": true
+      },
+      "sample_german": {
+        "p50_ms": 309.0,
+        "p95_ms": 309.0,
+        "throughput_chars_per_s": 987.2,
+        "entity_counts": [
+          8
+        ],
+        "pass_rate": 1.0,
+        "recall": 1.0,
+        "leaked": [],
+        "consistent": true
+      },
+      "sample_no_pii": {
+        "p50_ms": 268.6,
+        "p95_ms": 268.6,
+        "throughput_chars_per_s": 577.1,
+        "entity_counts": [
+          0
+        ],
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "multilingual": {
+    "description": "Explicit language-preservation instructions for mixed-language documents.",
+    "footer": true,
+    "n_runs": 3,
+    "mean_ms": 20371.9,
+    "p50_ms": 453.3,
+    "p95_ms": 54460.0,
+    "validation_pass_rate": 1.0,
+    "mean_recall": 0.944,
+    "mean_leak_rate": 0.056,
+    "per_text": {
+      "sample_short_en": {
+        "p50_ms": 453.3,
+        "p95_ms": 453.3,
+        "throughput_chars_per_s": 840.4,
+        "entity_counts": [
+          9
+        ],
+        "pass_rate": 1.0,
+        "recall": 0.889,
+        "leaked": [
+          "12.03.2025"
+        ],
+        "consistent": true
+      },
+      "sample_german": {
+        "p50_ms": 60460.7,
+        "p95_ms": 60460.7,
+        "throughput_chars_per_s": 5.0,
+        "entity_counts": [
+          8
+        ],
+        "pass_rate": 1.0,
+        "recall": 1.0,
+        "leaked": [],
+        "consistent": true
+      },
+      "sample_no_pii": {
+        "p50_ms": 201.6,
+        "p95_ms": 201.6,
+        "throughput_chars_per_s": 768.8,
+        "entity_counts": [
+          0
+        ],
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "footer_off": {
+    "description": "No entity footer: measures the latency/cost of the footer contract.",
+    "footer": false,
+    "n_runs": 3,
+    "mean_ms": 305.0,
+    "p50_ms": 314.4,
+    "p95_ms": 439.1,
+    "validation_pass_rate": 1.0,
+    "mean_recall": 0.944,
+    "mean_leak_rate": 0.056,
+    "per_text": {
+      "sample_short_en": {
+        "p50_ms": 452.9,
+        "p95_ms": 452.9,
+        "throughput_chars_per_s": 841.2,
+        "entity_counts": [
+          9
+        ],
+        "pass_rate": 1.0,
+        "recall": 0.889,
+        "leaked": [
+          "12.03.2025"
+        ],
+        "consistent": true
+      },
+      "sample_german": {
+        "p50_ms": 314.4,
+        "p95_ms": 314.4,
+        "throughput_chars_per_s": 970.0,
+        "entity_counts": [
+          8
+        ],
+        "pass_rate": 1.0,
+        "recall": 1.0,
+        "leaked": [],
+        "consistent": true
+      },
+      "sample_no_pii": {
+        "p50_ms": 147.6,
+        "p95_ms": 147.6,
+        "throughput_chars_per_s": 1050.1,
+        "entity_counts": [
+          0
+        ],
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

@@ -30,6 +30,7 @@ A comprehensive Python package for unified LLM access, benchmarking, evaluation,
 - **Interactive Reports**: HTML reports with Chart.js visualizations and Markdown summaries
 - **Flexible Prompt System**: Support for both simple text files and structured JSON prompt collections
 - **Model Monitoring**: Track Blablador model availability and configuration consistency
+- **PII Anonymization**: Document anonymization with the ShinrAI PII 1.3 model, including leak validation, cross-chunk consistency, and prompt-variant benchmarking
 - **LM Evaluation Harness**: Integration with EleutherAI's comprehensive evaluation suite
 - **LiteLLM Proxy**: Built-in proxy server for model routing and load balancing
 - **Throughput Testing**: Performance benchmarking for high-throughput scenarios
@@ -154,6 +155,29 @@ analysis = analyzer.analyze_evaluation_results("results/benchmark_latest.json")
 analyzer.print_analysis_summary(analysis)
 ```
 
+#### PII Anonymization
+
+Anonymize documents with the ShinrAI PII 1.3 model (`blablador:alias-anonymizer` by default). Results include the anonymized text, the detected PII entities, and a leak validation report.
+
+```python
+from hellmholtz.anonymizer import anonymize_file, anonymize_text
+
+# Anonymize an in-memory text
+result = anonymize_text("Patient John Doe was admitted on 12.03.2025.")
+print(result.text)                      # anonymized text
+print(result.entities)                  # PII entities that were replaced
+print(result.validation.summary)        # leak validation summary
+
+# Anonymize a file; writes <stem>.anonymized<suffix> plus a JSON sidecar
+# (entities, mapping, validation) next to the output
+result = anonymize_file("notes/patient.md", write=True)
+
+# The entity mapping is reversible for authorized re-identification
+restored = result.restore()
+```
+
+Longer documents are automatically split into word-safe chunks and reassembled with a consistent replacement mapping across chunk boundaries. Prompt variants (`default`, `framed`, `strict`, `multilingual`, `footer_off`) can be selected via the `prompt` keyword.
+
 ### Command Line Interface
 
 HeLLMholtz provides a comprehensive CLI for all operations:
@@ -217,6 +241,35 @@ hellm monitor --test-accessibility
 # Check model configuration consistency
 hellm monitor --check-config
 ```
+
+#### PII Anonymization
+
+Anonymize documents with the ShinrAI PII 1.3 model (default: `blablador:alias-anonymizer`, override with `--model`). Leak validation and fuzzy matching run by default; disable with `--no-validate` / `--no-fuzzy`.
+
+```bash
+# Anonymize a file and print the anonymized text to stdout
+hellm anonymize notes/patient.md
+
+# Write the anonymized text next to the input (with JSON sidecar)
+hellm anonymize notes/patient.md --write
+
+# Read from stdin and print the detected entity table
+cat notes/patient.md | hellm anonymize --show-entities
+
+# Machine-readable JSON output
+hellm anonymize notes/patient.md --json > patient_anonymized.json
+
+# Compare all prompt variants across documents, scored against ground truth
+hellm anonymize-benchmark \
+  tests/anonymizer/fixtures/sample_short_en.md \
+  tests/anonymizer/fixtures/sample_german.md \
+  --ground-truth tests/anonymizer/fixtures/ground_truth.json
+
+# Benchmark specific variants with more iterations; reports land in reports/anonymizer/
+hellm anonymize-benchmark docs/ -p framed,strict --iterations 3
+```
+
+Benchmark reports include per-variant latency (p50/p95), throughput, validation pass rate, entity recall, and leak rate, written as Markdown and JSON to `reports/anonymizer/`.
 
 #### Weekly Automated Benchmarking
 
