@@ -42,6 +42,7 @@ class Settings:
     default_models: list[str] = field(default_factory=list)
     blablador_api_key: str | None = None
     blablador_base_url: str | None = None
+    systemone_endpoint: str | None = None
     timeout_seconds: float = 30.0
 
     # Provider keys (read directly from env, but can be accessed here if needed)
@@ -61,6 +62,10 @@ def get_settings() -> Settings:
     blablador_key = os.getenv("BLABLADOR_API_KEY")
     blablador_url = os.getenv("BLABLADOR_API_BASE")
 
+    # System-One (Jev-compatible) endpoint override; when unset, the client
+    # defaults to the dedicated Laya host (see providers.systemone).
+    systemone_endpoint = os.getenv("SYSTEMONE_ENDPOINT")
+
     # Timeout
     try:
         timeout = float(os.getenv("HELMHOLTZ_TIMEOUT_SECONDS", "30.0"))
@@ -71,5 +76,6 @@ def get_settings() -> Settings:
         default_models=default_models,
         blablador_api_key=blablador_key,
         blablador_base_url=blablador_url,
+        systemone_endpoint=systemone_endpoint,
         timeout_seconds=timeout,
     )

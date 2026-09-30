@@ -4,6 +4,7 @@ from typing import Any
 
 import aisuite as ai
 from hellmholtz.core.config import get_settings
+from hellmholtz.providers.blablador_config import get_model_by_name
 
 logger = logging.getLogger(__name__)
 
@@ -121,17 +122,49 @@ def chat_raw(
         raise
 
 
+def _resolve_systemone_model(model: str) -> str | None:
+    """Return the model name if *model* refers to a System-One model.
+
+    Accepts plain names/aliases ("alias-laya", "laya") as well as
+    provider-prefixed identifiers ("blablador:alias-laya").
+
+    Args:
+        model: Model identifier.
+
+    Returns:
+        The System-One model name, or None if *model* is not a System-One
+        model.
+    """
+    name = model.split(":", 1)[1] if ":" in model else model
+    known = get_model_by_name(name)
+    if known is not None and known.model_kind == "systemone":
+        return known.name
+    return None
+
+
 def check_model_availability(model: str) -> bool:
     """Check if a model is available by making a minimal test request.
 
+    System-One typed-decision models (e.g. "alias-laya") have no chat
+    surface, so they are probed through the dedicated /v1/systemone
+    endpoint instead of a chat completion.
+
     Args:
-        model: Model identifier (e.g., "openai:gpt-4o", "blablador:gpt-4o")
+        model: Model identifier (e.g., "openai:gpt-4o", "blablador:gpt-4o",
+            "alias-laya")
 
     Returns:
         True if the model is available and can respond to requests
     """
     try:
-        # For all models, try a minimal request using the chat function
+        # System-One models are probed via their typed-decision endpoint
+        from hellmholtz.providers import systemone
+
+        systemone_model = _resolve_systemone_model(model)
+        if systemone_model is not None:
+            return systemone.check_availability(systemone_model)
+
+        # For all other models, try a minimal request using the chat function
         test_messages = [{"role": "user", "content": "test"}]
         chat(
             model=model,

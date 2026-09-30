@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI Version](https://img.shields.io/pypi/v/hellmholtz.svg)](https://pypi.org/project/hellmholtz/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
@@ -35,6 +35,20 @@ A comprehensive Python package for unified LLM access, benchmarking, evaluation,
 - **LiteLLM Proxy**: Built-in proxy server for model routing and load balancing
 - **Throughput Testing**: Performance benchmarking for high-throughput scenarios
 - **Model Discovery**: Dynamic model listing and availability checking (19+ BLABLADOR models currently available)
+
+## System-One (Laya) CLI
+
+The new `hellm systemone` command lets you route a state with custom questions and run a benchmark across clinical scenarios.
+
+### Usage examples
+
+```bash
+# Route a single state with a question
+hellm systemone route "Patient presents with fatigue." -q "risk:Assess risk" -c "risk=low:Low;high:High"
+
+# Run the benchmark (default 4 scenarios, 3 replications each)
+hellm systemone benchmark --replications 3 --output-dir reports/systemone
+```
 
 ## Installation
 
