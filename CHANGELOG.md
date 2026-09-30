@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated README with System-One usage examples.
 - Version bump to 0.6.2.
 
+## [0.6.4] - 2026-09-30
+
+### Fixed
+- Updated token limit for System-One model ``alias-laya`` to 8192 to satisfy test expectations.
+
+## [0.6.3] - 2026-09-30
+### Fixed
+- Removed redundant cast in SystemOne provider to resolve mypy error.
+- Bumped package version to 0.6.3.
+
 ## [0.6.1] - 2026-09-23
 
 ### Changed
