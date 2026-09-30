@@ -1,0 +1,177 @@
+{
+  "model": "alias-laya",
+  "endpoint": "https://laya.blablador.fz-juelich.de/v1/systemone",
+  "replications": 3,
+  "generated_at": "2026-09-30T16:17:46+00:00",
+  "scenarios": [
+    {
+      "name": "fatigue_triage",
+      "state": "Adult patient with persistent, severe post-exertional fatigue for over 12 months, not explained by another condition, presenting for an initial diagnostic work-up.",
+      "n_questions": 1,
+      "replications": 3,
+      "attempts": 3,
+      "successful": 3,
+      "errors": 0,
+      "latencies_ms": [
+        614.5049349979672,
+        529.2958480022207,
+        584.891130001779
+      ],
+      "confidences": [
+        0.6048,
+        0.6048,
+        0.6048
+      ],
+      "questions": [
+        {
+          "name": "post_exertional_malaise",
+          "instructions": "Does the history strongly suggest post-exertional malaise?",
+          "choice_counts": {
+            "yes": 3
+          },
+          "attempts": 3,
+          "no_answer": 0,
+          "confidences": [
+            0.6048,
+            0.6048,
+            0.6048
+          ]
+        }
+      ],
+      "routing_model": "english",
+      "routing_repo": "convaiinnovations/laya",
+      "routing_language": "en"
+    },
+    {
+      "name": "antibiotic_stewardship",
+      "state": "Patient with a suspected viral prodrome and low-grade fever who is requesting antibiotics at the visit.",
+      "n_questions": 1,
+      "replications": 3,
+      "attempts": 3,
+      "successful": 3,
+      "errors": 0,
+      "latencies_ms": [
+        510.87543800167623,
+        512.7996179980983,
+        511.05880300019635
+      ],
+      "confidences": [
+        0.1087,
+        0.1087,
+        0.1087
+      ],
+      "questions": [
+        {
+          "name": "antibiotics",
+          "instructions": "Should antibiotics be prescribed at this time?",
+          "choice_counts": {
+            "yes": 3
+          },
+          "attempts": 3,
+          "no_answer": 0,
+          "confidences": [
+            0.1087,
+            0.1087,
+            0.1087
+          ]
+        }
+      ],
+      "routing_model": "english",
+      "routing_repo": "convaiinnovations/laya",
+      "routing_language": "en"
+    },
+    {
+      "name": "referral_urgency",
+      "state": "Patient with worsening neurological symptoms, including brain fog and orthostatic intolerance.",
+      "n_questions": 2,
+      "replications": 3,
+      "attempts": 3,
+      "successful": 3,
+      "errors": 0,
+      "latencies_ms": [
+        717.4925370018173,
+        613.2067030011967,
+        614.7986280011537
+      ],
+      "confidences": [
+        0.1698,
+        0.0211,
+        0.1698,
+        0.0211,
+        0.1698,
+        0.0211
+      ],
+      "questions": [
+        {
+          "name": "neurology",
+          "instructions": "Is a neurology referral warranted, and how urgent?",
+          "choice_counts": {
+            "urgent": 3
+          },
+          "attempts": 3,
+          "no_answer": 0,
+          "confidences": [
+            0.1698,
+            0.1698,
+            0.1698
+          ]
+        },
+        {
+          "name": "followup",
+          "instructions": "How soon should the next follow-up happen?",
+          "choice_counts": {
+            "week": 3
+          },
+          "attempts": 3,
+          "no_answer": 0,
+          "confidences": [
+            0.0211,
+            0.0211,
+            0.0211
+          ]
+        }
+      ],
+      "routing_model": "english",
+      "routing_repo": "convaiinnovations/laya",
+      "routing_language": "en"
+    },
+    {
+      "name": "followup_frequency",
+      "state": "Stable ME/CFS patient on a graded management plan, reviewing the care pathway.",
+      "n_questions": 1,
+      "replications": 3,
+      "attempts": 3,
+      "successful": 3,
+      "errors": 0,
+      "latencies_ms": [
+        513.1240549999347,
+        462.150635998114,
+        458.0227529986587
+      ],
+      "confidences": [
+        0.0011,
+        0.0011,
+        0.0011
+      ],
+      "questions": [
+        {
+          "name": "frequency",
+          "instructions": "What follow-up cadence is appropriate?",
+          "choice_counts": {
+            "quarterly": 3
+          },
+          "attempts": 3,
+          "no_answer": 0,
+          "confidences": [
+            0.0011,
+            0.0011,
+            0.0011
+          ]
+        }
+      ],
+      "routing_model": "english",
+      "routing_repo": "convaiinnovations/laya",
+      "routing_language": "en"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ from typing import Any
 import openai
 
 from aisuite.provider import LLMError, Provider
+from hellmholtz.providers import systemone
 from hellmholtz.providers.blablador import list_models
 from hellmholtz.providers.blablador_config import KNOWN_MODELS
 
@@ -64,6 +65,10 @@ class BlabladorProvider(Provider):
     def check_model_availability(self, model: str) -> bool:
         """Check if a model is available by making a minimal test request.
 
+        System-One typed-decision models (e.g. "alias-laya") have no chat
+        surface, so they are probed through the dedicated /v1/systemone
+        endpoint instead of a chat completion.
+
         Args:
             model: Model identifier (name, alias, or ID)
 
@@ -76,6 +81,10 @@ class BlabladorProvider(Provider):
             for m in KNOWN_MODELS:
                 if m.id == model or m.name == model or m.alias == model:
                     resolved_model = m.api_id
+                    if m.model_kind == "systemone":
+                        # System-One models have no chat surface; probe their
+                        # dedicated typed-decision endpoint instead.
+                        return systemone.check_availability(m.name)
                     break
 
             # Make a minimal test request
@@ -104,6 +113,11 @@ class BlabladorProvider(Provider):
             resolved_model = model
             for m in KNOWN_MODELS:
                 if m.id == model or m.name == model or m.alias == model:
+                    if m.model_kind == "systemone":
+                        raise LLMError(
+                            f"Model '{model}' is a System-One typed-decision model and does not "
+                            f"support chat completions. Use `hellm systemone route` instead."
+                        )
                     resolved_model = m.api_id
                     break
 

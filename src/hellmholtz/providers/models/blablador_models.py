@@ -38,6 +38,9 @@ class BlabladorModel(BaseModel):
         description_separator: Separator used in API ID formatting
         max_context_tokens: Maximum context window size in tokens
         available: Whether the model is available (online check succeeded)
+        model_kind: API surface of the model ('chat' for OpenAI-compatible
+            chat completions, 'systemone' for the Jev-compatible
+            /v1/systemone typed-decision endpoint)
     """
 
     id: str = ""
@@ -45,6 +48,7 @@ class BlabladorModel(BaseModel):
     description_separator: str = " - "  # Separator between name and description in API ID
     max_context_tokens: int = DEFAULT_TOKEN_LIMIT  # Default context window size
     available: bool = True  # Whether the model is available (online check succeeded)
+    model_kind: str = "chat"  # 'chat' or 'systemone' (typed-decision endpoint)
 
     @property
     def display_string(self) -> str:
@@ -276,6 +280,16 @@ KNOWN_MODELS: list[BlabladorModel] = [
         source="Blablador",
         max_context_tokens=131072,  # 128k context for function calling
         available=False,
+    ),
+    # System-One typed-decision models (Jev-compatible /v1/systemone API, no chat surface)
+    BlabladorModel(
+        id="",  # No numeric ID, uses name directly
+        name="alias-laya",
+        alias="laya",
+        description="System-One decision model (Jev-compatible) served via /v1/systemone",
+        source="Blablador",
+        max_context_tokens=1024,  # Laya decision context (512-1024 tokens)
+        model_kind="systemone",
     ),
     # Legacy OpenAI-compatible models
     BlabladorModel(
