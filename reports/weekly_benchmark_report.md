@@ -1,0 +1,13 @@
+# Benchmark Summary
+
+**Total Runs**: 432
+**Models**: blablador:code, blablador:fast, blablador:huge, blablador:large
+
+## Performance by Model
+
+| Model | Success Rate | Avg Latency (s) | Avg Input Tokens | Avg Output Tokens | Tokens/sec | Avg Rating |
+|-------|--------------|-----------------|-------------------|--------------------|-----------|------------|
+| blablador:code | 100.0% | 12.1523 | 75.4 | 294.6 | 35.07 | - |
+| blablador:fast | 100.0% | 2.9180 | 89.8 | 424.8 | 153.07 | - |
+| blablador:huge | 100.0% | 13.3395 | 60.6 | 473.2 | 76.24 | - |
+| blablador:large | 100.0% | 8.9735 | 75.4 | 240.0 | 78.21 | - |

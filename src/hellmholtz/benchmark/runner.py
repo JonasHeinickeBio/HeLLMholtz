@@ -76,7 +76,7 @@ def _retry_with_backoff(
 
 @dataclass
 class BenchmarkResult:
-    """Result of a single benchmark run."""
+    """Result of a single benchmark run, enriched with performance and evaluation metrics."""
 
     model: str
     prompt_id: str
@@ -92,6 +92,7 @@ class BenchmarkResult:
     temperature: float | None = None
     max_tokens: int | None = None
     run_id: int | None = None  # For replication tracking
+    tokens_per_sec: float | None = None
 
 
 def run_benchmarks(  # noqa: C901
@@ -133,6 +134,9 @@ def run_benchmarks(  # noqa: C901
     results_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().isoformat()
+    # Incremental recovery file: one JSON object per completed test, appended live so
+    # an interrupted run keeps everything completed so far.
+    partial_path = results_path / f"benchmark_{timestamp.replace(':', '-')}.partial.jsonl"
     total_tests = len(model_list) * len(prompt_list) * len(temperatures) * replications
 
     logger.info(
@@ -267,8 +271,20 @@ def run_benchmarks(  # noqa: C901
                             temperature=temperature,
                             max_tokens=max_tokens,
                             run_id=repl_idx,
+                            tokens_per_sec=(
+                                out_tokens / latency
+                                if latency > 0 and out_tokens is not None
+                                else None
+                            ),
                         )
                         results.append(result)
+
+                        # Append to the incremental recovery file immediately.
+                        try:
+                            with open(partial_path, "a") as pf:
+                                pf.write(json.dumps(asdict(result)) + "\n")
+                        except OSError as save_exc:  # pragma: no cover - best effort
+                            logger.warning(f"Could not write incremental result: {save_exc}")
 
                         # Update statistics
                         stats["completed"] += 1

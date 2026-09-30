@@ -13,6 +13,7 @@ from hellmholtz.cli.common import (
     PROMPTS_CATEGORY_OPTION,
     PROMPTS_FILE_OPTION,
     RESULTS_FILE_ARGUMENT,
+    TASKS_OPTION,
     TEMPERATURES_OPTION,
     generate_output_path,
     handle_error,
@@ -35,6 +36,7 @@ def register_benchmark_commands(app: typer.Typer) -> None:
 
     @app.command()
     def bench(  # noqa: C901
+        tasks: str | None = TASKS_OPTION,
         models: str | None = typer.Option(
             None,
             help=(
@@ -69,6 +71,7 @@ def register_benchmark_commands(app: typer.Typer) -> None:
             replications,
             evaluate_with,
             system_prompt,
+            tasks=tasks,
         )
 
     @app.command()
@@ -110,7 +113,7 @@ def register_benchmark_commands(app: typer.Typer) -> None:
 # ============================================================================
 
 
-def _bench_impl(
+def _bench_impl(  # noqa: C901
     models: str | None,
     prompts_file: Path | None,
     prompts_category: str | None,
@@ -120,12 +123,13 @@ def _bench_impl(
     replications: int,
     evaluate_with: str | None,
     system_prompt: str | None,
+    tasks: str | None = None,
 ) -> None:
     """Implementation for bench command."""
     from hellmholtz.benchmark import run_benchmarks
     from hellmholtz.benchmark.prompts import get_all_prompts, get_prompts_by_category
     from hellmholtz.benchmark.runner import save_results
-    from hellmholtz.cli.common import load_prompts_from_file
+    from hellmholtz.cli.common import load_prompts_from_file, parse_tasks
     from hellmholtz.client import check_model_availability
 
     try:
@@ -150,14 +154,31 @@ def _bench_impl(
             prompts = get_all_prompts()
             typer.echo(f"Using all {len(prompts)} available prompts")
         else:
+            # Default to reasoning prompts
             prompts = get_prompts_by_category("reasoning")
             typer.echo(f"Using {len(prompts)} reasoning prompts (default)")
+
+        # Filter prompts by tasks if provided
+        if tasks:
+            task_list = parse_tasks(tasks)
+            if task_list:
+                original_count = len(prompts)
+                prompts = [p for p in prompts if p.category in task_list]
+                typer.echo(
+                    f"Filtered prompts by tasks {task_list}: {original_count} -> {len(prompts)}"
+                )
+                if not prompts:
+                    handle_error(
+                        ValueError("No prompts left after task filtering"),
+                        "Task filtering resulted in empty prompt set",
+                    )
+            else:
+                typer.echo("No valid tasks provided; using all selected prompts.")
 
         # Calculate and display metrics
         total_tests = len(model_list) * len(prompts) * len(temp_list) * replications
         typer.echo(
-            f"Total benchmark tests: {total_tests} "
-            f"({len(temp_list)} temperatures × {replications} replications)"
+            f"Total benchmark tests: {total_tests} ({len(temp_list)} temps × {replications} reps)"
         )
         typer.echo(f"Estimated time: ~{total_tests * 3 // 60} minutes (assuming 3s per test)")
 

@@ -12,6 +12,8 @@ reports/html/*.html
 !reports/html/.gitkeep
 *.html
 !src/**/*.html
+# Weekly published report artifacts (committed by weekly-benchmark.yml)
+!reports/weekly_benchmark_*.html
 
 /aid_pais_knowledgegraph/SymptomData/processed_symptoms/raw_jsonld
 

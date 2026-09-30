@@ -57,7 +57,9 @@ jobs:
     - name: Check model availability and update status
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        # Check model availability and update models_status.yaml
+        # Refresh models_status.yaml: availability, latency, last-checked for every
+        # registered model. The weekly report's "which models are available" section
+        # is driven by this file.
         poetry run python -c "
         from src.hellmholtz.monitoring import ModelAvailabilityMonitor
         monitor = ModelAvailabilityMonitor()
@@ -65,59 +67,109 @@ jobs:
         print('Model status updated')
         "
 
-    - name: Run intelligent benchmarks
+    - name: Run benchmarks on all available chat models
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        # Load available models from status file
+        # Build the model list: models marked available in models_status.yaml,
+        # minus non-chat endpoints (embedding / transcription) which cannot serve
+        # chat completions and would always fail the benchmark.
         AVAILABLE_MODELS=$(python3 -c "
+        import re
         import yaml
-        with open('models_status.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-        models = [k for k, v in data.get('models', {}).items() if v.get('available', False)]
-        print(','.join([f'blablador:{m}' for m in models]))
+        with open('models_status.yaml') as f:
+            data = yaml.safe_load(f) or {}
+        models = data.get('models', {})
+        non_chat = re.compile(r'embed|whisper|audio', re.IGNORECASE)
+        names = [
+            k for k, v in models.items()
+            if isinstance(v, dict) and v.get('available', False) and not non_chat.search(k)
+        ]
+        print(','.join(f'blablador:{m}' for m in names))
         ")
 
-        if [ -n \"$AVAILABLE_MODELS\" ]; then
-          echo \"Running benchmarks for available models: $AVAILABLE_MODELS\"
-          poetry run hellm bench --models \"$AVAILABLE_MODELS\" --all-prompts --replications 1
+        if [ -n "$AVAILABLE_MODELS" ]; then
+          echo "Running benchmarks for available models: $AVAILABLE_MODELS"
+          poetry run hellm bench --models "$AVAILABLE_MODELS" --all-prompts --replications 1 --max-tokens 512
         else
-          echo \"No available models found, skipping benchmarks\"
+          echo "No available chat models found, skipping benchmarks"
         fi
 
     - name: Generate comprehensive reports
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        # Find the latest results file
-        LATEST_RESULTS=$(ls -t results/benchmark_*.json | head -1)
-        echo "Using results file: $LATEST_RESULTS"
+        mkdir -p reports
 
-        # Generate comprehensive reports using the dedicated script
-        poetry run python scripts/generate_comprehensive_report.py \"$LATEST_RESULTS\"
+        # Pick the freshest result set: prefer the newest non-empty
+        # results/benchmark_*.json, fall back to the newest incremental
+        # .partial.jsonl (written live by the runner, survives crashes/timeouts).
+        python3 - <<'PYEOF'
+        import json
+        from pathlib import Path
+
+        def newest(pattern):
+            files = sorted(Path("results").glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+            return files[0] if files else None
+
+        chosen = None
+        latest_json = newest("benchmark_*.json")
+        if latest_json:
+            try:
+                if len(json.loads(latest_json.read_text())) >= 1:
+                    chosen = latest_json
+            except (json.JSONDecodeError, OSError):
+                chosen = None
+
+        if chosen is None:
+            latest_partial = newest("*.partial.jsonl")
+            if latest_partial is None:
+                raise SystemExit("No benchmark results found in results/")
+            records = [json.loads(line) for line in latest_partial.read_text().splitlines() if line.strip()]
+            chosen = latest_json or latest_partial
+            latest_json = Path("results/benchmark_from_partial.json")
+            latest_json.write_text(json.dumps(records))
+            chosen = latest_json
+
+        Path("reports/weekly_benchmark_results.json").write_text(Path(chosen).read_text())
+        print(f"Using results file: {chosen} -> reports/weekly_benchmark_results.json")
+        PYEOF
+
+        # 1) Availability + per-task performance report (md + html)
+        poetry run python scripts/generate_comprehensive_report.py reports/weekly_benchmark_results.json
+
+        # 2) Standard benchmark report (response-level detail)
+        poetry run hellm report reports/weekly_benchmark_results.json --format markdown --output reports/weekly_benchmark_report.md
+        poetry run hellm report reports/weekly_benchmark_results.json --format html-detailed --output reports/weekly_benchmark_report.html
+
+        # 3) Performance chart
+        poetry run hellm chart reports/weekly_benchmark_results.json --output reports/weekly_benchmark_chart.png
 
     - name: Create fallback reports (no API keys)
       if: steps.check-keys.outputs.keys_available == 'false'
       run: |
+        mkdir -p reports
+        REPORT_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
         # Create a placeholder report when no API keys are available
-        cat > reports/weekly_benchmark_report.md << 'EOF'
+        cat > reports/weekly_benchmark_report.md << EOF
         # Weekly Benchmark Report
 
         **Note:** This report was generated without API access. To enable full benchmarking:
 
         1. Set the following secret in your GitHub repository:
-           - `BLABLADOR_API_KEY`: Your Blablador API key
-           - `BLABLADOR_API_BASE`: Blablador API base URL (optional)
+           - \`BLABLADOR_API_KEY\`: Your Blablador API key
+           - \`BLABLADOR_API_BASE\`: Blablador API base URL (optional)
 
         2. The workflow will automatically run weekly benchmarks and update this report.
 
         ## Last Updated
-        $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        ${REPORT_DATE}
 
         ## Status
         ⏳ Waiting for BLABLADOR API credentials to be configured
         EOF
 
         # Copy placeholder HTML
-        cat > reports/weekly_benchmark_report.html << 'EOF'
+        cat > reports/weekly_benchmark_report.html << EOF
         <!DOCTYPE html>
         <html>
         <head>
@@ -142,7 +194,7 @@ jobs:
                     <li>The workflow will automatically run weekly benchmarks and update this report.</li>
                 </ol>
             </div>
-            <p><strong>Last Updated:</strong> $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
+            <p><strong>Last Updated:</strong> ${REPORT_DATE}</p>
             <p><strong>Status:</strong> ⏳ Waiting for BLABLADOR API credentials to be configured</p>
         </body>
         </html>
@@ -151,7 +203,8 @@ jobs:
     - name: Check for changes
       id: check-changes
       run: |
-        if git diff --quiet reports/ models_status.yaml; then
+        if git diff --quiet reports/ models_status.yaml && \
+           [ -z "$(git ls-files --others --exclude-standard reports/)" ]; then
           echo "changes=false" >> $GITHUB_OUTPUT
         else
           echo "changes=true" >> $GITHUB_OUTPUT
