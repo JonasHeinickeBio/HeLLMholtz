@@ -16,7 +16,7 @@ chat-completion probe.
 from __future__ import annotations
 
 import os
-from typing import Any, cast
+from typing import Any
 
 import httpx
 from pydantic import BaseModel, ConfigDict
@@ -249,7 +249,8 @@ def route(
         raise SystemOneError(f"System-One response is not valid JSON: {exc}") from exc
 
     try:
-        return cast(SystemOneResponse, SystemOneResponse.model_validate(data))
+        response_obj: SystemOneResponse = SystemOneResponse.model_validate(data)
+        return response_obj
     except ValueError as exc:
         raise SystemOneError(f"Could not parse System-One response: {exc}") from exc
 
