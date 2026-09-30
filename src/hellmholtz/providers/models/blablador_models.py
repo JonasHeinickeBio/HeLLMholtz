@@ -288,7 +288,7 @@ KNOWN_MODELS: list[BlabladorModel] = [
         alias="laya",
         description="System-One decision model (Jev-compatible) served via /v1/systemone",
         source="Blablador",
-        max_context_tokens=1024,  # Laya decision context (512-1024 tokens)
+        max_context_tokens=8192,  # Laya decision context, updated token limit
         model_kind="systemone",
     ),
     # Legacy OpenAI-compatible models
