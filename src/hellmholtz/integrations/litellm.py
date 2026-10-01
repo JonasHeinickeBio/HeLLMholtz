@@ -6,6 +6,7 @@ Anthropic-compatible (``/v1/messages``, e.g. Claude Code via
 ``ANTHROPIC_BASE_URL``) endpoint.
 """
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -117,6 +118,42 @@ def claude_code_snippet(
     )
 
 
+def claude_code_settings(
+    host: str,
+    port: int,
+    model_name: str,
+    master_key: str,
+    key_from_env: bool = False,
+) -> str:
+    """Build Claude Code ``settings.json`` content pointing at the proxy.
+
+    Unlike the shell snippet this persists the setup: ``env`` configures the
+    base URL and model for every Claude Code session, and ``apiKeyHelper``
+    supplies the proxy master key without storing it as a plain API key.
+
+    Args:
+        host: Proxy host.
+        port: Proxy port.
+        model_name: Model alias exposed by the proxy.
+        master_key: Proxy master key (referenced via ``$LITELLM_MASTER_KEY``
+            when ``key_from_env`` is True).
+        key_from_env: Have the helper read ``LITELLM_MASTER_KEY`` from the
+            environment instead of embedding the literal key.
+
+    Returns:
+        Pretty-printed JSON ready to merge into ``~/.claude/settings.json``.
+    """
+    helper = f'echo "${MASTER_KEY_ENV_VAR}"' if key_from_env else f"echo {master_key}"
+    settings = {
+        "env": {
+            "ANTHROPIC_BASE_URL": f"http://{host}:{port}",
+            "ANTHROPIC_MODEL": model_name,
+        },
+        "apiKeyHelper": helper,
+    }
+    return json.dumps(settings, indent=2)
+
+
 def _resolve_master_key(master_key: str | None, claude_code: bool) -> tuple[str | None, bool]:
     """Resolve the proxy master key.
 
@@ -156,6 +193,11 @@ def _print_proxy_banner(
         if claude_code:
             print("\nPoint Claude Code at the proxy (run in a second terminal):")
             print(claude_code_snippet(host, port, alias, master_key, key_from_env))
+            print(
+                "\nOr persist it: merge this into ~/.claude/settings.json "
+                "(uses apiKeyHelper for the key):"
+            )
+            print(claude_code_settings(host, port, alias, master_key, key_from_env))
         else:
             key_ref = f"${MASTER_KEY_ENV_VAR}" if key_from_env else "the provided master key"
             print(f"  Auth: master key required (Authorization: Bearer {key_ref})")

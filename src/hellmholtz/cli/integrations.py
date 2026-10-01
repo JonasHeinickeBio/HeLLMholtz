@@ -34,9 +34,17 @@ def register_integration_commands(app: typer.Typer) -> None:
         claude_code: bool = typer.Option(
             False, "--claude-code", help="Print snippet that points Claude Code at the proxy"
         ),
+        print_claude_settings: bool = typer.Option(
+            False,
+            "--print-claude-settings",
+            help="Print Claude Code settings.json content for this proxy and exit",
+        ),
         debug: bool = typer.Option(False, help="Run the proxy in debug mode"),
     ) -> None:
         """Start LiteLLM Proxy (OpenAI- and Anthropic-compatible endpoints)."""
+        if print_claude_settings:
+            _print_claude_settings_impl(model, host, port, name, master_key)
+            raise typer.Exit(code=0)
         _proxy_impl(model, port, host, name, master_key, config, claude_code, debug)
 
     @app.command()
@@ -63,6 +71,24 @@ def _lm_eval_impl(model: str, tasks: str, num_fewshot: int | None, limit: float 
         run_lm_eval(model, task_list, num_fewshot=num_fewshot, limit=limit)
     except Exception as e:
         handle_error(e, "LM Eval error")
+
+
+def _print_claude_settings_impl(
+    model: str,
+    host: str,
+    port: int,
+    name: str | None,
+    master_key: str | None,
+) -> None:
+    """Implementation for `proxy --print-claude-settings` (print and exit)."""
+    from hellmholtz.integrations.litellm import _resolve_master_key, claude_code_settings
+
+    try:
+        key, key_from_env = _resolve_master_key(master_key, claude_code=True)
+        assert key is not None  # nosec B101 - claude_code mode always yields a key
+        print(claude_code_settings(host, port, name or model, key, key_from_env))
+    except Exception as e:
+        handle_error(e, "Claude Code settings error")
 
 
 def _proxy_impl(
