@@ -5,6 +5,20 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.7] - 2026-10-01
+
+### Added
+
+- `hellm doctor` — one-shot connectivity diagnostics for python version, optional extras,
+  credentials, base URL, model ids, and a live chat round-trip; exits non-zero only on hard
+  failures, with `--model` and `--skip-chat` options (issue #40).
+- `hellm proxy --print-claude-settings` — prints a ready-to-paste `~/.claude/settings.json`
+  block that hands the proxy master key to Claude Code via `apiKeyHelper`, without starting
+  the proxy (issue #40).
+- "Connect Your Client" documentation hub page routing Claude Code, MCP clients,
+  OpenAI-compatible tools, and team deployments to the right setup, plus an
+  `examples/one-api/` docker-compose team gateway with per-user tokens (issue #40).
+
 ## [0.6.6] - 2026-10-01
 
 ### Added
