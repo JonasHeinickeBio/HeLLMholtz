@@ -324,6 +324,49 @@ OPENAI_BASE_URL=https://api.blablador.fz-juelich.de/v1
 
 ---
 
+### 10. MCP Clients (Claude Desktop, Claude Code, Cherry Studio, ...)
+
+**Type:** Model Context Protocol server shipped with HeLLMholtz
+
+**Install the extra:**
+```bash
+pip install "hellmholtz[mcp]"        # or: poetry install --extras mcp
+```
+
+**Setup:**
+```bash
+# Print a ready-to-paste Claude Desktop config (uses your default model):
+hellm mcp --print-config
+
+# Or with an explicit default model:
+hellm mcp --print-config --model blablador:alias-large
+```
+
+Paste the output into Claude Desktop's `claude_desktop_config.json`
+(Settings > Developer > Edit Config), then restart Claude Desktop.
+
+The server exposes four tools:
+
+| Tool | Purpose |
+|------|---------|
+| `ask_external` | Offload a single heavy task (summarize, draft, translate) to Blablador |
+| `chat_external` | Continue a full conversation (JSON message array) on Blablador |
+| `list_models` | List usable `blablador:...` model identifiers |
+| `get_info` | Show server default model and endpoint status |
+
+**Manual run / other options:**
+```bash
+hellm mcp --model blablador:alias-large              # stdio (Claude Desktop)
+hellm mcp --transport streamable-http --port 8765    # HTTP for remote clients
+HELLM_MCP_MODEL=blablador:alias-code hellm mcp       # env-var default model
+python -m hellmholtz.mcp                             # from a source checkout
+```
+
+Blablador credentials (`BLABLADOR_API_KEY`, `BLABLADOR_API_BASE`) are read
+from the same environment/`.env` files as the rest of the CLI.
+
+---
+
 ## Available Blablador Models
 
 | Alias | Description | Context | Max Output |

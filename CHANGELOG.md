@@ -5,6 +5,16 @@ All notable changes to HeLLMholtz will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.6] - 2026-10-01
+
+### Added
+
+- Bundled MCP server (`hellm mcp`, optional `hellmholtz[mcp]` extra) exposing Blablador
+  models to MCP clients such as Claude Desktop and Claude Code: `ask_external`,
+  `chat_external`, `list_models`, and `get_info` tools over stdio or streamable HTTP,
+  with `hellm mcp --print-config` generating ready-to-paste Claude Desktop configs
+  and an integration guide in `docs/blablador-integrations.md` (issue #40).
+
 ## [0.6.2] - 2026-09-30
 
 ### Added
