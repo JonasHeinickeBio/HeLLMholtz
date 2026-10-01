@@ -1,9 +1,9 @@
-# Weekly Benchmark Report - 2026-10-01 01:06:32 UTC
+# Weekly Benchmark Report - 2026-10-01 10:35:33 UTC
 
 ## 📊 Executive Summary
 
-**Report Generated:** 2026-10-01 01:06:32 UTC
-**Benchmark Results:** `benchmark_2026-09-30T23-29-27.138617.FULL.json`
+**Report Generated:** 2026-10-01 10:35:33 UTC
+**Benchmark Results:** `benchmark_2026-09-30T23-29-27.138617.partial.judged.jsonl`
 **Requests Recorded:** 432
 **Models Benchmarked:** 4
 **Task Categories:** Coding, Creative, Knowledge, Reasoning
@@ -54,10 +54,10 @@
 
 | Model | Success Rate | Avg Latency | Tokens/s | Prompts | Requests | Ratings |
 |-------|-------------|-------------|----------|---------|----------|---------|
-| `blablador:fast` | 100.0% | 2.92s | 153.1 | 12 | 108 | - |
-| `blablador:large` | 100.0% | 8.97s | 78.2 | 12 | 108 | - |
-| `blablador:huge` | 100.0% | 13.34s | 76.2 | 12 | 108 | - |
-| `blablador:code` | 100.0% | 12.15s | 35.1 | 12 | 108 | - |
+| `blablador:fast` | 100.0% | 2.92s | 153.1 | 12 | 108 | 8.1 |
+| `blablador:large` | 100.0% | 8.97s | 78.2 | 12 | 108 | 8.6 |
+| `blablador:huge` | 100.0% | 13.34s | 76.2 | 12 | 108 | 5.0 |
+| `blablador:code` | 100.0% | 12.15s | 35.1 | 12 | 108 | 8.5 |
 
 ## 🟢 Success Rate by Task
 
@@ -86,7 +86,7 @@
 - **Reasoning:** 4/4 models tied at 100% success — fastest `blablador:fast` (3.01s avg)
 
 ## 🔗 Links
-- Source results: `benchmark_2026-09-30T23-29-27.138617.FULL.json` (published as [weekly_benchmark_results.json](weekly_benchmark_results.json))
+- Source results: `benchmark_2026-09-30T23-29-27.138617.partial.judged.jsonl` (published as [weekly_benchmark_results.json](weekly_benchmark_results.json))
 - [Model Status YAML](../models_status.yaml)
 - [HTML Report](weekly_benchmark_comprehensive.html)
 - [Performance Chart](weekly_benchmark_chart.png)
