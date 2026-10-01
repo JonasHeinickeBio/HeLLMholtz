@@ -7,6 +7,7 @@ This package organizes CLI commands into logical groups:
 - models: Model management and monitoring (models, check, monitor)
 - integrations: Third-party integrations (lm_eval, proxy, bench_throughput)
 - mcp: MCP server for Claude Desktop / MCP clients
+- doctor: Configuration and connectivity diagnostics
 - manager: Blablador Model Manager and Config Exporters
 - setup: Setup and configuration commands
 - systemone: System-One typed decision support (route, benchmark)
@@ -18,6 +19,7 @@ from hellmholtz.cli.anonymize import register_anonymize_commands
 from hellmholtz.cli.benchmark import register_benchmark_commands
 from hellmholtz.cli.chat import register_chat_commands
 from hellmholtz.cli.common import configure_logging
+from hellmholtz.cli.doctor import register_doctor_commands
 from hellmholtz.cli.integrations import register_integration_commands
 from hellmholtz.cli.mcp import register_mcp_commands
 from hellmholtz.cli.model_manager import register_model_manager_commands
@@ -39,6 +41,7 @@ def create_app() -> typer.Typer:
     register_models_commands(app)
     register_integration_commands(app)
     register_mcp_commands(app)
+    register_doctor_commands(app)
     register_model_manager_commands(app)
     register_setup_commands(app)
     register_systemone_commands(app)
