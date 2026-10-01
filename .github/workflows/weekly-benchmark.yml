@@ -89,7 +89,10 @@ jobs:
 
         if [ -n "$AVAILABLE_MODELS" ]; then
           echo "Running benchmarks for available models: $AVAILABLE_MODELS"
-          poetry run hellm bench --models "$AVAILABLE_MODELS" --all-prompts --replications 1 --max-tokens 512
+          # 2048-token budget: some models (e.g. blablador:code) spend most of the
+          # completion budget on hidden reasoning/thinking output and return an
+          # empty visible completion truncated with finish_reason="length" at 512.
+          poetry run hellm bench --models "$AVAILABLE_MODELS" --all-prompts --replications 1 --max-tokens 2048
         else
           echo "No available chat models found, skipping benchmarks"
         fi

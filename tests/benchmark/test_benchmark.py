@@ -285,6 +285,92 @@ class TestBenchmarkRunner:
         assert results[0].finish_reason == "stop"
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
+    def test_benchmark_empty_responses_do_not_skip_model(
+        self, mock_chat_raw: MagicMock, tmp_path: Path
+    ) -> None:
+        """Empty completions are a model issue, not an API outage.
+
+        Even more consecutive empty responses than the skip threshold must
+        not cause the runner to abandon the remaining prompts.
+        """
+        mock_response = MagicMock()
+        mock_response.usage.prompt_tokens = 10
+        mock_response.usage.completion_tokens = 512
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = ""
+        mock_response.choices[0].finish_reason = "length"
+        mock_chat_raw.return_value = mock_response
+
+        prompts = [
+            Prompt(
+                id=f"empty-{i}",
+                category="test",
+                messages=[Message(role="user", content=f"prompt {i}")],
+            )
+            for i in range(8)  # > the consecutive-failure threshold of 5
+        ]
+
+        results = run_benchmarks(
+            models=["openai:gpt-4o"],
+            prompts=prompts,
+            results_dir=str(tmp_path),
+            temperatures=[0.1],
+            replications=1,
+        )
+
+        # All prompts still executed despite 8 consecutive empty responses.
+        assert len(results) == 8
+        assert {r.prompt_id for r in results} == {f"empty-{i}" for i in range(8)}
+        assert all(r.success is False for r in results)
+        assert all(r.finish_reason == "length" for r in results)
+
+    @patch("hellmholtz.benchmark.runner.chat_raw")
+    def test_benchmark_api_failures_skip_model_without_aborting_benchmark(
+        self,
+        mock_chat_raw: MagicMock,
+        mock_chat_response: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """A dead model is skipped after 5 consecutive API errors, but the
+        remaining models in the same run must still be benchmarked."""
+
+        def side_effect(model: str, **_kwargs: object) -> MagicMock:
+            if model == "dead-model":
+                # "API Error" matches no retryable pattern, so _retry_with_backoff
+                # fails fast and the test stays quick.
+                raise Exception("API Error")
+            return mock_chat_response
+
+        mock_chat_raw.side_effect = side_effect
+
+        prompts = [
+            Prompt(
+                id=f"p-{i}",
+                category="test",
+                messages=[Message(role="user", content=f"prompt {i}")],
+            )
+            for i in range(8)
+        ]
+
+        results = run_benchmarks(
+            models=["dead-model", "live-model"],
+            prompts=prompts,
+            results_dir=str(tmp_path),
+            temperatures=[0.1],
+            replications=1,
+        )
+
+        dead = [r for r in results if r.model == "dead-model"]
+        live = [r for r in results if r.model == "live-model"]
+
+        # Dead model: stopped right when the threshold (5) was reached...
+        assert len(dead) == 5
+        assert all(r.success is False for r in dead)
+        # ...but the next model ran to completion instead of being aborted.
+        assert len(live) == 8
+        assert all(r.success is True for r in live)
+
+    @patch("hellmholtz.benchmark.runner.chat_raw")
     def test_benchmark_run_no_usage_info(
         self, mock_chat_raw: MagicMock, sample_prompts: list[Prompt], tmp_path: Path
     ) -> None:
