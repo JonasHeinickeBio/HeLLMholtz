@@ -347,14 +347,27 @@ hellm mcp --print-config --model blablador:alias-large
 Paste the output into Claude Desktop's `claude_desktop_config.json`
 (Settings > Developer > Edit Config), then restart Claude Desktop.
 
-The server exposes four tools:
+The server exposes six tools, two resources and three prompts:
 
 | Tool | Purpose |
 |------|---------|
 | `ask_external` | Offload a single heavy task (summarize, draft, translate) to Blablador |
 | `chat_external` | Continue a full conversation (JSON message array) on Blablador |
+| `check_model` | Check whether a model is available at the configured endpoint |
+| `run_doctor` | Run connectivity diagnostics (endpoint, auth, models, optional chat round-trip) |
 | `list_models` | List usable `blablador:...` model identifiers |
 | `get_info` | Show server default model and endpoint status |
+
+| Resource | Purpose |
+|----------|---------|
+| `hellm://info` | Server status text: default model and endpoint state |
+| `hellm://models` | Catalog of model identifiers served by the endpoint (JSON) |
+
+| Prompt | Purpose |
+|--------|---------|
+| `summarize` | Summarize a text (optional style/audience hint) |
+| `translate` | Translate a text into a target language |
+| `explain` | Explain a text in plain language (optional audience) |
 
 **Manual run / other options:**
 ```bash

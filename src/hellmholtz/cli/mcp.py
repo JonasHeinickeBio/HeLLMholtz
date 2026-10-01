@@ -29,7 +29,7 @@ def register_mcp_commands(app: typer.Typer) -> None:
             help="Print a ready-to-paste Claude Desktop MCP config and exit",
         ),
     ) -> None:
-        """Run the HeLLMholtz MCP server (tools: ask_external, chat_external, list_models)."""
+        """Run the HeLLMholtz MCP server (tools, resources and prompts for Blablador models)."""
         _mcp_impl(model, transport, host, port, print_config)
 
 
@@ -50,7 +50,9 @@ def _mcp_impl(
 
         # Stdio speaks MCP on stdout, so keep banners on stderr.
         banner = [
-            "HeLLMholtz MCP server. Tools: ask_external, chat_external, list_models, get_info.",
+            "HeLLMholtz MCP server. Tools: ask_external, chat_external, check_model, "
+            "run_doctor, list_models, get_info. Resources: hellm://info, hellm://models. "
+            "Prompts: summarize, translate, explain.",
             f"Default model: {model or 'auto (HELLM_MCP_MODEL / defaults)'}",
             "Claude Desktop: add via 'hellm mcp --print-config' or "
             "Settings > Developer > Edit Config.",

@@ -82,6 +82,65 @@ def claude_desktop_config(
     return json.dumps(config, indent=2)
 
 
+def prompt_summarize(text: str, style: str | None = None) -> list[dict[str, str]]:
+    """Build the ``summarize`` MCP prompt messages.
+
+    Args:
+        text: Text to summarize.
+        style: Optional style/audience hint for the summary.
+
+    Returns:
+        Chat messages ready to send to a model.
+    """
+    instruction = "Summarize the following text clearly, faithfully and concisely."
+    if style and style.strip():
+        instruction += f" Write for this style/audience: {style.strip()}."
+    return [{"role": "user", "content": f"{instruction}\n\n---\n{text}"}]
+
+
+def prompt_translate(text: str, target_language: str) -> list[dict[str, str]]:
+    """Build the ``translate`` MCP prompt messages.
+
+    Args:
+        text: Text to translate.
+        target_language: Language the text should be translated into.
+
+    Returns:
+        Chat messages ready to send to a model.
+    """
+    return [
+        {
+            "role": "user",
+            "content": (
+                f"Translate the following text into {target_language}. Preserve meaning, tone "
+                "and formatting; answer with the translation only.\n\n---\n" + text
+            ),
+        }
+    ]
+
+
+def prompt_explain(text: str, audience: str | None = None) -> list[dict[str, str]]:
+    """Build the ``explain`` MCP prompt messages.
+
+    Args:
+        text: Text to explain.
+        audience: Optional description of who the explanation is for.
+
+    Returns:
+        Chat messages ready to send to a model.
+    """
+    who = audience.strip() if audience and audience.strip() else "a technically literate reader"
+    return [
+        {
+            "role": "user",
+            "content": (
+                f"Explain the following text in plain language for {who}. Cover the key "
+                "claims, then list anything ambiguous or unsupported.\n\n---\n" + text
+            ),
+        }
+    ]
+
+
 class HellmTools:
     """Tool implementations exposed over MCP.
 
@@ -184,6 +243,92 @@ class HellmTools:
                 )
         return self._chat(parsed, model, temperature=temperature, max_tokens=max_tokens)
 
+    def check_model(self, model: str | None = None) -> str:
+        """Check whether one model is served by the endpoint and answers probes.
+
+        Args:
+            model: Model identifier; defaults to the server's default model.
+                Call list_models first to see valid identifiers.
+
+        Returns:
+            A one-line availability verdict, or a readable error string.
+        """
+        from hellmholtz.client import check_model_availability
+
+        effective = resolve_default_model(model or self.default_model)
+        try:
+            available = check_model_availability(effective)
+        except Exception as e:  # noqa: BLE001 - surface errors as tool text
+            logger.error(f"MCP check_model failed for {effective}: {e}")
+            return f"Error checking model '{effective}': {e}"
+        if available:
+            return f"Model '{effective}' is available."
+        return f"Model '{effective}' is NOT available (no answer to a minimal probe)."
+
+    def run_doctor(self, model: str | None = None, skip_chat: bool = False) -> str:
+        """Run connectivity diagnostics (the same checks as `hellm doctor`).
+
+        Checks the Python and package versions, the MCP extra, credentials,
+        endpoint reachability, whether the model is served, and (unless
+        skip_chat is set) a minimal chat round-trip.
+
+        Args:
+            model: Model to diagnose; defaults to the server's default model.
+            skip_chat: Skip the chat round-trip probe.
+
+        Returns:
+            A line-based check report ending with a verdict.
+        """
+        from hellmholtz import diagnostics as diag
+
+        settings = get_settings()
+        target = resolve_default_model(model or self.default_model)
+        results = [
+            diag.check_python(),
+            diag.check_version(),
+            diag.check_mcp_extra(),
+            diag.check_credentials(settings.blablador_api_key),
+        ]
+        models_body: str | None = None
+
+        def opener(url: str, timeout: float) -> str:
+            nonlocal models_body
+            headers = {"Authorization": f"Bearer {settings.blablador_api_key}"}
+            models_body = diag._http_get_with_headers(url, timeout, headers)
+            return models_body
+
+        endpoint = diag.check_endpoint(
+            settings.blablador_base_url,
+            opener=opener,
+            timeout=5.0,
+            api_key=settings.blablador_api_key,
+        )
+        results.append(endpoint)
+        if endpoint.ok and models_body is not None:
+            results.append(diag.check_model_available(models_body, target))
+        if skip_chat:
+            results.append(diag.CheckResult("chat round-trip", True, "skipped", warn=True))
+        else:
+            results.append(
+                diag.check_chat(
+                    settings.blablador_api_key,
+                    settings.blablador_base_url,
+                    target,
+                    timeout=5.0,
+                )
+            )
+
+        lines = [f"[{r.status}] {r.name}: {r.detail}" for r in results]
+        failures = sum(1 for r in results if not r.ok and not r.warn)
+        warnings = sum(1 for r in results if not r.ok and r.warn)
+        if failures:
+            verdict = f"{failures} check(s) failed."
+        elif warnings:
+            verdict = "Healthy with warnings."
+        else:
+            verdict = "All checks passed."
+        return "\n".join([f"hellm doctor report (model: {target})", *lines, "", verdict])
+
     def get_info(self) -> str:
         """Describe the server configuration (default model and endpoint state).
 
@@ -199,6 +344,28 @@ class HellmTools:
         else:
             endpoint = "MISSING (set BLABLADOR_API_KEY / BLABLADOR_API_BASE)"
         return f"HeLLMholtz MCP server. Default model: {model}. Blablador endpoint: {endpoint}."
+
+    def models_json(self) -> str:
+        """Machine-readable model catalog (payload of ``hellm://models``).
+
+        Returns:
+            JSON text with one entry per served model, or an error object.
+        """
+        try:
+            from hellmholtz.providers.blablador import list_models as blablador_list_models
+
+            entries = [
+                {
+                    "id": f"blablador:{model.name or model.id}",
+                    "name": model.name or model.id,
+                    "upstream_id": model.id,
+                }
+                for model in blablador_list_models()
+            ]
+        except Exception as e:  # noqa: BLE001 - surface errors as resource text
+            logger.error(f"MCP models resource failed: {e}")
+            return json.dumps({"error": str(e), "models": []})
+        return json.dumps({"object": "list", "models": entries})
 
     # ------------------------------------------------------------------
     # Internals

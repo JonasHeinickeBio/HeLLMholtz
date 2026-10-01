@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The bundled MCP server now covers the full MCP protocol surface: new `check_model` and
+  `run_doctor` tools, `hellm://info` and `hellm://models` resources, and `summarize`,
+  `translate`, and `explain` prompts, alongside the existing four tools (issue #40).
 - `hellm doctor` — one-shot connectivity diagnostics for python version, optional extras,
   credentials, base URL, model ids, and a live chat round-trip; exits non-zero only on hard
   failures, with `--model` and `--skip-chat` options (issue #40).

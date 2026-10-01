@@ -47,7 +47,9 @@ The `--print-claude-settings` output is a ready-to-paste `~/.claude/settings.jso
 
 ## Route 3: MCP clients (Claude Desktop, ...)
 
-HeLLMholtz ships an MCP server (`ask_external`, `chat_external`, `list_models`):
+HeLLMholtz ships an MCP server (tools `ask_external`, `chat_external`, `check_model`,
+`run_doctor`, `list_models`, `get_info`, plus `hellm://info`/`hellm://models` resources and
+`summarize`/`translate`/`explain` prompts):
 
 ```bash
 hellm mcp --print-config                    # ready-to-paste Claude Desktop config
