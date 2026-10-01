@@ -170,8 +170,11 @@ def run_benchmarks(  # noqa: C901
         for model_idx, model in enumerate(model_list):
             model_results = 0
             model_successful = 0
-            consecutive_failures = 0
-            max_consecutive_failures = 5  # Skip model after this many consecutive failures
+            consecutive_api_failures = 0
+            # Skip a model after this many consecutive API/transport failures.
+            # Empty completions are model-quality issues, not API outages, and
+            # never count toward this threshold.
+            max_consecutive_api_failures = 5
 
             logger.info(f"Testing model {model_idx + 1}/{len(model_list)}: {model}")
 
@@ -181,11 +184,11 @@ def run_benchmarks(  # noqa: C901
 
                 for _temp_idx, temperature in enumerate(temperatures):
                     for repl_idx in range(replications):
-                        # Check if we should skip this model due to too many failures
-                        if consecutive_failures >= max_consecutive_failures:
+                        # Check if we should skip this model due to too many API failures
+                        if consecutive_api_failures >= max_consecutive_api_failures:
                             warn_msg = (
                                 f"Skipping remaining tests for {model} due to "
-                                f"{consecutive_failures} consecutive failures"
+                                f"{consecutive_api_failures} consecutive API failures"
                             )
                             logger.warning(warn_msg)
                             stats["skipped_models"].add(model)
@@ -212,6 +215,7 @@ def run_benchmarks(  # noqa: C901
                         out_tokens = None
                         response_text = None
                         finish_reason = None
+                        transport_failure = False
 
                         try:
                             # Call with temperature and other parameters with retry logic
@@ -253,6 +257,7 @@ def run_benchmarks(  # noqa: C901
                             else:
                                 success = False
                                 error_msg = "No response choices returned"
+                                transport_failure = True
                                 logger.warning(
                                     f"No choices in response for {model}, prompt {prompt_id}"
                                 )
@@ -272,6 +277,7 @@ def run_benchmarks(  # noqa: C901
                         except Exception as e:
                             success = False
                             error_msg = str(e)
+                            transport_failure = True
                             logger.exception(
                                 f"Benchmark failed for {model}, prompt {prompt_id}, "
                                 f"temp {temperature}: {error_msg}"
@@ -314,25 +320,31 @@ def run_benchmarks(  # noqa: C901
                         if success:
                             stats["successful"] += 1
                             model_successful += 1
-                            consecutive_failures = 0  # Reset on success
+                            consecutive_api_failures = 0  # Reset on success
                         else:
                             stats["failed"] += 1
-                            consecutive_failures += 1
+                            if transport_failure:
+                                consecutive_api_failures += 1
+                            else:
+                                # Empty completion: the API is up and answered, so
+                                # this is a model-quality issue, not an outage.
+                                consecutive_api_failures = 0
 
                         model_results += 1
                         pbar.update(1)
 
                     # Check if we need to break out of replication loop due to model skipping
-                    if consecutive_failures >= max_consecutive_failures:
+                    if consecutive_api_failures >= max_consecutive_api_failures:
                         break
 
                 # Check if we need to break out of temperature loop due to model skipping
-                if consecutive_failures >= max_consecutive_failures:
+                if consecutive_api_failures >= max_consecutive_api_failures:
                     break
 
-            # Check if we need to break out of prompt loop due to model skipping
-            if consecutive_failures >= max_consecutive_failures:
-                break
+            # If this model was skipped due to consecutive API failures, move on
+            # to the next model instead of aborting the whole benchmark.
+            if consecutive_api_failures >= max_consecutive_api_failures:
+                continue
 
             logger.info(f"Completed testing {model}")
             stats["models_tested"].add(model)
@@ -429,7 +441,7 @@ def print_summary_stats(stats: dict[str, Any], results: list[BenchmarkResult]) -
     if stats.get("skipped_models"):
         print(f"Skipped Models: {len(stats['skipped_models'])}")
         for model in sorted(stats["skipped_models"]):
-            print(f"  {model}: skipped due to consecutive failures")
+            print(f"  {model}: skipped due to consecutive API failures")
 
     print(f"\nModels Tested: {len(stats['models_tested'])}")
     for model in sorted(stats["models_tested"]):
