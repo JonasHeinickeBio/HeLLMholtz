@@ -225,6 +225,66 @@ class TestBenchmarkRunner:
         assert results[0].error_message == "API Error"
 
     @patch("hellmholtz.benchmark.runner.chat_raw")
+    def test_benchmark_run_empty_response_marked_failure(
+        self, mock_chat_raw: MagicMock, sample_prompts: list[Prompt], tmp_path: Path
+    ) -> None:
+        """Test that an empty completion (e.g. truncated with finish_reason='length')
+        is recorded as a failure instead of a silent success."""
+        mock_response = MagicMock()
+        mock_response.usage.prompt_tokens = 10
+        mock_response.usage.completion_tokens = 512
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = ""
+        mock_response.choices[0].finish_reason = "length"
+        mock_chat_raw.return_value = mock_response
+
+        results = run_benchmarks(
+            models=["openai:gpt-4o"],
+            prompts=sample_prompts[:1],
+            results_dir=str(tmp_path),
+            temperatures=[0.1],
+            replications=1,
+        )
+
+        assert len(results) == 1
+        assert results[0].success is False
+        assert results[0].response_text == ""
+        assert results[0].finish_reason == "length"
+        assert "empty response" in (results[0].error_message or "")
+
+        # The failure and its finish reason must survive serialization.
+        files = list(tmp_path.glob("benchmark_*.json"))
+        assert len(files) == 1
+        with open(files[0]) as f:
+            data = json.load(f)
+        assert data[0]["success"] is False
+        assert data[0]["finish_reason"] == "length"
+
+    @patch("hellmholtz.benchmark.runner.chat_raw")
+    def test_benchmark_run_records_finish_reason(
+        self,
+        mock_chat_raw: MagicMock,
+        sample_prompts: list[Prompt],
+        mock_chat_response: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        """Test that a normal completion stores its finish reason."""
+        mock_chat_response.choices[0].finish_reason = "stop"
+        mock_chat_raw.return_value = mock_chat_response
+
+        results = run_benchmarks(
+            models=["openai:gpt-4o"],
+            prompts=sample_prompts[:1],
+            results_dir=str(tmp_path),
+            temperatures=[0.1],
+            replications=1,
+        )
+
+        assert len(results) == 1
+        assert results[0].success is True
+        assert results[0].finish_reason == "stop"
+
+    @patch("hellmholtz.benchmark.runner.chat_raw")
     def test_benchmark_run_no_usage_info(
         self, mock_chat_raw: MagicMock, sample_prompts: list[Prompt], tmp_path: Path
     ) -> None:
