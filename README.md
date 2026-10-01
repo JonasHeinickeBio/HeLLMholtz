@@ -338,6 +338,35 @@ hellm chart results/benchmark_<latest>.json --output reports/chart.png
 A companion workflow (`daily-model-check.yml`, every day at 02:00 UTC) refreshes only
 `models_status.yaml`, so availability information between benchmark runs stays current.
 
+#### Latest Benchmark Results (2026-09-30)
+
+Full run: 4 Blablador models × 36 prompts × 3 replications (432 requests, all prompts
+succeeded). Quality scores are LLM-as-a-Judge ratings (1–10, judge:
+`blablador:Muse Glimmer 30b`, independent of the benchmarked models); see the driver
+section below for how to reproduce or extend them. Raw data:
+`results/benchmark_2026-09-30T23-29-27.138617.partial.judged.jsonl`.
+
+| Model | Judge mean | Judge median | Rated | p50 latency | p50 tokens/s |
+|-------|-----------:|-------------:|------:|------------:|-------------:|
+| `blablador:large` | **8.62** | 9.0 | 106/108 | 2.5 s | 90 |
+| `blablador:code`  | **8.51** | 9.0 | 90/108 | 7.7 s | 41 |
+| `blablador:fast`  | **8.09** | 9.0 | 106/108 | 2.8 s | 145 |
+| `blablador:huge`  | **5.01** | 4.0 | 107/108 | 5.7 s | 82 |
+
+Mean judge rating per prompt category:
+
+| Category | fast | large | huge | code |
+|----------|-----:|------:|-----:|-----:|
+| reasoning | 9.3 | 8.8 | 7.9 | 9.8 |
+| creative | 8.7 | 8.7 | 5.1 | 8.3 |
+| coding | 8.3 | 9.4 | 4.3 | 9.2 |
+| knowledge | 6.1 | 7.6 | **2.8** | 7.3 |
+
+> ⚠️ `blablador:huge` is a persistent outlier this run — strongest on reasoning, but weak
+> on knowledge/coding: many responses are truncated or stop after an empty `<think>`
+> planning trace with no actual answer. `blablador:code` has 18 empty responses (excluded
+> from judging). Both warrant investigation in the next cycle.
+
 #### LLM-as-a-Judge for Existing Result Files
 
 `hellm bench --evaluate-with` only judges freshly produced runs. To retroactively score
