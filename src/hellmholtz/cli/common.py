@@ -28,6 +28,23 @@ TEMPERATURES_OPTION = typer.Option(
 )
 MAX_TOKENS_OPTION = typer.Option(None, help="Maximum tokens for responses")
 HTML_REPORT_OPTION = typer.Option(None, help="Generate HTML report at specified path")
+# Option to filter prompts by task categories (e.g., 'reasoning,coding')
+TASKS_OPTION = typer.Option(
+    None,
+    help=("Comma-separated task categories to filter prompts (e.g., 'reasoning,coding')"),
+)
+
+
+def parse_tasks(tasks_str: str | None) -> list[str] | None:
+    """Parse comma-separated task categories.
+
+    Returns a list of categories or None if not provided.
+    """
+    if tasks_str:
+        return [t.strip() for t in tasks_str.split(",")]
+    return None
+
+
 RESULTS_FILE_ARGUMENT = typer.Argument(..., help="Path to evaluation results JSON file")
 
 

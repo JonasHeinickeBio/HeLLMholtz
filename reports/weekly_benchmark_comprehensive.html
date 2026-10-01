@@ -1,0 +1,125 @@
+<!DOCTYPE html><html><head>
+<title>Weekly Benchmark Report - 2026-10-01 01:06:32 UTC</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;margin:40px;line-height:1.6;}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:30px;border-radius:10px;margin-bottom:30px;}
+.summary{background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0;}
+.available{color:#28a745;} .unavailable{color:#dc3545;}
+.metric{font-size:2em;font-weight:bold;margin:10px 0;}
+table{width:100%;border-collapse:collapse;margin:20px 0;background:white;}
+th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:0.95em;}
+th{background:#f8f9fa;font-weight:600;}
+td.good{background:#e6f6e6;} td.bad{background:#fdecea;}
+.recommendations{background:#fff3cd;border:1px solid #ffeaa7;padding:20px;border-radius:5px;margin:20px 0;}
+.footer{margin-top:40px;padding-top:20px;border-top:1px solid #e9ecef;color:#6c757d;font-size:0.9em;}
+</style></head><body>
+<div class="header"><h1>📊 Weekly Benchmark Report</h1>
+<p><strong>Generated:</strong> 2026-10-01 01:06:32 UTC</p>
+<p><strong>Requests:</strong> 432 | <strong>Models Benchmarked:</strong> 4</p></div>
+<div class="summary"><h2>🔍 Model Availability</h2><ul>
+<li><strong>Total Models:</strong> 25</li>
+<li><strong>Available:</strong> 25</li>
+<li><strong>Latency-Tested:</strong> 10</li></ul>
+<h3>Alias Models</h3><ul>
+<li class="available">✅ alias-apertus (0.632s)</li>
+<li class="available">✅ alias-code (0.136s)</li>
+<li class="available">✅ alias-embeddings</li>
+<li class="available">✅ alias-eve (0.199s)</li>
+<li class="available">✅ alias-fast</li>
+<li class="available">✅ alias-huge (0.143s)</li>
+<li class="available">✅ alias-large</li>
+<li class="available">✅ alias-qwen3-8b-embeddings</li>
+<li class="available">✅ alias-qwen35-35b-a3b (0.127s)</li>
+<li class="available">✅ alias-qwen36-35b</li>
+</ul>
+<h3>Base Model Models</h3><ul>
+<li class="available">✅ GPT-OSS-120b</li>
+<li class="available">✅ Qwen3.5-35B-A3B (0.121s)</li>
+<li class="available">✅ Qwen3.6-35B-A3B-FP8</li>
+</ul>
+<h3>Instruction Tuned Models</h3><ul>
+<li class="available">✅ Apertus-8B-Instruct-2509 (0.121s)</li>
+<li class="available">✅ EVE-Instruct (0.251s)</li>
+<li class="available">✅ eve-instruct-4gpu (0.191s)</li>
+</ul>
+<h3>Other Models</h3><ul>
+<li class="available">✅ MiniMax-M2.7 (0.152s)</li>
+<li class="available">✅ Mis</li>
+<li class="available">✅ Qwen3-Coder-Next-FP8 from Feb 2026</li>
+<li class="available">✅ Qwen3.5-122B-A10B-FP8, general purpose large model</li>
+<li class="available">✅ faster-whisper-large-v3</li>
+<li class="available">✅ gpt-3.5-turbo</li>
+<li class="available">✅ nemotron-3-nano-omni-30b-bf16-262k-8gpu</li>
+<li class="available">✅ text-davinci-003</li>
+<li class="available">✅ text-embedding-ada-002</li>
+</ul>
+</div>
+<div class="summary"><h2>📈 Overall Performance by Model</h2>
+<table><thead><tr><th>Model</th><th>Success Rate</th><th>Avg Latency</th><th>Tokens/s</th><th>Prompts</th><th>Requests</th><th>Avg Rating</th></tr></thead><tbody>
+<tr><td>blablador:fast</td><td class="good">100.0%</td><td>2.92s</td><td>153.1</td><td>12</td><td>108</td><td>-</td></tr>
+<tr><td>blablador:large</td><td class="good">100.0%</td><td>8.97s</td><td>78.2</td><td>12</td><td>108</td><td>-</td></tr>
+<tr><td>blablador:huge</td><td class="good">100.0%</td><td>13.34s</td><td>76.2</td><td>12</td><td>108</td><td>-</td></tr>
+<tr><td>blablador:code</td><td class="good">100.0%</td><td>12.15s</td><td>35.1</td><td>12</td><td>108</td><td>-</td></tr>
+</tbody></table></div>
+<div class="summary"><h2>🟢 Success Rate by Task</h2>
+<table><thead><tr><th>Model</th><th>Coding</th><th>Creative</th><th>Knowledge</th><th>Reasoning</th></tr></thead><tbody>
+<tr><td>blablador:code</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+</tr>
+<tr><td>blablador:fast</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+</tr>
+<tr><td>blablador:huge</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+</tr>
+<tr><td>blablador:large</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+<td class="good">100% (27)</td>
+</tr>
+</tbody></table></div>
+<div class="summary"><h2>⚡ Avg Latency by Task</h2>
+<table><thead><tr><th>Model</th><th>Coding</th><th>Creative</th><th>Knowledge</th><th>Reasoning</th></tr></thead><tbody>
+<tr><td>blablador:code</td>
+<td>9.92s</td>
+<td>13.54s</td>
+<td>17.59s</td>
+<td>7.56s</td>
+</tr>
+<tr><td>blablador:fast</td>
+<td>3.39s</td>
+<td>1.82s</td>
+<td>3.45s</td>
+<td>3.01s</td>
+</tr>
+<tr><td>blablador:huge</td>
+<td>12.84s</td>
+<td>16.40s</td>
+<td>12.67s</td>
+<td>11.44s</td>
+</tr>
+<tr><td>blablador:large</td>
+<td>8.64s</td>
+<td>8.35s</td>
+<td>10.34s</td>
+<td>8.57s</td>
+</tr>
+</tbody></table></div>
+<div class="recommendations"><h2>💡 Findings &amp; Recommendations</h2><ul>
+<li><strong>Availability:** 25/25 registered models are currently available.</li>
+<li><strong>Coding:** 4/4 models tied at 100% success — fastest `blablador:fast` (3.39s avg)</li>
+<li><strong>Creative:** 4/4 models tied at 100% success — fastest `blablador:fast` (1.82s avg)</li>
+<li><strong>Knowledge:** 4/4 models tied at 100% success — fastest `blablador:fast` (3.45s avg)</li>
+<li><strong>Reasoning:** 4/4 models tied at 100% success — fastest `blablador:fast` (3.01s avg)</li>
+</ul></div>
+<div class="footer"><p><strong>Links:</strong> Source results <code>benchmark_2026-09-30T23-29-27.138617.FULL.json</code> (<a href="weekly_benchmark_results.json">published JSON</a>) | <a href="../models_status.yaml">Model Status YAML</a> | <a href="weekly_benchmark_chart.png">Performance Chart</a></p><p><em>Automatically generated weekly by GitHub Actions.</em></p></div></body></html>

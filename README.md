@@ -287,30 +287,84 @@ Benchmark reports include per-variant latency (p50/p95), throughput, validation 
 
 #### Weekly Automated Benchmarking
 
-The repository includes a GitHub Actions workflow that automatically runs benchmarks weekly and updates reports:
+The repository includes a GitHub Actions workflow (`.github/workflows/weekly-benchmark.yml`)
+that runs every **Sunday at 00:00 UTC** (and on demand via *Run workflow*) to answer two
+questions continuously:
 
-- **Scheduled**: Runs every Sunday at 00:00 UTC
-- **Model Discovery**: Automatically fetches latest Blablador models
-- **Performance Charts**: Generates visual charts comparing model performance
-- **Multiple Formats**: Creates HTML, Markdown, and PNG chart reports
-- **Auto-commit**: Updates reports in the repository for public viewing
+1. **Which models are available?** Every registered Blablador model is probed against the
+   live `/models` endpoint and tested for chat accessibility; results are written to
+   `models_status.yaml` (availability, latency, category, last-checked timestamp).
+2. **How performant is each model on each task?** All currently available chat models are
+   benchmarked across every prompt category (reasoning, coding, creative, knowledge). The
+   generated report contains an overall per-model summary plus a **model × task performance
+   matrix** (success rate and average latency per category), so you can see at a glance
+   which model is best for which kind of task.
 
-To enable automated benchmarking:
+Non-chat endpoints (embedding / transcription models) are detected and excluded from the
+benchmark automatically. If a run is interrupted, the workflow falls back to the runner's
+incremental partial results so the weekly report still reflects the completed requests.
 
-1. Set repository secrets for API keys:
-   - `BLABLADOR_API_KEY`: Your Blablador API key
-   - `BLABLADOR_API_BASE`: Blablador API base URL (optional)
+To enable automated benchmarking, set repository secrets:
 
-2. The workflow will automatically:
-   - Run benchmarks on selected models
-   - Generate performance reports
-   - Create visual charts
-   - Commit updated reports to the repository
+- `BLABLADOR_API_KEY`: Your Blablador API key
+- `BLABLADOR_API_BASE`: Blablador API base URL (optional)
 
-Reports are available in the `reports/` directory and include:
-- `weekly_benchmark_report.html`: Interactive HTML report
-- `weekly_benchmark_report.md`: Markdown summary
-- `weekly_benchmark_chart.png`: Performance visualization
+Outputs are committed back to the repository under `reports/`:
+
+| File | Content |
+|------|---------|
+| `weekly_benchmark_comprehensive.md` / `.html` | Availability status, per-model summary, per-task success-rate & latency matrices, findings |
+| `weekly_benchmark_report.md` / `.html` | Response-level benchmark detail (latency, tokens, ratings) |
+| `weekly_benchmark_chart.png` | Performance visualization |
+| `weekly_benchmark_results.json` | Raw result records for the week (regenerate reports anytime) |
+
+The same reports can be produced locally from any benchmark run:
+
+```bash
+# Full benchmark across all chat models and prompt categories
+hellm bench --models blablador:fast,blablador:large,... --all-prompts --replications 3
+
+# Availability check (updates models_status.yaml)
+hellm monitor --test-accessibility
+
+# Comprehensive weekly-style report (availability + per-task matrix)
+python scripts/generate_comprehensive_report.py results/benchmark_<latest>.json
+
+# Standard report + chart
+hellm report results/benchmark_<latest>.json --format html-detailed --output reports/report.html
+hellm chart results/benchmark_<latest>.json --output reports/chart.png
+```
+
+A companion workflow (`daily-model-check.yml`, every day at 02:00 UTC) refreshes only
+`models_status.yaml`, so availability information between benchmark runs stays current.
+
+#### LLM-as-a-Judge for Existing Result Files
+
+`hellm bench --evaluate-with` only judges freshly produced runs. To retroactively score
+an existing results file (1–10 rating + critique per response), use the resumable driver:
+
+```bash
+python scripts/run_llm_judge.py results/benchmark_<latest>.jsonl \
+    --model "blablador:Muse Glimmer 30b" --workers 4
+
+# Smoke test on a handful of records first:
+python scripts/run_llm_judge.py results/benchmark_<latest>.jsonl --limit 4
+```
+
+Behaviour:
+
+- Writes `<results>.judged.jsonl` (override with `--output`); the input file is never modified.
+- **Resumable**: re-running keeps existing judgements (matched by a content hash of each
+  record) and only retries records still missing a rating — safe after transient 5xx or
+  unparseable judge replies; checkpoints are written atomically every 10 completions.
+- Identical records (same model, params, prompt and response text) are judged once and the
+  verdict is shared across duplicates.
+- Choose a judge model that is *not* one of the benchmarked models to avoid self-preference
+  bias. Reasoning-style judges may hide the verdict in `reasoning_content`; the driver
+  handles that and can be nudged with `--judge-max-tokens`.
+
+The judged file can then be fed to the report generators above, which pick up the ratings.
+
 
 #### Advanced Features
 
