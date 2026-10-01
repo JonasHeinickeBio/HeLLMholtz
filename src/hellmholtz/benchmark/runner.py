@@ -93,6 +93,7 @@ class BenchmarkResult:
     max_tokens: int | None = None
     run_id: int | None = None  # For replication tracking
     tokens_per_sec: float | None = None
+    finish_reason: str | None = None  # Completion finish reason (e.g. "stop", "length")
 
 
 def run_benchmarks(  # noqa: C901
@@ -210,6 +211,7 @@ def run_benchmarks(  # noqa: C901
                         in_tokens = None
                         out_tokens = None
                         response_text = None
+                        finish_reason = None
 
                         try:
                             # Call with temperature and other parameters with retry logic
@@ -229,7 +231,27 @@ def run_benchmarks(  # noqa: C901
 
                             if response.choices and len(response.choices) > 0:
                                 response_text = response.choices[0].message.content
+                                fr = getattr(response.choices[0], "finish_reason", None)
+                                finish_reason = fr if isinstance(fr, str) else None
+                                # The call itself can succeed yet still return an
+                                # empty completion (e.g. the model exhausts its
+                                # token budget on hidden output and is truncated
+                                # with finish_reason="length"). Treat these as
+                                # failures so successful results never contain an
+                                # empty response, and keep the finish reason for
+                                # diagnostics.
+                                if not (response_text or "").strip():
+                                    success = False
+                                    error_msg = (
+                                        "Model returned an empty response "
+                                        f"(finish_reason={finish_reason})"
+                                    )
+                                    logger.warning(
+                                        f"Empty response from {model} for prompt "
+                                        f"{prompt_id} (finish_reason={finish_reason})"
+                                    )
                             else:
+                                success = False
                                 error_msg = "No response choices returned"
                                 logger.warning(
                                     f"No choices in response for {model}, prompt {prompt_id}"
@@ -268,6 +290,7 @@ def run_benchmarks(  # noqa: C901
                             output_tokens=out_tokens,
                             error_message=error_msg,
                             response_text=response_text,
+                            finish_reason=finish_reason,
                             temperature=temperature,
                             max_tokens=max_tokens,
                             run_id=repl_idx,
