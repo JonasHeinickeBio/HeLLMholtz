@@ -2,6 +2,8 @@
 
 This guide covers how to connect [Helmholtz Blablador](https://blablador.fz-juelich.de) to various AI coding tools and frameworks. All tools are open-source and work with Blablador's private models.
 
+Not sure which route fits your tool? See [Connect Your Client](connect-your-client.md) for the decision guide, or run `hellm doctor` to diagnose connectivity.
+
 ## Quick Setup
 
 Use the `hellm-setup` CLI for one-time configuration:

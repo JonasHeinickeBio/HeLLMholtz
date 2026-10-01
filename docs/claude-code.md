@@ -7,6 +7,8 @@ HeLLMholtz can run a local LiteLLM proxy that speaks **both** the OpenAI API
 HeLLMholtz can route — OpenAI, Gemini, Ollama, Blablador, and more — without
 an Anthropic API key.
 
+Looking for a different client? Start at [Connect Your Client](connect-your-client.md).
+
 ## How it works
 
 Claude Code is an Anthropic-API client: it sends requests to
@@ -184,5 +186,8 @@ Options:
   --master-key TEXT     Proxy master key (or set LITELLM_MASTER_KEY)
   --config PATH         Use an existing LiteLLM config file
   --claude-code         Print the Claude Code snippet; auto-generate a master key
+  --print-claude-settings
+                        Print ~/.claude/settings.json block and exit (proxy not
+                        started)
   --debug               Run the proxy in debug mode
 ```

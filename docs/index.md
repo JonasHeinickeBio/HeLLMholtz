@@ -57,6 +57,7 @@ Reports are available in the [reports/](../reports/) directory and include:
 - **[Installation](installation.md)**: Setup and installation instructions
 - **[Configuration](configuration.md)**: Environment variables and settings
 - **[Usage](usage.md)**: Command-line interface and Python API
+- **[Connect Your Client](connect-your-client.md)**: Wire Claude Code, Claude Desktop, MCP clients, or any OpenAI-compatible tool to Blablador
 - **[Models](models.md)**: Available models and providers
 - **[Monitoring](monitoring.md)**: Model availability and health monitoring
 - **[Publishing](publishing.md)**: PyPI publishing workflow and release management

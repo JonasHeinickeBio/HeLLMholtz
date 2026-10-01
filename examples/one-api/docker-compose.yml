@@ -1,0 +1,48 @@
+# Team gateway: one-api in front of the Helmholtz Blablador API.
+#
+# one-api centralises authentication: the Blablador token lives in ONE place
+# (the channel configuration), and every team member gets their own one-api
+# token with quotas and usage stats.
+#
+#   docker compose up -d
+#   open http://localhost:3000   # create root account on first visit
+#
+# See README.md in this folder for the channel setup.
+
+services:
+  one-api:
+    image: justsong/one-api:latest
+    container_name: one-api
+    restart: always
+    command: --log-dir /data/logs
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/one-api:/data
+    environment:
+      - SQL_DSN=oneapi:change-me-db-pass@tcp(mysql:3306)/oneapi
+      # Optional: seed the root password instead of the first-visit form
+      # - INITIAL_ROOT_TOKEN=change-me-root-pass
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.2
+    container_name: one-api-mysql
+    restart: always
+    # Bind to localhost only — the database is not part of the gateway surface.
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      - MYSQL_USER=oneapi
+      - MYSQL_PASSWORD=change-me-db-pass
+      - MYSQL_DATABASE=oneapi
+      - MYSQL_ROOT_PASSWORD=change-me-root-pass
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
