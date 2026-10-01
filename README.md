@@ -338,6 +338,33 @@ hellm chart results/benchmark_<latest>.json --output reports/chart.png
 A companion workflow (`daily-model-check.yml`, every day at 02:00 UTC) refreshes only
 `models_status.yaml`, so availability information between benchmark runs stays current.
 
+#### LLM-as-a-Judge for Existing Result Files
+
+`hellm bench --evaluate-with` only judges freshly produced runs. To retroactively score
+an existing results file (1–10 rating + critique per response), use the resumable driver:
+
+```bash
+python scripts/run_llm_judge.py results/benchmark_<latest>.jsonl \
+    --model "blablador:Muse Glimmer 30b" --workers 4
+
+# Smoke test on a handful of records first:
+python scripts/run_llm_judge.py results/benchmark_<latest>.jsonl --limit 4
+```
+
+Behaviour:
+
+- Writes `<results>.judged.jsonl` (override with `--output`); the input file is never modified.
+- **Resumable**: re-running keeps existing judgements (matched by a content hash of each
+  record) and only retries records still missing a rating — safe after transient 5xx or
+  unparseable judge replies; checkpoints are written atomically every 10 completions.
+- Identical records (same model, params, prompt and response text) are judged once and the
+  verdict is shared across duplicates.
+- Choose a judge model that is *not* one of the benchmarked models to avoid self-preference
+  bias. Reasoning-style judges may hide the verdict in `reasoning_content`; the driver
+  handles that and can be nudged with `--judge-max-tokens`.
+
+The judged file can then be fed to the report generators above, which pick up the ratings.
+
 
 #### Advanced Features
 
