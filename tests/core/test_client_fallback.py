@@ -71,6 +71,51 @@ class TestFallbackChain:
         assert chain == ["ollama:other"]
 
 
+REAL_AISUITE_PROVIDERS = {"openai", "anthropic", "google", "ollama", "groq", "mistral", "azure"}
+
+
+class TestProviderPrefixDetection:
+    @pytest.fixture(autouse=True)
+    def _aisuite_providers(self) -> Any:
+        from aisuite.provider import ProviderFactory
+
+        with patch.object(
+            ProviderFactory, "get_supported_providers", return_value=REAL_AISUITE_PROVIDERS
+        ):
+            yield
+
+    @pytest.mark.parametrize(
+        "entry", ["groq:llama-3.1-8b", "azure:gpt-4o", "mistral:small", "openai:gpt-4o"]
+    )
+    def test_aisuite_providers_are_not_sent_to_ollama(self, entry: str) -> None:
+        assert client._qualify_fallback(entry) == entry
+
+    def test_blablador_kept_even_if_aisuite_does_not_list_it(self) -> None:
+        assert client._qualify_fallback("blablador:alias-fast") == "blablador:alias-fast"
+
+    def test_bare_ollama_names_still_qualified(self) -> None:
+        assert client._qualify_fallback("llama3.2:3b") == "ollama:llama3.2:3b"
+        assert client._qualify_fallback("phi3.5") == "ollama:phi3.5"
+
+    def test_provider_prefix_wins_over_ollama_model_name(self) -> None:
+        assert client._qualify_fallback("mistral:7b") == "mistral:7b"
+
+    def test_explicit_ollama_prefix_forces_local_model(self) -> None:
+        assert client._qualify_fallback("ollama:mistral:7b") == "ollama:mistral:7b"
+
+    def test_static_floor_when_aisuite_reports_nothing(self) -> None:
+        from aisuite.provider import ProviderFactory
+
+        with patch.object(ProviderFactory, "get_supported_providers", return_value=set()):
+            assert client._qualify_fallback("openai:gpt-4o") == "openai:gpt-4o"
+
+    def test_chain_keeps_groq_entry(self) -> None:
+        assert client._fallback_chain("a:b", ["groq:llama-3.1-8b", "llama3.2:3b"]) == [
+            "groq:llama-3.1-8b",
+            "ollama:llama3.2:3b",
+        ]
+
+
 class TestChatWithFallback:
     def test_primary_success_skips_fallbacks(self) -> None:
         fake = _fake_chat({"blablador:a": "primary"})

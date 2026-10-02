@@ -34,6 +34,10 @@ A fallback entry is a `provider:model` id, a bare Ollama name (`llama3.2:3b`), o
 for "the preferred local model": `HELLM_OLLAMA_MODEL` if set, otherwise the first installed
 one. When a fallback answers, the CLI notes which model on stderr.
 
+A leading provider prefix always wins (any provider aisuite supports, such as `groq:` or
+`mistral:`). A bare name like `mistral:7b` therefore means the Mistral API; write
+`ollama:mistral:7b` to use the local model of that name.
+
 ### List Models
 
 List available models from the Blablador API:

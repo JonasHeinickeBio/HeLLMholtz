@@ -127,7 +127,8 @@ def chat_raw(
         raise
 
 
-#: Provider prefixes recognised when parsing a fallback entry; anything else is
+#: Provider prefixes always recognised when parsing a fallback entry, on top of
+#: whatever aisuite reports (see :func:`_known_providers`). Anything else is
 #: treated as a bare Ollama model name (which may itself contain a colon).
 KNOWN_PROVIDERS = ("blablador", "openai", "anthropic", "google", "ollama")
 
@@ -186,9 +187,20 @@ def _chat_target(model: str, messages: Sequence[Mapping[str, Any]], **kwargs: An
         raise
 
 
+def _known_providers() -> set[str]:
+    """Provider prefixes aisuite can route, plus ours."""
+    from aisuite.provider import ProviderFactory
+
+    return set(ProviderFactory.get_supported_providers()) | set(KNOWN_PROVIDERS)
+
+
 def _qualify_fallback(entry: str) -> str:
-    """Normalise a fallback entry to a ``provider:model`` identifier."""
-    if entry == AUTO_OLLAMA or entry.split(":", 1)[0] in KNOWN_PROVIDERS:
+    """Normalise a fallback entry to a ``provider:model`` identifier.
+
+    A leading provider prefix always wins, so ``mistral:7b`` means the Mistral
+    API; write ``ollama:mistral:7b`` for the local model of the same name.
+    """
+    if entry == AUTO_OLLAMA or entry.split(":", 1)[0] in _known_providers():
         return entry
     return ollama.qualify(entry)
 
