@@ -47,7 +47,7 @@ HeLLMholtz is a Python package providing unified LLM access, benchmarking, and r
 
 ## Common Pitfalls
 - **Model Resolution**: For Blablador, use model `name` or `alias` in `blablador:{name}`, not raw API ID.
-- **Dependencies**: Install optional groups: `poetry install --with eval` for lm-eval.
+- **Dependencies**: Optional features are extras (`eval`, `proxy`, `mcp`, `reporting`): `poetry install --extras eval` for lm-eval. Dev tooling lives in the `test`, `lint`, `typing` and `security` groups, all installed by a plain `poetry install`.
 - **Paths**: Scripts in `scripts/` add `src/` to `sys.path` manually.
 - **Async**: No async support; all operations synchronous.
 - **Token Counting**: Approximate via `len(content) / 4` if usage not provided.

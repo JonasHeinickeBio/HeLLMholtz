@@ -36,7 +36,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry install --with dev
+        poetry install
 
     - name: Check for API keys
       id: check-keys
