@@ -27,8 +27,14 @@ pip install -e ".[eval]"
 # For proxy support
 pip install -e ".[proxy]"
 
+# For MCP server support
+pip install -e ".[mcp]"
+
+# For charts and reports
+pip install -e ".[reporting]"
+
 # For everything
-pip install -e ".[eval,proxy,dev]"
+pip install -e ".[eval,proxy,mcp,reporting]"
 ```
 
 ## Using Poetry
@@ -36,5 +42,5 @@ pip install -e ".[eval,proxy,dev]"
 If you are developing HeLLMholtz, you can use Poetry:
 
 ```bash
-poetry install --extras "eval proxy"
+poetry install --extras "eval proxy mcp"
 ```

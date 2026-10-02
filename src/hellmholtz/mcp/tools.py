@@ -2,7 +2,7 @@
 
 This module deliberately avoids importing ``mcp`` so it stays testable and
 importable without the optional dependency. :mod:`hellmholtz.mcp.server`
-binds these methods to FastMCP tool declarations.
+binds these methods to MCP tool declarations.
 """
 
 import json
@@ -146,7 +146,7 @@ class HellmTools:
 
     Thin, dependency-light wrappers around :func:`hellmholtz.client.chat`
     and the Blablador model catalog. All methods return plain strings so
-    FastMCP can serialize them directly.
+    the MCP server can serialize them directly.
     """
 
     def __init__(self, default_model: str | None = None) -> None:

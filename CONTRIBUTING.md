@@ -20,8 +20,12 @@ We welcome contributions from the community! This document provides guidelines f
 
 2. **Install dependencies**:
    ```bash
-   poetry install --with dev
+   poetry install
    ```
+
+   This installs the runtime dependencies plus the development groups
+   (`test`, `lint`, `typing`, `security`, `reporting`). Optional features are extras:
+   `poetry install --extras "proxy mcp"` (also `eval`, which pulls in PyTorch).
 
 3. **Install pre-commit hooks**:
    ```bash

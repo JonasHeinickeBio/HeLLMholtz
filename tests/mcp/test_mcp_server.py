@@ -27,7 +27,7 @@ from hellmholtz.mcp.tools import (
 )
 
 try:  # optional extra: guard against missing *or* broken installs
-    import mcp.shared.memory  # noqa: F401
+    from mcp.server.mcpserver import MCPServer  # noqa: F401  (mcp>=2 only)
 
     HAS_MCP = True
 except ImportError:
@@ -308,9 +308,9 @@ class TestServerEndToEnd:
         server = create_server(default_model="blablador:M")
 
         async def run() -> None:
-            from mcp.shared.memory import create_connected_server_and_client_session
+            from mcp.client import Client
 
-            async with create_connected_server_and_client_session(server) as client:
+            async with Client(server) as client:
                 names = {t.name for t in (await client.list_tools()).tools}
                 assert names == {
                     "ask_external",
@@ -340,9 +340,9 @@ class TestServerEndToEnd:
         server = create_server(default_model="blablador:M")
 
         async def run() -> None:
-            from mcp.shared.memory import create_connected_server_and_client_session
+            from mcp.client import Client
 
-            async with create_connected_server_and_client_session(server) as client:
+            async with Client(server) as client:
                 uris = {str(r.uri) for r in (await client.list_resources()).resources}
                 assert uris == {"hellm://info", "hellm://models"}
 

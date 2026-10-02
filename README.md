@@ -65,13 +65,13 @@ For development with all optional dependencies:
 ```bash
 git clone https://github.com/JonasHeinickeBio/HeLLMholtz.git
 cd HeLLMholtz
-pip install -e ".[eval,proxy]"
+pip install -e ".[eval,proxy,mcp,reporting]"
 ```
 
 ### Poetry Installation
 
 ```bash
-poetry install --with eval,proxy
+poetry install --extras "eval proxy"
 ```
 
 ## Configuration
@@ -611,7 +611,7 @@ git clone https://github.com/JonasHeinickeBio/HeLLMholtz.git
 cd HeLLMholtz
 
 # Install with development dependencies
-poetry install --with dev
+poetry install
 
 # Install pre-commit hooks
 poetry run pre-commit install
@@ -700,7 +700,7 @@ git clone https://github.com/JonasHeinickeBio/HeLLMholtz.git
 cd HeLLMholtz
 
 # Install with development dependencies
-poetry install --with dev
+poetry install
 
 # Install pre-commit hooks
 poetry run pre-commit install
