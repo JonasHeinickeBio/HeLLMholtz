@@ -5,6 +5,7 @@ from typing import Any
 
 import aisuite as ai
 from hellmholtz.core.config import get_settings
+from hellmholtz.core.logging_utils import failures_handled_downstream, log_failure, short
 from hellmholtz.providers import ollama
 from hellmholtz.providers.blablador_config import get_model_by_name
 
@@ -103,7 +104,7 @@ def chat(
                 f"total={response.usage.total_tokens}"
             )
     except Exception as e:
-        logger.error(f"Chat completion failed for {model}: {e}")
+        log_failure(logger, f"Chat completion failed for {model}: {e}")
         raise
 
     # Extract content - aisuite returns a standard response object
@@ -122,7 +123,7 @@ def chat_raw(
     try:
         return client.chat.completions.create(model=effective_model, messages=messages, **kwargs)
     except Exception as e:
-        logger.error(f"Raw chat completion failed for {model}: {e}")
+        log_failure(logger, f"Raw chat completion failed for {model}: {e}")
         raise
 
 
@@ -233,9 +234,10 @@ def chat_with_fallback_detailed(
     for candidate in [model, *_fallback_chain(model, fallbacks)]:
         try:
             target = ollama.resolve_model() if candidate == AUTO_OLLAMA else candidate
-            text = _chat_target(target, messages, **kwargs)
+            with failures_handled_downstream():
+                text = _chat_target(target, messages, **kwargs)
         except Exception as e:
-            logger.warning(f"Model {candidate} failed: {e}")
+            logger.warning(f"Model {candidate} failed: {short(e)}")
             attempts.append((candidate, str(e)))
             continue
         if attempts:

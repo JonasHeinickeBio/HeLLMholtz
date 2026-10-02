@@ -225,3 +225,30 @@ class TestChatCompletionsCreate:
         call_kwargs = p.client.chat.completions.create.call_args[1]
         assert call_kwargs["temperature"] == 0.7
         assert call_kwargs["max_tokens"] == 100
+
+
+class TestFailureLogLevel:
+    """Provider failures are ERROR normally, DEBUG while a fallback handles them."""
+
+    @patch("hellmholtz.providers.blablador_provider.openai.OpenAI")
+    def _failing_call(self, mock_openai_cls: MagicMock) -> None:
+        p = _make_provider()
+        p._available_models = ["other-model"]
+        p._models_cache_time = time.time()
+        with pytest.raises(LLMError):
+            p.chat_completions_create("does-not-exist", [{"role": "user", "content": "x"}])
+
+    def test_error_by_default(self, caplog: pytest.LogCaptureFixture) -> None:
+        with caplog.at_level("DEBUG"):
+            self._failing_call()
+        provider_levels = [r.levelname for r in caplog.records if "blablador_provider" in r.name]
+        assert "ERROR" in provider_levels
+
+    def test_debug_when_handled_downstream(self, caplog: pytest.LogCaptureFixture) -> None:
+        from hellmholtz.core.logging_utils import failures_handled_downstream
+
+        with caplog.at_level("DEBUG"), failures_handled_downstream():
+            self._failing_call()
+        provider_levels = [r.levelname for r in caplog.records if "blablador_provider" in r.name]
+        assert provider_levels
+        assert "ERROR" not in provider_levels
