@@ -28,6 +28,13 @@ BLABLADOR_API_BASE=https://your-blablador-instance.com
 
 # Optional: Default models
 AISUITE_DEFAULT_MODELS='{"openai": "gpt-4o", "anthropic": "claude-3-haiku"}'
+
+# Optional: local Ollama (defaults to http://localhost:11434)
+OLLAMA_API_URL=http://localhost:11434
+# Preferred local model for the "ollama" fallback (default: first installed)
+HELLM_OLLAMA_MODEL=llama3.2:3b
+# Comma-separated chat fallback chain (default: local Ollama)
+HELLM_FALLBACK_MODELS=ollama
 ```
 
 ## User-Level Configuration (Recommended)

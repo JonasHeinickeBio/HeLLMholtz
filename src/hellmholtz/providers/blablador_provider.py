@@ -6,6 +6,7 @@ from typing import Any
 import openai
 
 from aisuite.provider import LLMError, Provider
+from hellmholtz.core.logging_utils import log_failure
 from hellmholtz.providers import systemone
 from hellmholtz.providers.blablador import list_models
 from hellmholtz.providers.blablador_config import KNOWN_MODELS
@@ -137,7 +138,7 @@ class BlabladorProvider(Provider):
                     f"This may indicate the model has been removed or renamed by the API provider."
                     f"Available models: {', '.join(sorted(set(available_names)))}"
                 )
-                logger.error(error_msg)
+                log_failure(logger, error_msg)
                 raise LLMError(error_msg)
 
             response = self.client.chat.completions.create(
@@ -150,17 +151,17 @@ class BlabladorProvider(Provider):
             # Handle connection errors (e.g., server down, DNS issues, or localhost redirects)
             error_msg = str(e)
             if "localhost" in error_msg or "127.0.0.1" in error_msg:
-                logger.error(f"Server configuration error for {model}: {e}")
+                log_failure(logger, f"Server configuration error for {model}: {e}")
                 raise LLMError(
                     f"Server configuration error: The API is redirecting to localhost. "
                     f"This is likely a server-side misconfiguration for model '{model}'. "
                     f"Details: {e}"
                 ) from e
-            logger.error(f"Connection error: {e}")
+            log_failure(logger, f"Connection error: {e}")
             raise LLMError(f"Connection error: {e}") from e
         except openai.APIStatusError as e:
             # Handle API status errors (e.g., 400, 500)
-            logger.error(f"API status error: {e}")
+            log_failure(logger, f"API status error: {e}")
 
             # Check for server-side connection errors reflected in the 500 response
             error_msg = str(e)
@@ -176,5 +177,5 @@ class BlabladorProvider(Provider):
                 raise LLMError(f"Bad Request: {e.message}") from e
             raise LLMError(f"API Error ({e.status_code}): {e.message}") from e
         except Exception as e:
-            logger.error(f"Chat completion failed: {e}")
+            log_failure(logger, f"Chat completion failed: {e}")
             raise LLMError(f"An error occurred: {e}") from e

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ollama fallback: `chat_with_fallback` / `chat_with_fallback_detailed` retry a failed chat
+  against a configurable chain (`HELLM_FALLBACK_MODELS`, default local Ollama), raising
+  `FallbackError` with per-model errors when everything fails. `ollama_chat` and
+  `hellmholtz.providers.ollama` (`is_available`, `list_models`, `resolve_model`) wrap local
+  models; `OLLAMA_API_URL` and `HELLM_OLLAMA_MODEL` configure the server and preferred model.
+- `hellm ollama status|models|chat` and `hellm chat --fallback/-f`.
+
 ### Changed
 
 - Runtime dependencies and extras now live in `[project]` metadata (PEP 621), so published

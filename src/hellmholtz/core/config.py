@@ -45,6 +45,11 @@ class Settings:
     systemone_endpoint: str | None = None
     timeout_seconds: float = 30.0
 
+    # Local Ollama server and chat fallback chain
+    ollama_base_url: str | None = None
+    ollama_model: str | None = None
+    fallback_models: list[str] = field(default_factory=list)
+
     # Provider keys (read directly from env, but can be accessed here if needed)
     openai_api_key: str | None = field(default_factory=lambda: os.getenv("OPENAI_API_KEY"))
     anthropic_api_key: str | None = field(default_factory=lambda: os.getenv("ANTHROPIC_API_KEY"))
@@ -66,6 +71,14 @@ def get_settings() -> Settings:
     # defaults to the dedicated Laya host (see providers.systemone).
     systemone_endpoint = os.getenv("SYSTEMONE_ENDPOINT")
 
+    # Ollama: server URL (also read by aisuite) and preferred local model
+    ollama_base_url = os.getenv("OLLAMA_API_URL") or None
+    ollama_model = os.getenv("HELLM_OLLAMA_MODEL") or None
+
+    # Fallback chain tried in order when the primary model fails
+    fallback_str = os.getenv("HELLM_FALLBACK_MODELS", "")
+    fallback_models = [m.strip() for m in fallback_str.split(",") if m.strip()]
+
     # Timeout
     try:
         timeout = float(os.getenv("HELMHOLTZ_TIMEOUT_SECONDS", "30.0"))
@@ -78,4 +91,7 @@ def get_settings() -> Settings:
         blablador_base_url=blablador_url,
         systemone_endpoint=systemone_endpoint,
         timeout_seconds=timeout,
+        ollama_base_url=ollama_base_url,
+        ollama_model=ollama_model,
+        fallback_models=fallback_models,
     )

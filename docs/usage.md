@@ -14,6 +14,30 @@ Chat with an LLM directly from the terminal:
 hellm chat --model openai:gpt-4o "Explain quantum computing in one sentence."
 ```
 
+### Ollama and Fallback
+
+Use a local [Ollama](https://ollama.com) server directly, or as a safety net when a hosted
+model is down. No extra dependency is needed; Ollama is served through aisuite.
+
+```bash
+hellm ollama status                       # is a local server reachable?
+hellm ollama models                       # installed models, as ollama:<name>
+hellm ollama chat "Hello" --model llama3.2:3b
+
+# Try Blablador first; if it fails, answer with a local model
+hellm chat --model blablador:alias-fast --fallback ollama "Hello"
+# Chain several fallbacks (bare names are Ollama models)
+hellm chat --model blablador:alias-fast -f openai:gpt-4o -f llama3.2:3b "Hello"
+```
+
+A fallback entry is a `provider:model` id, a bare Ollama name (`llama3.2:3b`), or `ollama`
+for "the preferred local model": `HELLM_OLLAMA_MODEL` if set, otherwise the first installed
+one. When a fallback answers, the CLI notes which model on stderr.
+
+A leading provider prefix always wins (any provider aisuite supports, such as `groq:` or
+`mistral:`). A bare name like `mistral:7b` therefore means the Mistral API; write
+`ollama:mistral:7b` to use the local model of that name.
+
 ### List Models
 
 List available models from the Blablador API:
@@ -165,6 +189,34 @@ from hellmholtz.client import chat
 response = chat("openai:gpt-4o", [{"role": "user", "content": "Hello!"}])
 print(response)
 ```
+
+### Ollama and Fallback
+
+```python
+from hellmholtz.client import chat_with_fallback, chat_with_fallback_detailed, ollama_chat
+from hellmholtz.providers import ollama
+
+messages = [{"role": "user", "content": "Hello!"}]
+
+# Primary model, then local Ollama (or HELLM_FALLBACK_MODELS if set)
+text = chat_with_fallback("blablador:alias-fast", messages)
+
+# Explicit chain, and find out who answered
+result = chat_with_fallback_detailed(
+    "blablador:alias-fast", messages, fallbacks=["openai:gpt-4o", "llama3.2:3b"]
+)
+print(result.model, result.used_fallback, result.attempts)
+
+# Local model only
+ollama_chat("Hello!", model="llama3.2:3b")
+
+# Discovery
+if ollama.is_available():
+    print(ollama.list_models())
+```
+
+Any exception from a model moves on to the next one. If every model fails,
+`FallbackError` is raised with the per-model errors in `.attempts`.
 
 ### Token Limits
 

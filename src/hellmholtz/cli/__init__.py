@@ -24,6 +24,7 @@ from hellmholtz.cli.integrations import register_integration_commands
 from hellmholtz.cli.mcp import register_mcp_commands
 from hellmholtz.cli.model_manager import register_model_manager_commands
 from hellmholtz.cli.models import register_models_commands
+from hellmholtz.cli.ollama import register_ollama_commands
 from hellmholtz.cli.setup import register_setup_commands
 from hellmholtz.cli.systemone import register_systemone_commands
 
@@ -43,6 +44,7 @@ def create_app() -> typer.Typer:
     register_mcp_commands(app)
     register_doctor_commands(app)
     register_model_manager_commands(app)
+    register_ollama_commands(app)
     register_setup_commands(app)
     register_systemone_commands(app)
 

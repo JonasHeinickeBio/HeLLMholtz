@@ -233,3 +233,33 @@ class TestLoadUserConfig:
         _load_user_config()
 
         assert os.environ["SOME_MODEL"] == "openai:gpt-4o"
+
+
+class TestOllamaSettings:
+    """Ollama and fallback-chain settings."""
+
+    def test_defaults(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            settings = get_settings()
+        assert settings.ollama_base_url is None
+        assert settings.ollama_model is None
+        assert settings.fallback_models == []
+
+    def test_from_env(self) -> None:
+        env_vars = {
+            "OLLAMA_API_URL": "http://gpu-box:11434",
+            "HELLM_OLLAMA_MODEL": "llama3.2:3b",
+            "HELLM_FALLBACK_MODELS": " openai:gpt-4o , ollama , ,llama3.2:3b",
+        }
+        with patch.dict(os.environ, env_vars, clear=True):
+            settings = get_settings()
+        assert settings.ollama_base_url == "http://gpu-box:11434"
+        assert settings.ollama_model == "llama3.2:3b"
+        assert settings.fallback_models == ["openai:gpt-4o", "ollama", "llama3.2:3b"]
+
+    def test_empty_values_are_unset(self) -> None:
+        env_vars = {"OLLAMA_API_URL": "", "HELLM_OLLAMA_MODEL": ""}
+        with patch.dict(os.environ, env_vars, clear=True):
+            settings = get_settings()
+        assert settings.ollama_base_url is None
+        assert settings.ollama_model is None
