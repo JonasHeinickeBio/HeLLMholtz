@@ -16,6 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   models; `OLLAMA_API_URL` and `HELLM_OLLAMA_MODEL` configure the server and preferred model.
 - `hellm ollama status|models|chat` and `hellm chat --fallback/-f`.
 
+### Changed
+
+- Runtime dependencies and extras now live in `[project]` metadata (PEP 621), so published
+  extras carry real version constraints (`hellmholtz[proxy]` used to install any `litellm`).
+  `httpx`, which the code imports directly, is now a declared runtime dependency.
+- Development dependencies are split into `test`, `lint`, `typing`, `security` and
+  `reporting` groups, replacing `dev`. All are non-optional, so `poetry install` is unchanged;
+  `--with dev` no longer exists. `numpy` is declared for `reporting`.
+- Dependencies refreshed (`litellm` 1.103, `mcp` 2.2, and transitive updates). `openai` stays
+  on 2.x and `rich` on 13.x because `litellm[proxy]` caps both.
+- The MCP server now targets `mcp>=2` (`FastMCP` became `MCPServer`); `hellmholtz[mcp]`
+  installs 2.x.
+
+### Removed
+
+- Unused dev dependencies `isort` (ruff's `I` rules cover it), `types-redis` and `types-toml`.
+
 ## [0.6.7] - 2026-10-01
 
 ### Added
