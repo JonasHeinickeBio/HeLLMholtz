@@ -46,6 +46,11 @@ class TestDoctorCLI:
             "hellmholtz.cli.doctor.check_chat",
             lambda *a, **k: CheckResult("chat round-trip", True, "model responded"),
         )
+        # keep the verdict independent of whether the optional extra is installed here
+        monkeypatch.setattr(
+            "hellmholtz.cli.doctor.check_mcp_extra",
+            lambda: CheckResult("mcp extra", True, "installed"),
+        )
         result = runner.invoke(app, ["doctor"])
         assert result.exit_code == 0
         assert "All checks passed" in result.stdout

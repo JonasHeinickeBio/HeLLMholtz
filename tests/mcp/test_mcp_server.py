@@ -14,6 +14,7 @@ import pytest
 from typer.testing import CliRunner
 
 from hellmholtz.cli import app
+from hellmholtz.diagnostics import CheckResult
 from hellmholtz.mcp.tools import (
     DEFAULT_MODEL_ENV_VAR,
     FALLBACK_MODEL,
@@ -219,6 +220,11 @@ class TestRunDoctor:
             patch("hellmholtz.mcp.tools.get_settings", return_value=self._settings()),
             patch("hellmholtz.diagnostics._http_get_with_headers", return_value=models_body),
             patch("hellmholtz.diagnostics._http_post_json", return_value="{}"),
+            # keep the verdict independent of whether the optional extra is installed here
+            patch(
+                "hellmholtz.diagnostics.check_mcp_extra",
+                return_value=CheckResult("mcp extra", True, "installed"),
+            ),
         ):
             out = tools.run_doctor()
         assert out.startswith("hellm doctor report (model: blablador:alias-large)")
