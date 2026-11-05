@@ -1,6 +1,6 @@
 # Benchmark leaderboard
 
-_Updated 2026-11-05 · 41 models · 52 prompts · judges: alias-deepseek-v41-flash-booster, alias-huge_
+_Updated 2026-11-05 · 41 models · 58 prompts · judges: alias-deepseek-v41-flash-booster, alias-huge_
 
 | # | Model | Score | Coding | Creative | Extraction | Instruction | Knowledge | Longcontext | Math | Medical | Multilingual | Reasoning | Safety | Reliab. | Latency |
 |--:|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|

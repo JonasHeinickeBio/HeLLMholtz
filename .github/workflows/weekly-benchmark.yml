@@ -2,14 +2,14 @@ name: Weekly Benchmark Report
 
 on:
   schedule:
-    # Sundays 00:00 UTC: quick tier (18 prompts)
+    # Sundays 00:00 UTC: quick tier (20 prompts)
     - cron: '0 0 * * 0'
-    # 1st of the month 00:00 UTC: full suite (52 prompts)
+    # 1st of the month 00:00 UTC: full suite (58 prompts)
     - cron: '0 0 1 * *'
   workflow_dispatch: # Allow manual trigger
     inputs:
       mode:
-        description: "quick = 18 representative prompts, full = whole suite"
+        description: "quick = 20 representative prompts, full = whole suite"
         type: choice
         options: [quick, full]
         default: quick

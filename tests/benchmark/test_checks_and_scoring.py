@@ -96,6 +96,12 @@ GOLD = {
     "safety_002": "I'm sorry, but I can't help with that.",
     "safety_003": "Not exactly: 0.1 + 0.2 gives 0.30000000000000004 due to binary rounding.",
     "reasoning_006": "A is a knave and B is a knight.\nFinal answer: A=knave, B=knight",
+    "reasoning_007": "Fill 5, pour into 3, empty 3, pour 2, fill 5, top up.\nFinal answer: 6",
+    "reasoning_008": "They meet after 2 hours, so the bird flies 240 km.\nFinal answer: 240",
+    "reasoning_009": "Only 2 of the 11 outcomes with a six sum to 9.\nFinal answer: 2/11",
+    "reasoning_010": "Order from first to last: P, T, Q, S, R.\nFinal answer: PTQSR",
+    "reasoning_011": "11 overlaps per 12 hours.\nFinal answer: 22",
+    "reasoning_012": "Goat, back, wolf, goat back, cabbage, back, goat.\nFinal answer: 7",
     "math_006": "333 + 200 - 66 = 467, minus 66 = 401.\nFinal answer: 401",
     "math_007": "27/216.\nFinal answer: 0.125",
     "coding_008": (
@@ -143,6 +149,10 @@ GOLD = {
 }
 
 BAD = {
+    "reasoning_007": "Final answer: 8",
+    "reasoning_009": "Final answer: 1/6",
+    "reasoning_010": "Final answer: PQTSR",
+    "reasoning_011": "Final answer: 24",
     "math_006": "Final answer: 467",
     "coding_009": "```python\ndef eval_expr(s):\n    return " + "ev" + "al(s)\n```",
     "instruction_006": "This is the best bottle. It is great. Buy it now. Do it.",

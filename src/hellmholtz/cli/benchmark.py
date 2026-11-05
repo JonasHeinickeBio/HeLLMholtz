@@ -67,12 +67,17 @@ def register_benchmark_commands(app: typer.Typer) -> None:
         quick: bool = typer.Option(
             False,
             "--quick",
-            help="Short tier: 18 representative prompts instead of the full suite",
+            help="Short tier: 20 representative prompts instead of the full suite",
         ),
         judge_workers: int = typer.Option(
             6, help="Parallel judge requests (lower it if the API answers 429)"
         ),
         resume: Path | None = RESUME_OPTION,
+        speed_probe: bool = typer.Option(
+            True,
+            "--speed-probe/--no-speed-probe",
+            help="Add a streamed speed probe per model (time to first token, tokens/s)",
+        ),
         concurrency: int = typer.Option(
             1, help="Parallel workers; work is split into (model, prompt-chunk) units"
         ),
@@ -96,6 +101,7 @@ def register_benchmark_commands(app: typer.Typer) -> None:
             resume=resume,
             judge_workers=judge_workers,
             quick=quick,
+            speed_probe=speed_probe,
         )
 
     @app.command()
@@ -152,6 +158,7 @@ def _bench_impl(  # noqa: C901
     resume: Path | None = None,
     judge_workers: int = 6,
     quick: bool = False,
+    speed_probe: bool = True,
 ) -> None:
     """Implementation for bench command."""
     from hellmholtz.benchmark import run_benchmarks
@@ -225,6 +232,12 @@ def _bench_impl(  # noqa: C901
             max_concurrent=concurrency,
             resume_from=resume,
         )
+
+        if speed_probe:
+            from hellmholtz.benchmark.speed import probe_models
+
+            typer.echo(f"Speed probe: {len(model_list)} models, 2 streamed requests each")
+            results = [*results, *probe_models(model_list, runs=2, workers=max(1, concurrency))]
 
         # Evaluate if requested
         timestamp = datetime.now().isoformat()

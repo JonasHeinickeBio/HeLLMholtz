@@ -2,7 +2,7 @@
 <style>.bg{fill:#fff}.t{fill:#1f2328;font:600 15px system-ui,sans-serif}.s{fill:#59636e;font:12px system-ui,sans-serif}.l{fill:#1f2328;font:13px system-ui,sans-serif}.v{fill:#1f2328;font:600 13px system-ui,sans-serif}.b{fill:#2f6fdb}.n{fill:#d97706}.g{stroke:#d1d9e0;stroke-width:1}.ci{stroke:#1f2328;stroke-opacity:.55;stroke-width:1.5}@media (prefers-color-scheme:dark){.bg{fill:#0d1117}.t,.l,.v{fill:#e6edf3}.s{fill:#9198a1}.b{fill:#5b9cf6}.n{fill:#f0a43a}.g{stroke:#30363d}.ci{stroke:#e6edf3}}</style>
 <rect class="bg" width="860" height="506" rx="8"/>
 <text class="t" x="16" y="26">Overall benchmark score (0–100)</text>
-<text class="s" x="16" y="44">2026-11-05 · 52 prompts · checks + LLM-judge panel · bars show mean ± 95% CI</text>
+<text class="s" x="16" y="44">2026-11-05 · 58 prompts · checks + LLM-judge panel · bars show mean ± 95% CI</text>
 <line class="g" x1="250.0" y1="52" x2="250.0" y2="480"/>
 <text class="s" x="250.0" y="496" text-anchor="middle">0</text>
 <line class="g" x1="385.0" y1="52" x2="385.0" y2="480"/>

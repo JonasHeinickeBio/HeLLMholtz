@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Benchmark v2.** 52 prompts across 11 categories, each with deterministic `checks`
+- **Speed and reasoning metrics.** Streamed speed probe per model (time to first token,
+  decode tokens/s, 0-100 speed score), reasoning-token share and cut-off rate, six more
+  reasoning prompts (58 total) with a judged process rubric, and a dashboard speed view
+  (TTFT / latency / throughput vs. quality).
+- **Benchmark v2.** 58 prompts across 11 categories, each with deterministic `checks`
   (exact answers, executed unit tests, JSON/format/length rules) and/or a `reference` +
   `rubric` for the judge. `Prompt` gained `reference`, `rubric`, `checks`, `difficulty`.
 - **Combined scoring** (`benchmark.scoring`): 0-100 per run from checks and judge, failed runs

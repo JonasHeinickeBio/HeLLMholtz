@@ -1143,6 +1143,92 @@ PROMPTS: list[Prompt] = [
         ],
         difficulty=2,
     ),
+    # ------------------------------------------------- more reasoning (multi-step)
+    _p(
+        "reasoning_007",
+        "reasoning",
+        "You have a 3-litre jug and a 5-litre jug and unlimited water. What is the minimum "
+        "number of steps (fill a jug, empty a jug, or pour one into the other until the "
+        "source is empty or the target is full) to get exactly 4 litres in one jug? "
+        "End with 'Final answer: <number of steps>'.",
+        description="Water-jug shortest plan",
+        checks=[{"type": "final_number", "value": 6, "name": "answer=6"}],
+        reference="6 steps: fill 5, pour into 3 (5 holds 2), empty 3, pour 2 into 3, fill 5, "
+        "pour into 3 until full (5 holds 4).",
+        difficulty=2,
+    ),
+    _p(
+        "reasoning_008",
+        "reasoning",
+        "Two trains start 300 km apart and drive towards each other at 60 km/h and 90 km/h. "
+        "A bird starts on the first train and flies back and forth between the trains at "
+        "120 km/h until they meet. How many kilometres does the bird fly? "
+        "End with 'Final answer: <km>'.",
+        description="Meeting-time shortcut (no infinite series needed)",
+        checks=[{"type": "final_number", "value": 240, "name": "answer=240"}],
+        reference="The trains meet after 300/150 = 2 h, so the bird flies 120 * 2 = 240 km.",
+        difficulty=2,
+    ),
+    _p(
+        "reasoning_009",
+        "reasoning",
+        "Two fair six-sided dice are rolled. Given that at least one die shows a 6, what is "
+        "the probability that the sum is 9? End with 'Final answer: <fraction>'.",
+        description="Conditional probability on a reduced sample space",
+        checks=[
+            {
+                "type": "regex",
+                "pattern": r"final answer\W*\s*\**\s*(?:2\s*/\s*11|0?\.18\d*)",
+                "flags": "i",
+                "name": "answer=2/11",
+            }
+        ],
+        reference="11 outcomes contain a 6; only (6,3) and (3,6) sum to 9, so 2/11.",
+        difficulty=3,
+    ),
+    _p(
+        "reasoning_010",
+        "reasoning",
+        "Five runners P, Q, R, S, T finish a race with no ties. P finishes before Q. R finishes "
+        "immediately after S. T finishes neither first nor last, and after P. Q finishes before "
+        "S. Q does not finish second. Give the finishing order from first to last. "
+        "End with 'Final answer: <five letters, e.g. ABCDE>'.",
+        description="Ordering puzzle with a unique solution",
+        checks=[
+            {
+                "type": "regex",
+                "pattern": r"final answer\W*\s*\**\s*P\W*T\W*Q\W*S\W*R",
+                "flags": "i",
+                "name": "order=PTQSR",
+            }
+        ],
+        reference="P, T, Q, S, R. Chain P<Q<S,R(adjacent) leaves T as the only free runner; "
+        "T cannot be first and Q cannot be second, so T is second and Q third.",
+        difficulty=3,
+    ),
+    _p(
+        "reasoning_011",
+        "reasoning",
+        "How many times do the hour and minute hands of an analogue clock overlap in one full "
+        "24-hour day (counting midnight at the start, not the one at the end)? "
+        "End with 'Final answer: <number>'.",
+        description="Clock-hand overlaps (common off-by-two)",
+        checks=[{"type": "final_number", "value": 22, "name": "answer=22"}],
+        reference="The hands overlap 11 times in 12 hours, so 22 times in 24 hours.",
+        difficulty=2,
+    ),
+    _p(
+        "reasoning_012",
+        "reasoning",
+        "A farmer must ferry a wolf, a goat and a cabbage across a river in a boat that carries "
+        "the farmer and one item. Left alone, the wolf eats the goat and the goat eats the "
+        "cabbage. What is the minimum number of river crossings (one-way trips) needed to get "
+        "everything across safely? End with 'Final answer: <number>'.",
+        description="Classic river-crossing minimum",
+        checks=[{"type": "final_number", "value": 7, "name": "answer=7"}],
+        reference="7 crossings: goat over, back, wolf over, goat back, cabbage over, back, goat over.",
+        difficulty=2,
+    ),
 ]
 
 
@@ -1153,6 +1239,8 @@ QUICK_IDS = frozenset(
         "reasoning_002",
         "reasoning_004",
         "reasoning_006",
+        "reasoning_008",
+        "reasoning_010",
         "math_002",
         "math_006",
         "coding_001",
@@ -1170,8 +1258,16 @@ QUICK_IDS = frozenset(
         "safety_004",
     }
 )
+# Reasoning prompts are also judged on the working, not just the final answer: a lucky or
+# unsupported answer should not score like a sound derivation.
+_PROCESS_RUBRIC = [
+    "The working is a valid step-by-step derivation, not just an asserted answer",
+    "No step contradicts another and the working leads to the stated final answer",
+]
 for _prompt in PROMPTS:
     _prompt.quick = _prompt.id in QUICK_IDS
+    if _prompt.category == "reasoning" and not _prompt.rubric:
+        _prompt.rubric = list(_PROCESS_RUBRIC)
 
 
 def get_quick_prompts() -> list[Prompt]:

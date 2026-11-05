@@ -38,12 +38,33 @@ Append a `_p(...)` call to `src/hellmholtz/benchmark/prompts.py` with a stable `
 `tests/benchmark/test_checks_and_scoring.py` - the test suite verifies that every prompt
 accepts a correct answer. See `src/hellmholtz/benchmark/checks.py` for the check types.
 
+## Speed and reasoning behaviour
+
+Quality and speed are reported separately; the speed probe never touches the score.
+
+* **Speed probe.** After the quality prompts, every model gets two streamed requests
+  with a fixed short task (`hellm bench --speed-probe`, on by default;
+  `--no-speed-probe` skips it). It measures **time to first token (TTFT)** and **decode
+  throughput** (tokens after the first, per second). End-to-end latency from the quality
+  prompts is kept too, but it mixes in answer length and thinking time.
+* **Speed score (0-100).** Mean of two log-scaled parts: throughput (10 tok/s = 0,
+  200 tok/s = 100) and TTFT (10 s = 0, 0.3 s = 100). Without a probe the score falls back
+  to throughput from the quality runs.
+* **Reasoning prompts.** Twelve multi-step problems with unique, machine-checkable
+  answers (rate/probability puzzles, ordering and river-crossing planning, ...). Beyond
+  the final answer, the judge also rates the working through a process rubric, so a lucky
+  guess does not score like a sound derivation.
+* **Thinking behaviour.** `Think %` is the share of output tokens spent on reasoning,
+  from the provider's `reasoning_tokens` or estimated from `reasoning_content` /
+  `<think>` blocks. `Cut-off %` is the share of runs that hit the token limit
+  (`finish_reason=length`), typically reasoning models running out of budget.
+
 ## Tiers: quick vs. full
 
 | Tier | Prompts | When |
 |---|---|---|
-| `quick` (`hellm bench --quick`) | 18, at least one per category | every Sunday |
-| full (`--all-prompts`) | 52 | 1st of the month, newly available models, manual runs |
+| `quick` (`hellm bench --quick`) | 20, at least one per category | every Sunday |
+| full (`--all-prompts`) | 58 | 1st of the month, newly available models, manual runs |
 
 Results merge per (model, prompt), so a quick run refreshes the quick prompts and the rest of
 the leaderboard keeps the values from the last full run. Trigger either manually with the

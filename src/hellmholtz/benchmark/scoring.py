@@ -75,6 +75,26 @@ def _pct(values: list[float]) -> float | None:
     return round(100 * sum(values) / len(values), 1) if values else None
 
 
+def _log_scale(value: float, worst: float, best: float) -> float:
+    """Map ``value`` onto 0-100 on a log axis between ``worst`` and ``best``."""
+    frac = (math.log(value) - math.log(worst)) / (math.log(best) - math.log(worst))
+    return 100.0 * min(1.0, max(0.0, frac))
+
+
+def speed_score(ttft: float | None, tokens_per_sec: float | None) -> float | None:
+    """0-100 speed rating: half time-to-first-token, half decode throughput.
+
+    Log scales: 10 tok/s -> 0 and 200 tok/s -> 100; 10 s TTFT -> 0 and 0.3 s -> 100.
+    With only one component available that component is used alone.
+    """
+    parts = []
+    if tokens_per_sec and tokens_per_sec > 0:
+        parts.append(_log_scale(tokens_per_sec, 10.0, 200.0))
+    if ttft and ttft > 0:
+        parts.append(_log_scale(ttft, 10.0, 0.3))
+    return round(statistics.fmean(parts), 1) if parts else None
+
+
 def _ci95(values: list[float]) -> float:
     """Half-width of a normal-approximation 95% CI of the mean (0 for n < 2)."""
     if len(values) < 2:
@@ -102,7 +122,10 @@ def leaderboard(
         by_model[model_key(rec)].append(rec)
 
     rows: list[dict[str, Any]] = []
-    for model, recs in by_model.items():
+    for model, all_recs in by_model.items():
+        # Speed-probe runs measure speed only; they never enter the quality score.
+        probes = [r for r in all_recs if r.get("category") == "speed"]
+        recs = [r for r in all_recs if r.get("category") != "speed"]
         # per (category, prompt): average over replications / temperatures
         per_prompt: dict[tuple[str, str], list[float]] = defaultdict(list)
         for rec in recs:
@@ -128,6 +151,19 @@ def leaderboard(
         out_tok = [r["output_tokens"] for r in ok if r.get("output_tokens") is not None]
         auto = [r["auto_score"] for r in recs if r.get("auto_score") is not None]
         judged = [r["judge_score"] for r in recs if r.get("judge_score") is not None]
+        probe_ok = [r for r in probes if r.get("success")]
+        ttfts = [r["ttft_seconds"] for r in probe_ok if r.get("ttft_seconds")]
+        probe_tps = [r["tokens_per_sec"] for r in probe_ok if r.get("tokens_per_sec")]
+        ttft = statistics.median(ttfts) if ttfts else None
+        decode_tps = (
+            statistics.median(probe_tps)
+            if probe_tps
+            else (statistics.median(tps) if tps else None)
+        )
+        # Share of output spent thinking, over runs where the API revealed it.
+        think = [r for r in ok if r.get("reasoning_tokens") is not None and r.get("output_tokens")]
+        think_total = sum(r["reasoning_tokens"] for r in think)
+        out_total = sum(r["output_tokens"] for r in think)
         rows.append(
             {
                 "model": model,
@@ -141,6 +177,13 @@ def leaderboard(
                 "judge_score": _pct(judged),
                 "median_latency_s": round(statistics.median(latencies), 2) if latencies else None,
                 "tokens_per_sec": round(statistics.median(tps), 1) if tps else None,
+                "ttft_s": round(ttft, 2) if ttft is not None else None,
+                "decode_tps": round(decode_tps, 1) if decode_tps is not None else None,
+                "speed_score": speed_score(ttft, decode_tps),
+                "reasoning_share": round(100 * think_total / out_total, 1) if out_total else None,
+                "truncated_pct": round(
+                    100 * sum(r.get("finish_reason") == "length" for r in recs) / len(recs), 1
+                ),
                 "avg_output_tokens": round(_mean([float(t) for t in out_tok]) or 0)
                 if out_tok
                 else None,

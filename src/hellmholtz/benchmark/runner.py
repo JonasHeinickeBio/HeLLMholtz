@@ -6,6 +6,7 @@ import json
 import logging
 from pathlib import Path
 import random
+import re
 import threading
 import time
 from typing import Any
@@ -117,6 +118,8 @@ class BenchmarkResult:
     judge_spread: float | None = None  # max-min across judges (disagreement)
     judge_details: list[dict[str, Any]] | None = None
     final_score: float | None = None  # combined 0-100 score (see benchmark.scoring)
+    ttft_seconds: float | None = None  # time to first streamed token (speed probe only)
+    reasoning_tokens: int | None = None  # hidden/visible thinking tokens, when detectable
 
 
 def run_benchmarks(  # noqa: C901
@@ -281,6 +284,7 @@ def run_benchmarks(  # noqa: C901
                         error_msg = None
                         in_tokens = None
                         out_tokens = None
+                        reasoning_tokens = None
                         response_text = None
                         finish_reason = None
                         transport_failure = False
@@ -303,6 +307,7 @@ def run_benchmarks(  # noqa: C901
 
                             if response.choices and len(response.choices) > 0:
                                 response_text = response.choices[0].message.content
+                                reasoning_tokens = count_reasoning_tokens(response)
                                 fr = getattr(response.choices[0], "finish_reason", None)
                                 finish_reason = fr if isinstance(fr, str) else None
                                 # The call itself can succeed yet still return an
@@ -365,6 +370,7 @@ def run_benchmarks(  # noqa: C901
                             error_message=error_msg,
                             response_text=response_text,
                             finish_reason=finish_reason,
+                            reasoning_tokens=reasoning_tokens,
                             temperature=temperature,
                             max_tokens=max_tokens,
                             run_id=repl_idx,
@@ -458,6 +464,36 @@ def _load_resume(path: Path) -> dict[tuple[str, str, float, int], BenchmarkResul
         )
         reusable[key] = BenchmarkResult(**{k: v for k, v in data.items() if k in known})
     return reusable
+
+
+def count_reasoning_tokens(response: Any) -> int | None:
+    """Thinking tokens of a completion, or None when the API does not expose them.
+
+    Prefers the provider's own count (``usage.completion_tokens_details``); otherwise
+    estimates from a ``reasoning_content`` field or inline ``<think>`` blocks
+    (about 4 characters per token).
+    """
+    usage = getattr(response, "usage", None)
+    details = getattr(usage, "completion_tokens_details", None)
+    counted = getattr(details, "reasoning_tokens", None)
+    if isinstance(counted, int) and counted > 0:
+        return counted
+    try:
+        message = response.choices[0].message
+    except (AttributeError, IndexError, TypeError):
+        return None
+    chars = 0
+    for attr in ("reasoning_content", "reasoning"):
+        value = getattr(message, attr, None)
+        if isinstance(value, str):
+            chars += len(value)
+    content = getattr(message, "content", None)
+    if isinstance(content, str):
+        chars += sum(len(m) for m in _THINK_BLOCK.findall(content))
+    return max(1, chars // 4) if chars else None
+
+
+_THINK_BLOCK = re.compile(r"<think(?:ing)?>.*?</think(?:ing)?>", re.DOTALL | re.IGNORECASE)
 
 
 def _score_with_checks(result: BenchmarkResult, prompt: Prompt) -> None:

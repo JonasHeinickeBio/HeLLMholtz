@@ -93,6 +93,8 @@ KEEP = (
     "tokens_per_sec",
     "output_tokens",
     "finish_reason",
+    "ttft_seconds",
+    "reasoning_tokens",
     "timestamp",
 )
 
