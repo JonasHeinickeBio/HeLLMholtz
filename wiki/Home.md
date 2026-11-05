@@ -4,7 +4,7 @@ Unified LLM access, benchmarking and reporting for the Helmholtz Blablador API.
 
 ## Current state
 
-_Updated 2026-11-05 · 41 models · 58 prompts · judges: alias-deepseek-v41-flash-booster, alias-huge_
+_Updated 2026-11-05 · 41 models · 52 prompts · judges: checks only_
 
 - **Best overall:** `deepseek-v4.1-flash-at-hzdr` with **98.4** points
 - **Fastest of the top group (within 5 points of #1):** `alias-fast` - 0.14 s to first token, 209 tok/s

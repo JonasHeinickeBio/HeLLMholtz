@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from hellmholtz.benchmark.evaluator import DEFAULT_JUDGES, evaluate_responses  # noqa: E402
 from hellmholtz.benchmark.prompts import get_all_prompts  # noqa: E402
 from hellmholtz.benchmark.runner import BenchmarkResult, _score_with_checks  # noqa: E402
+from hellmholtz.benchmark.scoring import dedupe_attempts  # noqa: E402
 
 logger = logging.getLogger("run_llm_judge")
 _FIELDS = {f.name for f in fields(BenchmarkResult)}
@@ -46,7 +47,7 @@ def load_records(path: Path) -> list[dict[str, Any]]:
             out.append(json.loads(line))
         except json.JSONDecodeError as exc:
             logger.warning("Skipping malformed line %d: %s", line_no, exc)
-    return out
+    return dedupe_attempts(out)
 
 
 def save_atomic(path: Path, results: list[BenchmarkResult]) -> None:

@@ -32,6 +32,11 @@ on:
       models:
         type: string
         default: ""
+    secrets:
+      BLABLADOR_API_KEY:
+        required: false
+      BLABLADOR_API_BASE:
+        required: false
 
 # One benchmark at a time; a newer run waits instead of racing on the report commit.
 concurrency:
@@ -40,6 +45,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   benchmark:
@@ -48,6 +54,7 @@ jobs:
     outputs:
       changed: ${{ steps.check-changes.outputs.changes }}
       keys: ${{ steps.check-keys.outputs.keys_available }}
+      pages: ${{ steps.pages-upload-flag.outputs.uploaded }}
 
     steps:
     - name: Check for API keys
@@ -102,7 +109,8 @@ jobs:
       run: |
         {
           echo "BLABLADOR_API_KEY=$BLABLADOR_API_KEY"
-          echo "BLABLADOR_API_BASE=$BLABLADOR_API_BASE"
+          # An empty value would override the client's default endpoint.
+          if [ -n "$BLABLADOR_API_BASE" ]; then echo "BLABLADOR_API_BASE=$BLABLADOR_API_BASE"; fi
         } > .env
 
     - name: Sync model registry and refresh availability
@@ -212,7 +220,7 @@ jobs:
       run: |
         # The wiki is its own git repo and only exists once its first page was created
         # in the GitHub UI (Wiki tab -> Create the first page). Until then skip quietly.
-        if git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" _wiki 2>/dev/null; then
+        if git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" _wiki 2>_wiki_clone.log; then
           cp wiki/*.md _wiki/
           cd _wiki
           git add -A
@@ -225,7 +233,12 @@ jobs:
             git push
           fi
         else
-          echo "::notice::Wiki repository not found; create the first wiki page once to enable publishing"
+          cat _wiki_clone.log
+          if grep -qi "not found" _wiki_clone.log; then
+            echo "::notice::Wiki repository not found; create the first wiki page once to enable publishing"
+          else
+            echo "::warning::Wiki clone failed (see the log above); wiki pages were not published"
+          fi
         fi
 
     - name: Build docs site (includes the dashboard at /benchmark/)
@@ -235,10 +248,16 @@ jobs:
         mkdocs build --quiet --site-dir _site
 
     - name: Upload Pages artifact
+      id: pages-upload
       if: steps.check-changes.outputs.changes == 'true' && hashFiles('docs/benchmark/index.html') != ''
       uses: actions/upload-pages-artifact@v3
       with:
         path: _site
+
+    - name: Record that the Pages artifact exists
+      id: pages-upload-flag
+      if: steps.pages-upload.outcome == 'success'
+      run: echo "uploaded=true" >> "$GITHUB_OUTPUT"
 
     - name: Create issue on failure
       if: failure()
@@ -257,7 +276,7 @@ jobs:
     # Publishes the dashboard at https://<owner>.github.io/<repo>/benchmark/
     # One-time setup: Settings -> Pages -> Source: "GitHub Actions".
     needs: benchmark
-    if: needs.benchmark.outputs.changed == 'true' && needs.benchmark.outputs.keys == 'true'
+    if: needs.benchmark.outputs.pages == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write

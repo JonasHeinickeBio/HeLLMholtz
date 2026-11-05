@@ -31,7 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Also writes `reports/leaderboard.svg`/`.md` and rewrites the README leaderboard section.
 - `scripts/select_models.py` (chat-model selection, `--new-since`), `docs/benchmarking.md`.
 - GitHub Actions: the weekly benchmark judges, merges, rebuilds the dashboard and deploys it to
-  Pages; the daily check benchmarks newly available models the same day.
+  Pages; the daily check only syncs the model registry and sends one tiny request per model to
+  record availability (scored benchmarks of new models run in the weekly workflow).
 - New Blablador models: Mistral Large 4, DeepSeek-V4.1-Flash (Booster and HZDR), MedGemma,
   HyperQwen, plus the rest of the current registry.
 - Ollama fallback: `chat_with_fallback` / `chat_with_fallback_detailed` retry a failed chat

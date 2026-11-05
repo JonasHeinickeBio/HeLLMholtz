@@ -28,7 +28,11 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from hellmholtz.benchmark.prompts import get_all_prompts  # noqa: E402
-from hellmholtz.benchmark.scoring import leaderboard, model_key  # noqa: E402
+from hellmholtz.benchmark.scoring import (  # noqa: E402
+    dedupe_attempts,
+    leaderboard,
+    model_key,
+)
 
 HISTORY_LIMIT = 60
 README_START, README_END = "<!-- LEADERBOARD:START -->", "<!-- LEADERBOARD:END -->"
@@ -77,7 +81,7 @@ def load_records(path: Path) -> list[dict[str, Any]]:
             records.append(json.loads(line))
         except json.JSONDecodeError:
             continue  # blank or torn line from an interrupted run
-    return records
+    return dedupe_attempts(records)
 
 
 KEEP = (
@@ -203,7 +207,8 @@ def build_data(
         "generated": date,
         "run": run_id,
         "judges": [j.removeprefix("blablador:") for j in judges if j],
-        "n_prompts": len(prompts),
+        "n_prompts": len({r.get("prompt_id") for r in records if r.get("category") != "speed"}),
+        "n_checks_only": sum(1 for p in prompts.values() if p.checks and not p.rubric),
         "n_runs": len(records),
         "n_judged": len(judge_ok),
         "categories": categories,

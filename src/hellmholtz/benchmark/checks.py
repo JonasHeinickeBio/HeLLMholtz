@@ -11,8 +11,10 @@ Supported ``type`` values:
 ``regex`` / ``not_regex``        ``pattern`` (+ optional ``flags``: "i", "s", "m")
 ``final_number``                 ``value`` (+ ``tol``): last number in the answer
 ``json_valid``                   response (or a fenced block) parses as JSON;
-                                 optional ``keys``, ``values`` ({path: expected})
-                                 and ``lengths`` ({path: len})
+                                 optional ``keys``, ``values`` ({path: expected}),
+                                 ``lengths`` ({path: len}) and ``types`` ({path: type},
+                                 one of string/integer/number/boolean/array/object/
+                                 array_of_strings)
 ``max_words`` / ``min_words``    ``value``
 ``max_lines`` / ``min_lines``    ``value`` (non-empty lines)
 ``python_tests``                 run the extracted ``python`` block + ``tests`` code
@@ -71,7 +73,7 @@ class CheckResult:
 def strip_reasoning(text: str) -> str:
     """Drop ``<think>`` blocks and a dangling unclosed ``<think>`` prefix."""
     text = _THINK_RE.sub("", text or "")
-    if re.match(r"\s*<think>", text, re.IGNORECASE):
+    if re.match(r"\s*<think(?:ing)?>", text, re.IGNORECASE):
         return ""  # unterminated reasoning: no visible answer was produced
     return text.strip()
 
@@ -154,6 +156,17 @@ def _dig(data: Any, path: str) -> Any:
     for part in path.split("."):
         data = data[int(part)] if isinstance(data, list) else data[part]
     return data
+
+
+_TYPE_TESTS: dict[str, Any] = {
+    "string": lambda v: isinstance(v, str),
+    "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
+    "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+    "boolean": lambda v: isinstance(v, bool),
+    "array": lambda v: isinstance(v, list),
+    "object": lambda v: isinstance(v, dict),
+    "array_of_strings": lambda v: isinstance(v, list) and all(isinstance(x, str) for x in v),
+}
 
 
 def _run_python(code: str, tests: str, timeout: float) -> tuple[bool, str]:
@@ -241,6 +254,14 @@ def _run_one(spec: dict[str, Any], text: str) -> tuple[bool, str]:  # noqa: C901
                 return False, f"missing key {path}"
             if got_len != want_len:
                 return False, f"len({path})={got_len}, want {want_len}"
+        types: dict[str, Any] = spec["types"] if isinstance(spec.get("types"), dict) else {}
+        for path, type_name in types.items():
+            try:
+                value = _dig(data, path)
+            except (KeyError, IndexError, TypeError, ValueError):
+                return False, f"missing key {path}"
+            if not _TYPE_TESTS[type_name](value):
+                return False, f"{path}={value!r} is not {type_name}"
         return True, "valid JSON"
     if kind in ("max_words", "min_words"):
         n = len(_words(text))

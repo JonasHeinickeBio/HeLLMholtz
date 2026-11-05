@@ -1,16 +1,12 @@
 # Model performance
 
-_Updated 2026-11-05 · 41 models · 58 prompts · judges: alias-deepseek-v41-flash-booster, alias-huge_
+_Updated 2026-11-05 · 41 models · 52 prompts · judges: checks only_
 
 - **Best overall:** `deepseek-v4.1-flash-at-hzdr` with **98.4** points
 - **Fastest of the top group (within 5 points of #1):** `alias-fast` - 0.14 s to first token, 209 tok/s
 - **Best quality/speed balance (70 % quality, 30 % speed):** `deepseek-v4.1-flash-at-hzdr` - 98.4 points, speed 96
 
-Scores are 0-100: each prompt blends deterministic checks (exact answers, executed unit
-tests, format rules) with a blind LLM-judge panel; failed runs count as 0. Speed comes from
-a separate streamed probe per model (time to first token and decode throughput) and never
-changes the quality score. Details: [Benchmarking](benchmarking.md). The interactive version with
-filters, charts and per-prompt drill-down is the [live dashboard](https://jonasheinickebio.github.io/HeLLMholtz/benchmark/).
+Scores are 0-100 per prompt (exact answers, executed unit tests and format rules). 27 of 52 prompts are scored by their deterministic checks alone; the others blend the checks (60 %) with a blind LLM-judge panel (40 %). Failed, truncated and empty runs count as 0. Speed comes from a separate streamed probe per model (time to first token and decode throughput) and never changes the quality score; a model without a successful probe falls back to the throughput of its quality runs, so its speed rests on end-to-end latency. Details: [Benchmarking](benchmarking.md). The interactive version with filters, charts and per-prompt drill-down is the [live dashboard](https://jonasheinickebio.github.io/HeLLMholtz/benchmark/).
 
 ![Leaderboard](assets/leaderboard.svg)
 
@@ -30,23 +26,23 @@ filters, charts and per-prompt drill-down is the [live dashboard](https://jonash
 
 ## Leaderboard
 
-| # | Model | Family | Score | Speed | TTFT s | Tok/s | Reliab. |
-|:--|:--|:--|--:|--:|--:|--:|--:|
-| 🥇 | `deepseek-v4.1-flash-at-hzdr` | DeepSeek | **98.4** | 96 | 0.41 | 451 | 100% |
-| 🥈 | `alias-mimo-v2.6-flash` | MiMo | **98.2** | 67 | – | 74 | 100% |
-| 🥉 | `alias-mimo-v2.6-pro` | MiMo | **97.9** | 66 | 0.79 | 60 | 100% |
-| 4 | `alias-hyperqwen` | Qwen | **97.8** | 77 | 0.26 | 50 | 98% |
-| 5 | `DeepSeek-V4.1-Flash on JUWELS Booster` | DeepSeek | **97.7** | 28 | 5.22 | 31 | 100% |
-| 6 | `alias-qwen3.8-flash-next` | Qwen | **97.5** | 93 | 0.15 | 130 | 98% |
-| 7 | `alias-qwen38-quick` | Qwen | **97.4** | 75 | 0.21 | 46 | 98% |
-| 8 | `alias-code` | Other | **97.3** | 62 | 0.40 | 27 | 98% |
-| 9 | `alias-deepseek-v41-flash-booster` | DeepSeek | **97.0** | 63 | 0.52 | 35 | 100% |
-| 10 | `alias-large` | Other | **97.0** | 88 | 0.15 | 97 | 98% |
-| 11 | `MiMo-V2.6-Pro-RL on Juwels Booster` | MiMo | **96.9** | 71 | 0.69 | 70 | 100% |
-| 12 | `alias-qwen38-27b` | Qwen | **96.9** | 60 | 0.35 | 20 | 98% |
-| 13 | `Qwen3.8-27B-FP8` | Qwen | **96.7** | 72 | 0.24 | 37 | 96% |
-| 14 | `Aleph Kolibri` | Other | **96.7** | 54 | 2.30 | 74 | 98% |
-| 15 | `Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster` | Qwen | **96.6** | 90 | 0.29 | 113 | 96% |
+| # | Model | Family | Score | Speed | TTFT s | Tok/s | Reliab. | Prompts |
+|:--|:--|:--|--:|--:|--:|--:|--:|--:|
+| 🥇 | `deepseek-v4.1-flash-at-hzdr` | DeepSeek | **98.4** | 96 | 0.41 | 451 | 100% | 52 |
+| 🥈 | `alias-mimo-v2.6-flash` | MiMo | **98.2** | 67 | – | 74 | 100% | 52 |
+| 🥉 | `alias-mimo-v2.6-pro` | MiMo | **97.9** | 66 | 0.79 | 60 | 100% | 52 |
+| 4 | `alias-hyperqwen` | Qwen | **97.8** | 77 | 0.26 | 50 | 98% | 52 |
+| 5 | `DeepSeek-V4.1-Flash on JUWELS Booster` | DeepSeek | **97.7** | 28 | 5.22 | 31 | 100% | 52 |
+| 6 | `alias-qwen3.8-flash-next` | Qwen | **97.5** | 93 | 0.15 | 130 | 98% | 52 |
+| 7 | `alias-qwen38-quick` | Qwen | **97.4** | 75 | 0.21 | 46 | 98% | 52 |
+| 8 | `alias-code` | Other | **97.3** | 62 | 0.40 | 27 | 98% | 52 |
+| 9 | `alias-deepseek-v41-flash-booster` | DeepSeek | **97.0** | 63 | 0.52 | 35 | 100% | 52 |
+| 10 | `alias-large` | Other | **97.0** | 88 | 0.15 | 97 | 98% | 52 |
+| 11 | `MiMo-V2.6-Pro-RL on Juwels Booster` | MiMo | **96.9** | 71 | 0.69 | 70 | 100% | 52 |
+| 12 | `alias-qwen38-27b` | Qwen | **96.9** | 60 | 0.35 | 20 | 98% | 52 |
+| 13 | `Qwen3.8-27B-FP8` | Qwen | **96.7** | 72 | 0.24 | 37 | 96% | 52 |
+| 14 | `Aleph Kolibri` | Other | **96.7** | 54 | 2.30 | 74 | 98% | 52 |
+| 15 | `Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster` | Qwen | **96.6** | 90 | 0.29 | 113 | 96% | 52 |
 
 _Top 15 of 41; the full ranking is in the dashboard._
 

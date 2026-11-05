@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blablador Model Benchmark</title>
+<meta name="description" content="Automated quality, speed and reliability benchmark of the Helmholtz Blablador LLM models.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
+<style>
+:root{
+  --bg:#f6f8fa;--card:#fff;--ink:#1f2328;--mute:#59636e;--line:#d1d9e0;--accent:#2f6fdb;--accent-ink:#fff;
+  --new:#b45309;--good:#1a7f4b;--bad:#b42318;--chip:#eaeef2;--focus:#0969da;
+  --c1:#2f6fdb;--c2:#d97706;--c3:#7c3aed;--c4:#0f9d8a;--c5:#c2410c;--c6:#4f5d75;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1117;--card:#151b23;--ink:#e6edf3;--mute:#9198a1;--line:#30363d;--accent:#5b9cf6;--accent-ink:#0d1117;
+  --new:#f0a43a;--good:#3fb97a;--bad:#f47067;--chip:#222b36;--focus:#58a6ff;
+  --c1:#5b9cf6;--c2:#f0a43a;--c3:#b794f6;--c4:#3dd1bd;--c5:#f2855a;--c6:#9aa7bd;}}
+:root[data-theme="dark"]{
+  --bg:#0d1117;--card:#151b23;--ink:#e6edf3;--mute:#9198a1;--line:#30363d;--accent:#5b9cf6;--accent-ink:#0d1117;
+  --new:#f0a43a;--good:#3fb97a;--bad:#f47067;--chip:#222b36;--focus:#58a6ff;
+  --c1:#5b9cf6;--c2:#f0a43a;--c3:#b794f6;--c4:#3dd1bd;--c5:#f2855a;--c6:#9aa7bd;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+header,main{max-width:1240px;margin:0 auto;padding:0 16px}
+header{padding-top:28px}
+h1{margin:0 0 4px;font-size:26px;letter-spacing:-.01em}
+h2{margin:0 0 4px;font-size:18px}
+.sub{color:var(--mute);margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:20px 0}
+.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi b{display:block;font-size:22px;line-height:1.2}
+.kpi span{color:var(--mute);font-size:13px}
+.card{margin:16px 0}
+.card p.note{color:var(--mute);font-size:13px;margin:0 0 12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:8px 0 12px}
+input[type=search],select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit}
+input[type=search]{min-width:220px}
+button{background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);font-weight:600;cursor:pointer;user-select:none}
+th:hover{color:var(--accent)}
+td.l,th.l{text-align:left}
+tr.sel td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+tbody tr{cursor:pointer}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--mute)}
+.new{background:color-mix(in srgb,var(--new) 20%,transparent);color:var(--new);font-weight:600}
+.up{color:var(--good)}.down{color:var(--bad)}
+.heat{min-width:46px;text-align:center;font-variant-numeric:tabular-nums;border-radius:4px}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--accent);vertical-align:middle;margin-right:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px}
+.chartbox{position:relative;height:380px}
+.empty{color:var(--mute);padding:20px;text-align:center}
+.detail td.f{white-space:normal;text-align:left;color:var(--mute);font-size:13px;max-width:520px}
+footer{max-width:1240px;margin:24px auto 40px;padding:0 16px;color:var(--mute);font-size:13px}
+.theme{position:absolute;right:16px;top:20px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}input[type=search]{min-width:0;width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <button class="theme" id="theme" aria-label="Toggle colour theme">◐ Theme</button>
+  <h1>Blablador Model Benchmark</h1>
+  <p class="sub" id="sub"></p>
+  <div class="kpis" id="kpis"></div>
+</header>
+<main>
+  <section class="card" aria-labelledby="h-lb">
+    <h2 id="h-lb">Leaderboard</h2>
+    <p class="note">Score = mean of category scores (0–100). Each prompt blends deterministic checks (exact answers, executed unit tests, format rules) with a blind LLM-judge panel; failed runs count as 0. Click a row to select it for the charts below, click a header to sort.</p>
+    <div class="row">
+      <input type="search" id="q" placeholder="Filter models…" aria-label="Filter models">
+      <select id="fam" aria-label="Filter by model family"></select>
+      <button id="clear">Clear selection</button>
+      <span class="sub" id="count"></span>
+    </div>
+    <div class="scroll"><table id="lb"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" aria-labelledby="h-sc">
+      <h2 id="h-sc">Quality vs. speed</h2>
+      <div class="row"><select id="speedm" aria-label="Speed metric for the chart">
+        <option value="median_latency_s">End-to-end latency (median)</option>
+        <option value="ttft_s">Time to first token</option>
+        <option value="decode_tps">Throughput (tokens/s)</option>
+      </select></div>
+      <p class="note">Up and to the good side is better. The line connects models on the Pareto frontier – nothing is both faster and better. Time to first token and throughput come from a streamed probe request per model.</p>
+      <div class="chartbox"><canvas id="scatter" role="img" aria-label="Scatter plot of score versus median latency"></canvas></div>
+    </section>
+    <section class="card" aria-labelledby="h-rd">
+      <h2 id="h-rd">Compare selected models</h2>
+      <p class="note">Select up to 5 rows in the leaderboard. Defaults to the top 3.</p>
+      <div class="chartbox"><canvas id="radar" role="img" aria-label="Radar chart of category scores for selected models"></canvas></div>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-hm">
+    <h2 id="h-hm">Category heatmap</h2>
+    <p class="note">Mean score per category. Darker = better. Use it to pick a model for a specific job (code, medical, German …) rather than by overall rank.</p>
+    <div class="scroll"><table id="heat"></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-tr">
+    <h2 id="h-tr">Trend over time</h2>
+    <p class="note">Overall score per scheduled run for the selected models. Regressions after a silent model update show up here.</p>
+    <div class="chartbox"><canvas id="trend" role="img" aria-label="Line chart of overall score over time"></canvas></div>
+    <p class="empty" id="trend-empty" hidden>Trend lines appear after the second scheduled run.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-dd">
+    <h2 id="h-dd">Model drill-down</h2>
+    <div class="row"><select id="pick" aria-label="Model to inspect"></select></div>
+    <div class="scroll"><table id="detail" class="detail"></table></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-pr">
+    <h2 id="h-pr">Prompt difficulty</h2>
+    <p class="note">Share of models scoring ≥90 per prompt. Prompts nobody solves are either genuinely hard or broken – worth a look; prompts everybody solves no longer separate models.</p>
+    <div class="scroll"><table id="prompts"></table></div>
+  </section>
+</main>
+<footer id="foot"></footer>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dark = () => document.documentElement.dataset.theme === 'dark' ||
+  (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const PAL = ['--c1','--c2','--c3','--c4','--c5','--c6'];
+const f1 = x => x == null ? '–' : x.toFixed(1);
+const cap = s => s[0].toUpperCase() + s.slice(1);
+
+let sort = {k: 'score', dir: -1};
+let selected = D.rows.slice(0, 3).map(r => r.model);
+let charts = {};
+
+function heatStyle(v) {
+  if (v == null) return '';
+  const t = v / 100, d = dark();
+  const L = d ? 16 + 44 * t : 96 - 56 * t;
+  const txt = (d ? L > 34 : L < 62) ? '#fff' : (d ? '#e6edf3' : '#1f2328');
+  return `background:hsl(212 62% ${L}%);color:${txt}`;
+}
+
+function header() {
+  const top = D.rows[0], near = D.rows.filter(r => r.score >= top.score - 10);
+  const fast = near.some(r => r.speed_score != null)
+    ? near.filter(r => r.speed_score != null).sort((a, b) => b.speed_score - a.speed_score)[0]
+    : near.filter(r => r.median_latency_s).sort((a, b) => a.median_latency_s - b.median_latency_s)[0];
+  const newOnes = D.rows.filter(r => r.new);
+  $('#sub').textContent = `Run ${D.run} · ${D.generated} · ${D.rows.length} models · ${D.n_prompts} prompts · judges: ${D.judges.join(' + ') || 'checks only'}`;
+  const k = [
+    [top.display, `#1 overall · ${f1(top.score)}`],
+    [fast ? fast.display : '–', fast ? `fastest within 10 pts of #1 · ${fast.speed_score != null ? 'speed ' + fast.speed_score + ' · TTFT ' + (fast.ttft_s ?? '–') + 's · ' + (fast.decode_tps ?? '–') + ' tok/s' : fast.median_latency_s + 's'}` : ''],
+    [newOnes.length, newOnes.length ? 'new this run: ' + newOnes.slice(0, 3).map(r => r.display).join(', ') : 'new models this run'],
+    [D.n_judged.toLocaleString(), `judged responses of ${D.n_runs.toLocaleString()} runs`],
+  ];
+  $('#kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
+}
+
+function table() {
+  const q = $('#q').value.toLowerCase(), fam = $('#fam').value;
+  let rows = D.rows.filter(r => (!q || r.display.toLowerCase().includes(q) || r.model.toLowerCase().includes(q)) && (fam === 'All' || r.family === fam));
+  const get = r => sort.k === 'model' ? r.display.toLowerCase() : sort.k.startsWith('cat:') ? (r.categories[sort.k.slice(4)] ?? -1) : (r[sort.k] ?? -1);
+  rows.sort((a, b) => { const x = get(a), y = get(b); return (x < y ? -1 : x > y ? 1 : 0) * sort.dir; });
+  const cols = [['rank', '#'], ['model', 'Model'], ['score', 'Score'], ...D.categories.map(c => ['cat:' + c, cap(c)]),
+    ['reliability', 'Reliab. %'], ['prompts', 'Prompts'], ['speed_score', 'Speed'], ['ttft_s', 'TTFT s'], ['median_latency_s', 'Latency s'], ['decode_tps', 'Tok/s'], ['reasoning_share', 'Think %'], ['truncated_pct', 'Cut-off %']];
+  $('#lb thead').innerHTML = '<tr>' + cols.map(([k, t]) => `<th class="${k === 'model' ? 'l' : ''}" data-k="${k}" aria-sort="${sort.k === k ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(t)}${sort.k === k ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('') + '</tr>';
+  $('#lb tbody').innerHTML = rows.map(r => {
+    const d = r.delta ? ` <span class="${r.delta > 0 ? 'up' : 'down'}">${r.delta > 0 ? '▲' : '▼'}${Math.abs(r.delta).toFixed(1)}</span>` : '';
+    return `<tr data-m="${esc(r.model)}" class="${selected.includes(r.model) ? 'sel' : ''}" tabindex="0">
+      <td>${r.rank}</td>
+      <td class="l">${esc(r.display)} ${r.new ? '<span class="chip new">NEW</span>' : ''} <span class="chip">${esc(r.family)}</span></td>
+      <td><span class="bar" style="width:${Math.round(r.score * .6)}px"></span><b>${f1(r.score)}</b><span class="sub"> ±${f1(r.ci95)}</span>${d}</td>
+      ${D.categories.map(c => `<td class="heat" style="${heatStyle(r.categories[c])}">${r.categories[c] == null ? '–' : Math.round(r.categories[c])}</td>`).join('')}
+      <td>${f1(r.reliability)}</td><td>${r.prompts ?? '–'}</td><td>${r.speed_score ?? '–'}</td><td>${r.ttft_s ?? '–'}</td><td>${r.median_latency_s ?? '–'}</td><td>${r.decode_tps ?? r.tokens_per_sec ?? '–'}</td><td>${r.reasoning_share ?? '–'}</td><td>${r.truncated_pct ?? '–'}</td></tr>`;
+  }).join('') || '<tr><td class="empty" colspan="20">No models match.</td></tr>';
+  $('#count').textContent = `${rows.length} of ${D.rows.length} models`;
+}
+
+const SPEEDM = {
+  median_latency_s: {label: 'Median latency (s, log)', unit: 's', low: true},
+  ttft_s: {label: 'Time to first token (s, log)', unit: 's', low: true},
+  decode_tps: {label: 'Throughput (tokens/s, log)', unit: ' tok/s', low: false},
+};
+const speedKey = () => $('#speedm').value;
+
+function pareto() {
+  const k = speedKey(), m = SPEEDM[k];
+  const pts = D.rows.filter(r => r[k] != null).sort((a, b) => m.low ? a[k] - b[k] : b[k] - a[k]);
+  const out = []; let best = -1;
+  for (const p of pts) if (p.score > best) { out.push(p); best = p.score; }
+  return out;
+}
+
+function makeChart(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart($(('#' + id)), cfg); }
+
+function scatter() {
+  const ink = css('--ink'), line = css('--line'), mute = css('--mute');
+  const k = speedKey(), m = SPEEDM[k];
+  const pts = D.rows.filter(r => r[k] != null);
+  const front = pareto();
+  makeChart('scatter', {
+    type: 'scatter',
+    data: { datasets: [
+      { label: 'Models', data: pts.map(r => ({x: r[k], y: r.score, r})), backgroundColor: pts.map(r => selected.includes(r.model) ? css('--c2') : css('--c1')), pointRadius: pts.map(r => selected.includes(r.model) ? 7 : 5) },
+      { label: 'Pareto frontier', type: 'line', data: front.map(r => ({x: r[k], y: r.score})), borderColor: css('--c4'), borderDash: [5, 4], pointRadius: 0, borderWidth: 2 },
+    ]},
+    options: { maintainAspectRatio: false, animation: false,
+      scales: { x: { type: 'logarithmic', reverse: !m.low, title: {display: true, text: m.label, color: mute}, ticks: {color: mute}, grid: {color: line} },
+                y: { title: {display: true, text: 'Overall score', color: mute}, ticks: {color: mute}, grid: {color: line}, suggestedMin: 0, suggestedMax: 100 } },
+      plugins: { legend: {labels: {color: ink}}, tooltip: { callbacks: { label: c => c.raw.r ? `${c.raw.r.display}: ${f1(c.raw.y)} @ ${c.raw.x}${m.unit}` : `${f1(c.raw.y)} @ ${c.raw.x}${m.unit}` } } },
+      onClick: (_e, els) => { const el = els.find(e => e.datasetIndex === 0); if (el) toggle(pts[el.index].model); } },
+  });
+}
+
+function radar() {
+  const ink = css('--ink'), line = css('--line'), mute = css('--mute');
+  const rows = selected.map(m => D.rows.find(r => r.model === m)).filter(Boolean);
+  makeChart('radar', {
+    type: 'radar',
+    data: { labels: D.categories.map(cap), datasets: rows.map((r, i) => ({ label: r.display, data: D.categories.map(c => r.categories[c] ?? 0),
+      borderColor: css(PAL[i % PAL.length]), backgroundColor: css(PAL[i % PAL.length]) + '22', pointRadius: 2, borderWidth: 2 })) },
+    options: { maintainAspectRatio: false, animation: false,
+      scales: { r: { min: 0, max: 100, ticks: {color: mute, backdropColor: 'transparent', stepSize: 25}, grid: {color: line}, angleLines: {color: line}, pointLabels: {color: ink} } },
+      plugins: { legend: {labels: {color: ink}} } },
+  });
+}
+
+function heat() {
+  $('#heat').innerHTML = '<thead><tr><th class="l">Category</th>' + D.rows.slice(0, 12).map(r => `<th title="${esc(r.display)}">${esc(r.display.slice(0, 14))}</th>`).join('') + '</tr></thead><tbody>' +
+    D.categories.map(c => `<tr><td class="l">${cap(c)}</td>` + D.rows.slice(0, 12).map(r => `<td class="heat" style="${heatStyle(r.categories[c])}">${r.categories[c] == null ? '–' : Math.round(r.categories[c])}</td>`).join('') + '</tr>').join('') + '</tbody>';
+}
+
+function trend() {
+  const h = D.history;
+  $('#trend-empty').hidden = h.length > 1; $('#trend').parentElement.hidden = h.length <= 1;
+  if (h.length <= 1) return;
+  const ink = css('--ink'), line = css('--line'), mute = css('--mute');
+  makeChart('trend', { type: 'line',
+    data: { labels: h.map(x => x.date), datasets: selected.map((m, i) => ({ label: (D.rows.find(r => r.model === m) || {display: m}).display, data: h.map(x => x.scores[m] ?? null), borderColor: css(PAL[i % PAL.length]), backgroundColor: css(PAL[i % PAL.length]), spanGaps: true, tension: .25, pointRadius: 3 })) },
+    options: { maintainAspectRatio: false, animation: false, scales: { x: {ticks: {color: mute}, grid: {color: line}}, y: {suggestedMin: 0, suggestedMax: 100, ticks: {color: mute}, grid: {color: line}} }, plugins: {legend: {labels: {color: ink}}} } });
+}
+
+function detail() {
+  const m = $('#pick').value, cells = D.detail[m] || {};
+  const ids = Object.keys(D.prompts).sort((a, b) => D.prompts[a].category.localeCompare(D.prompts[b].category) || a.localeCompare(b));
+  $('#detail').innerHTML = '<thead><tr><th class="l">Prompt</th><th class="l">Category</th><th>Score</th><th>Checks</th><th>Judge</th><th>Latency</th><th class="l">What went wrong / judge note</th></tr></thead><tbody>' +
+    ids.filter(id => cells[id]).map(id => { const c = cells[id], p = D.prompts[id];
+      const note = c.e ? 'Error: ' + c.e : [c.f.length ? 'Failed: ' + c.f.join(', ') : '', c.c].filter(Boolean).join(' · ');
+      return `<tr><td class="l" title="${esc(p.description)}">${esc(id)}</td><td class="l">${esc(p.category)}</td><td class="heat" style="${heatStyle(c.s)}">${Math.round(c.s)}</td><td>${c.a ?? '–'}</td><td>${c.j ?? '–'}</td><td>${c.l ?? '–'}s</td><td class="f">${esc(note)}</td></tr>`; }).join('') + '</tbody>';
+}
+
+function prompts() {
+  const ids = Object.keys(D.prompts).sort((a, b) => (D.prompts[a].solved ?? 0) - (D.prompts[b].solved ?? 0));
+  $('#prompts').innerHTML = '<thead><tr><th class="l">Prompt</th><th class="l">Category</th><th class="l">Description</th><th>Level</th><th>Mean</th><th>Solved %</th></tr></thead><tbody>' +
+    ids.map(id => { const p = D.prompts[id]; return `<tr><td class="l">${esc(id)}</td><td class="l">${esc(p.category)}</td><td class="l">${esc(p.description)}</td><td>${'●'.repeat(p.difficulty)}</td><td class="heat" style="${heatStyle(p.mean)}">${p.mean == null ? '–' : Math.round(p.mean)}</td><td>${p.solved ?? '–'}</td></tr>`; }).join('') + '</tbody>';
+}
+
+function toggle(m) {
+  selected = selected.includes(m) ? selected.filter(x => x !== m) : [...selected, m].slice(-5);
+  $('#pick').value = m; draw();
+}
+
+function draw() { table(); scatter(); radar(); heat(); trend(); detail(); }
+
+function init() {
+  header();
+  const fams = ['All', ...new Set(D.rows.map(r => r.family))];
+  $('#fam').innerHTML = fams.map(f => `<option>${esc(f)}</option>`).join('');
+  $('#pick').innerHTML = D.rows.map(r => `<option value="${esc(r.model)}">${esc(r.display)}</option>`).join('');
+  $('#q').oninput = table; $('#fam').onchange = table; $('#speedm').onchange = scatter; $('#pick').onchange = detail;
+  $('#clear').onclick = () => { selected = []; draw(); };
+  $('#lb thead').onclick = e => { const th = e.target.closest('th'); if (!th) return; const k = th.dataset.k; sort = {k, dir: sort.k === k ? -sort.dir : (k === 'model' || k === 'rank' || k === 'median_latency_s' || k === 'ttft_s' || k === 'truncated_pct' ? 1 : -1)}; table(); };
+  $('#lb tbody').onclick = e => { const tr = e.target.closest('tr[data-m]'); if (tr) toggle(tr.dataset.m); };
+  $('#lb tbody').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { const tr = e.target.closest('tr[data-m]'); if (tr) { e.preventDefault(); toggle(tr.dataset.m); } } };
+  $('#theme').onclick = () => { document.documentElement.dataset.theme = dark() ? 'light' : 'dark'; draw(); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  $('#foot').innerHTML = `Generated ${esc(D.generated)} by <a href="https://github.com/JonasHeinickeBio/HeLLMholtz">HeLLMholtz</a>. Scores combine deterministic checks (${D.n_prompts} prompts) with a blind LLM-judge panel; a judge never grades its own model. Raw data: <a href="data.json">data.json</a>.`;
+  $('#pick').value = D.rows[0].model;
+  draw();
+}
+init();
+</script>
+</body>
+</html>

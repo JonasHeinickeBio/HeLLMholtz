@@ -398,6 +398,12 @@ PROMPTS: list[Prompt] = [
                 "name": "required elements",
             },
         ],
+        rubric=[
+            "The answer is syntactically valid Go that compiles (package main, imports net/http, "
+            "func main)",
+            "The server listens on port 8080 and answers every request with 'Hello, World!'",
+            "Only code is returned, without explanatory prose",
+        ],
         difficulty=1,
     ),
     # ------------------------------------------------------ instruction following
@@ -451,6 +457,7 @@ PROMPTS: list[Prompt] = [
                 "type": "json_valid",
                 "keys": ["name", "age", "skills"],
                 "lengths": {"skills": 3},
+                "types": {"name": "string", "age": "integer", "skills": "array_of_strings"},
                 "name": "valid schema",
             },
             {"type": "not_regex", "pattern": r"```", "name": "no code fences"},
@@ -514,7 +521,12 @@ PROMPTS: list[Prompt] = [
                     "due_date": "2026-04-02",
                 },
                 "name": "all fields correct",
-            }
+            },
+            {
+                "type": "regex",
+                "pattern": r"^\s*(?:```(?:json)?\s*)?\{[\s\S]*\}\s*(?:```)?\s*$",
+                "name": "JSON only, no surrounding prose",
+            },
         ],
         reference='{"invoice_number": "INV-2026-0417", "total_eur": 392.0, "due_date": "2026-04-02"}',
         difficulty=2,
@@ -634,7 +646,10 @@ PROMPTS: list[Prompt] = [
         checks=[
             {
                 "type": "regex",
-                "pattern": r"6\s*CO2[\s\S]{0,30}6\s*H2O[\s\S]{0,80}6\s*O2",
+                "pattern": (
+                    r"6\s*CO2[\s\S]{0,30}6\s*H2O[\s\S]{0,80}"
+                    r"(?:C6H12O6[\s\S]{0,40}6\s*O2|6\s*O2[\s\S]{0,40}C6H12O6)"
+                ),
                 "flags": "i",
                 "name": "6 CO2 + 6 H2O -> C6H12O6 + 6 O2",
             },

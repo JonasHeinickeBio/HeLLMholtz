@@ -14,6 +14,7 @@ Usage: python scripts/build_docs.py
 """
 
 import argparse
+from datetime import UTC, datetime
 from pathlib import Path
 import re
 import shutil
@@ -113,12 +114,13 @@ def leaderboard(data: dict[str, Any], top: int = 15) -> str:
                 num(r.get("ttft_s"), 2),
                 num(r.get("decode_tps"), 0),
                 num(r["reliability"], 0, "%"),
+                str(r.get("prompts", "")),
             ]
         )
     out = table(
-        ["#", "Model", "Family", "Score", "Speed", "TTFT s", "Tok/s", "Reliab."],
+        ["#", "Model", "Family", "Score", "Speed", "TTFT s", "Tok/s", "Reliab.", "Prompts"],
         rows,
-        "ccl" + "r" * 5,
+        "ccl" + "r" * 6,
     )
     if len(data["rows"]) > top:
         out += f"\n\n_Top {top} of {len(data['rows'])}; the full ranking is in the dashboard._"
@@ -190,7 +192,8 @@ def picks(data: dict[str, Any]) -> str:
         ("longcontext", "Long context"),
     ):
         if c in cat:
-            items.append((label, pick(rows, lambda r, c=c: r["categories"].get(c) or -1)))
+            tested = [r for r in rows if r["categories"].get(c) is not None]
+            items.append((label, pick(tested, lambda r, c=c: r["categories"][c])))
     out = []
     for label, r in items:
         if r is None:
@@ -293,22 +296,36 @@ def catalog(data: dict[str, Any], status: dict[str, Any]) -> str:
     )
 
 
-def availability(status: dict[str, Any]) -> str:
+def availability(status: dict[str, Any], checked: str | None = None) -> str:
     listed = sum(1 for v in status.values() if v.get("available"))
+    when = f"status of {checked}" if checked else "status at the last registry update"
     return (
-        f"**{listed} of {len(status)}** known models are currently listed by the API "
-        f"(checked daily). Models marked ⛔ stay in the registry so they come back "
+        f"**{listed} of {len(status)}** known models were listed by the API "
+        f"({when}). Models marked ⛔ stay in the registry so they come back "
         f"automatically when the API lists them again."
     )
 
 
 # ---------------------------------------------------------------- pages
 
-HOW = f"""Scores are 0-100: each prompt blends deterministic checks (exact answers, executed unit
-tests, format rules) with a blind LLM-judge panel; failed runs count as 0. Speed comes from
-a separate streamed probe per model (time to first token and decode throughput) and never
-changes the quality score. Details: [Benchmarking]({{bench}}). The interactive version with
-filters, charts and per-prompt drill-down is the [live dashboard]({DASHBOARD_URL})."""
+def how(data: dict[str, Any], bench_link: str) -> str:
+    only = data.get("n_checks_only")
+    mixed = (
+        f"{only} of {data['n_prompts']} prompts are scored by their deterministic checks alone; "
+        "the others blend the checks (60 %) with a blind LLM-judge panel (40 %). "
+        if only is not None
+        else "Prompts blend deterministic checks with a blind LLM-judge panel where a rubric "
+        "exists. "
+    )
+    return (
+        "Scores are 0-100 per prompt (exact answers, executed unit tests and format rules). "
+        f"{mixed}Failed, truncated and empty runs count as 0. Speed comes from a separate "
+        "streamed probe per model (time to first token and decode throughput) and never "
+        "changes the quality score; a model without a successful probe falls back to the "
+        "throughput of its quality runs, so its speed rests on end-to-end latency. "
+        f"Details: [Benchmarking]({bench_link}). The interactive version with filters, "
+        f"charts and per-prompt drill-down is the [live dashboard]({DASHBOARD_URL})."
+    )
 
 
 def performance_page(data: dict[str, Any], bench_link: str, svg: str | None) -> str:
@@ -317,7 +334,7 @@ def performance_page(data: dict[str, Any], bench_link: str, svg: str | None) -> 
         "",
         headline(data),
         "",
-        HOW.replace("{bench}", bench_link),
+        how(data, bench_link),
         "",
     ]
     if svg:
@@ -362,7 +379,7 @@ def models_block(data: dict[str, Any], status: dict[str, Any]) -> str:
         [
             "### Model list",
             "",
-            availability(status),
+            availability(status, data.get("status_checked")),
             "",
             f"_Scores from the benchmark of {data['generated']} "
             f"({data['n_prompts']} prompts); sorted by rank, unbenchmarked models last._",
@@ -437,7 +454,7 @@ def wiki_pages(data: dict[str, Any], status: dict[str, Any]) -> dict[str, str]:
         [
             "# Models",
             "",
-            availability(status),
+            availability(status, data.get("status_checked")),
             "",
             f"_Scores from the benchmark of {data['generated']}._",
             "",
@@ -472,7 +489,11 @@ def main() -> int:
         print(f"{args.data} missing: run scripts/build_dashboard.py first", file=sys.stderr)
         return 1
     data = load_json(args.data)
-    status = yaml.safe_load(args.status.read_text(encoding="utf-8"))["models"]
+    status_doc = yaml.safe_load(args.status.read_text(encoding="utf-8"))
+    status = status_doc["models"]
+    checked = status_doc.get("last_checked")
+    if isinstance(checked, (int, float)):
+        data["status_checked"] = datetime.fromtimestamp(checked, UTC).strftime("%Y-%m-%d")
 
     svg_src = ROOT / "reports/leaderboard.svg"
     svg_ref = None

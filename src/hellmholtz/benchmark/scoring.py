@@ -53,11 +53,21 @@ def rating_from_score(score: float) -> float:
 
 
 def final_score(
-    auto: float | None, judge: float | None, success: bool = True, empty: bool = False
+    auto: float | None,
+    judge: float | None,
+    success: bool = True,
+    empty: bool = False,
+    needs_judge: bool = False,
 ) -> float | None:
-    """Final 0-100 score for one run; None while a needed signal is still missing."""
+    """Final 0-100 score for one run; None while a needed signal is still missing.
+
+    ``needs_judge`` marks prompts whose score blends checks with a judge verdict: until
+    the judge has answered they stay unscored instead of counting the checks alone.
+    """
     if not success or empty:
         return 0.0
+    if needs_judge and judge is None:
+        return None
     if auto is not None and judge is not None:
         return round(100 * (CHECK_WEIGHT * auto + (1 - CHECK_WEIGHT) * judge), 2)
     if auto is not None:
@@ -65,6 +75,25 @@ def final_score(
     if judge is not None:
         return round(100 * judge, 2)
     return None
+
+
+def dedupe_attempts(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep the last attempt per (model, prompt, temperature, run).
+
+    Resumed runs append a retry after the earlier failed record for the same key; only
+    the final attempt may count, or the failure would be scored and hurt reliability.
+    """
+    latest: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for rec in records:
+        key = (
+            rec.get("model"),
+            rec.get("prompt_id"),
+            float(rec.get("temperature") or 0.0),
+            int(rec.get("run_id") or 0),
+        )
+        latest.pop(key, None)  # re-insert so the order follows the final attempt
+        latest[key] = rec
+    return list(latest.values())
 
 
 def _mean(values: list[float]) -> float | None:

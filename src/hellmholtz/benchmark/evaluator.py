@@ -35,7 +35,7 @@ JUDGE_SYSTEM = (
 )
 
 JUDGE_PROMPT_TEMPLATE = """\
-TASK GIVEN TO THE MODEL:
+{system_block}TASK GIVEN TO THE MODEL:
 <task>
 {prompt}
 </task>
@@ -68,6 +68,13 @@ Respond with exactly this JSON shape:
 
 def build_judge_prompt(prompt: Prompt, response: str) -> str:
     """Render the judge prompt for one prompt/response pair."""
+    system_text = "\n".join(m.content for m in prompt.messages if m.role == "system").strip()
+    system_block = (
+        f"SYSTEM INSTRUCTIONS GIVEN TO THE MODEL (the answer must honour them):\n"
+        f"<system>\n{system_text}\n</system>\n\n"
+        if system_text
+        else ""
+    )
     reference_block = (
         f"\nREFERENCE (ground truth / model solution; the answer may differ in wording):\n"
         f"<reference>\n{prompt.reference}\n</reference>\n"
@@ -85,6 +92,7 @@ def build_judge_prompt(prompt: Prompt, response: str) -> str:
     else:
         rubric_block, rubric_hint, rubric_field = "", "", ""
     return JUDGE_PROMPT_TEMPLATE.format(
+        system_block=system_block,
         prompt=prompt.user_message,
         response=strip_reasoning(response)[:12000],
         reference_block=reference_block,
@@ -92,6 +100,20 @@ def build_judge_prompt(prompt: Prompt, response: str) -> str:
         rubric_hint=rubric_hint,
         rubric_field=rubric_field,
     )
+
+
+_DIMENSIONS = ("correctness", "completeness", "instruction_following", "clarity")
+
+
+def _normalise_dimensions(data: dict[str, Any]) -> bool:
+    """Round the four 1-5 scores in place; False when any is missing or out of range."""
+    complete = True
+    for dim in _DIMENSIONS:
+        v = data.get(dim)
+        valid = isinstance(v, (int, float)) and not isinstance(v, bool) and 1 <= v <= 5
+        data[dim] = int(round(v)) if valid else None
+        complete = complete and valid
+    return complete
 
 
 def parse_verdict(text: str, n_rubric: int = 0) -> dict[str, Any] | None:
@@ -112,9 +134,8 @@ def parse_verdict(text: str, n_rubric: int = 0) -> dict[str, Any] | None:
             continue
         if not isinstance(data, dict):
             continue
-        for dim in ("correctness", "completeness", "instruction_following", "clarity"):
-            v = data.get(dim)
-            data[dim] = int(round(v)) if isinstance(v, (int, float)) and 1 <= v <= 5 else None
+        if not _normalise_dimensions(data):
+            continue  # a partial verdict would inflate the average over the dimensions present
         rubric = data.get("rubric_met")
         if n_rubric and not (
             isinstance(rubric, list)
@@ -162,11 +183,21 @@ def judge_one(
     return None
 
 
-def _same_model(judge: str, evaluated: str) -> bool:
-    def norm(name: str) -> str:
-        return name.split(":", 1)[-1].strip().lower()
+# Aliases that serve the same deployment as a differently named catalogue entry.
+_DEPLOYMENT_ALIASES = {
+    "alias-deepseek-v41-flash-booster": "deepseek-v4.1-flash on juwels booster",
+}
 
-    return norm(judge) == norm(evaluated)
+
+def _deployment(name: str) -> str:
+    """Canonical deployment name: provider prefix, list number and aliases resolved."""
+    base = name.split(":", 1)[-1].strip().lower()
+    base = re.sub(r"^\d+\s*-\s*", "", base)
+    return _DEPLOYMENT_ALIASES.get(base, base)
+
+
+def _same_model(judge: str, evaluated: str) -> bool:
+    return _deployment(judge) == _deployment(evaluated)
 
 
 def judge_panel(

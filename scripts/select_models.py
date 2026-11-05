@@ -22,7 +22,7 @@ from typing import Any
 import yaml
 
 NON_CHAT = re.compile(
-    r"embed|rerank|whisper|audio|flux|image|ocr|video|voice|anonymizer|clef|ada-002|davinci|gpt-3\.5",
+    r"embed|rerank|whisper|audio|flux|image|ocr|video|voice|anonymizer|clef|laya|ada-002|davinci|gpt-3\.5",
     re.IGNORECASE,
 )
 

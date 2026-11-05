@@ -72,7 +72,8 @@ jobs:
       run: |
         {
           echo "BLABLADOR_API_KEY=$BLABLADOR_API_KEY"
-          echo "BLABLADOR_API_BASE=$BLABLADOR_API_BASE"
+          # An empty value would override the client's default endpoint.
+          if [ -n "$BLABLADOR_API_BASE" ]; then echo "BLABLADOR_API_BASE=$BLABLADOR_API_BASE"; fi
         } > .env
 
     - name: Sync model registry with the API

@@ -43,9 +43,9 @@ print(all_limits["openai"]["gpt-4o"])  # Output: 128000
 <!-- MODELS:START -->
 ### Model list
 
-**62 of 99** known models are currently listed by the API (checked daily). Models marked ⛔ stay in the registry so they come back automatically when the API lists them again.
+**62 of 99** known models were listed by the API (status at the last registry update). Models marked ⛔ stay in the registry so they come back automatically when the API lists them again.
 
-_Scores from the benchmark of 2026-11-05 (58 prompts); sorted by rank, unbenchmarked models last._
+_Scores from the benchmark of 2026-11-05 (52 prompts); sorted by rank, unbenchmarked models last._
 
 | Model | Family | Context | API | Rank | Score | Speed | Description |
 |:--|:--|--:|:--|--:|--:|--:|:--|

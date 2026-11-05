@@ -114,6 +114,11 @@ class BlabladorProvider(Provider):
         resolved = model
         for m in KNOWN_MODELS:
             if m.id == model or m.name == model or m.alias == model:
+                if m.model_kind == "systemone":
+                    raise LLMError(
+                        f"Model '{model}' is a System-One typed-decision model and does not "
+                        f"support chat completions. Use `hellm systemone route` instead."
+                    )
                 resolved = m.api_id
                 break
         return self.client.chat.completions.create(

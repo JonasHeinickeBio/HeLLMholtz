@@ -486,6 +486,7 @@ def _update_models_file(
 
         # Process removed models - mark them as unavailable
         removed_models_marked = set()
+        reenabled_marked = set()
         # Insert bottom-up: each insertion shifts every later line, so the
         # (start, end) indexes captured above are only valid for models that
         # sit above all previous insertions.
@@ -506,7 +507,7 @@ def _update_models_file(
                 for i in range(end_line, start_line - 1, -1):
                     if existing_lines[i].strip() == "available=False,":
                         del existing_lines[i]
-                        removed_models_marked.add(model_name)
+                        reenabled_marked.add(model_name)
                 continue
             if any("available=False" in line for line in block):
                 continue
@@ -527,7 +528,7 @@ def _update_models_file(
                 seen.add(model_key)
             unique_new_models.append(line)
 
-        if not new_models_lines and not removed_models_marked:
+        if not new_models_lines and not removed_models_marked and not reenabled_marked:
             logger.info("No new models to add, no models to mark as unavailable")
             return {
                 "success": True,
@@ -581,6 +582,7 @@ def _update_models_file(
             if new_models_lines
             else 0,  # Each model is 6 lines
             "models_unavailable": len(removed_models_marked),
+            "models_reenabled": len(reenabled_marked),
         }
     except Exception as e:
         logger.error(f"Failed to update models file: {e}")

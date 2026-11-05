@@ -2,6 +2,7 @@
 Core prompt structures for LLM interactions.
 """
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +61,18 @@ class Prompt(BaseModel):
     )
     difficulty: int = Field(default=2, ge=1, le=3, description="1 = easy, 2 = medium, 3 = hard")
     quick: bool = Field(default=False, description="Member of the short benchmark tier")
+
+    @field_validator("checks")
+    @classmethod
+    def validate_check_weights(cls, v: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        for spec in v:
+            try:
+                weight = float(spec.get("weight", 1))
+            except (TypeError, ValueError):
+                raise ValueError(f"Check weight must be a number: {spec!r}") from None
+            if not math.isfinite(weight) or weight < 0:
+                raise ValueError(f"Check weight must be finite and non-negative: {spec!r}")
+        return v
 
     @field_validator("messages")
     @classmethod

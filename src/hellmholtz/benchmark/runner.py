@@ -137,6 +137,7 @@ def run_benchmarks(  # noqa: C901
     _partial_path: Path | None = None,
     _save: bool = True,
     _resume: dict[tuple[str, str, float, int], BenchmarkResult] | None = None,
+    _streaks: "_FailureStreaks | None" = None,
 ) -> list[BenchmarkResult]:
     """Run benchmarks across multiple models and prompts.
 
@@ -230,7 +231,7 @@ def run_benchmarks(  # noqa: C901
         for model_idx, model in enumerate(model_list):
             model_results = 0
             model_successful = 0
-            consecutive_api_failures = 0
+            streaks = _streaks or _FailureStreaks()
             # Skip a model after this many consecutive API/transport failures.
             # Empty completions are model-quality issues, not API outages, and
             # never count toward this threshold.
@@ -245,10 +246,10 @@ def run_benchmarks(  # noqa: C901
                 for _temp_idx, temperature in enumerate(temperatures):
                     for repl_idx in range(replications):
                         # Check if we should skip this model due to too many API failures
-                        if consecutive_api_failures >= max_consecutive_api_failures:
+                        if streaks.get(model) >= max_consecutive_api_failures:
                             warn_msg = (
                                 f"Skipping remaining tests for {model} due to "
-                                f"{consecutive_api_failures} consecutive API failures"
+                                f"{streaks.get(model)} consecutive API failures"
                             )
                             logger.warning(warn_msg)
                             stats["skipped_models"].add(model)
@@ -256,12 +257,14 @@ def run_benchmarks(  # noqa: C901
 
                         reused = resume.get((model, prompt_id, float(temperature), repl_idx))
                         if reused is not None:
+                            reused.category = prompt.category
+                            _score_with_checks(reused, prompt)
                             results.append(reused)
                             stats["completed"] += 1
                             stats["successful"] += 1
                             model_successful += 1
                             model_results += 1
-                            consecutive_api_failures = 0
+                            streaks.reset(model)
                             pbar.update(1)
                             continue
 
@@ -327,6 +330,11 @@ def run_benchmarks(  # noqa: C901
                                         f"Empty response from {model} for prompt "
                                         f"{prompt_id} (finish_reason={finish_reason})"
                                     )
+                                elif finish_reason == "length":
+                                    # Cut off at the token limit: an incomplete answer
+                                    # scores 0 like any other failed run.
+                                    success = False
+                                    error_msg = "Response truncated (finish_reason=length)"
                             else:
                                 success = False
                                 error_msg = "No response choices returned"
@@ -396,30 +404,30 @@ def run_benchmarks(  # noqa: C901
                         if success:
                             stats["successful"] += 1
                             model_successful += 1
-                            consecutive_api_failures = 0  # Reset on success
+                            streaks.reset(model)  # Reset on success
                         else:
                             stats["failed"] += 1
                             if transport_failure:
-                                consecutive_api_failures += 1
+                                streaks.hit(model)
                             else:
                                 # Empty completion: the API is up and answered, so
                                 # this is a model-quality issue, not an outage.
-                                consecutive_api_failures = 0
+                                streaks.reset(model)
 
                         model_results += 1
                         pbar.update(1)
 
                     # Check if we need to break out of replication loop due to model skipping
-                    if consecutive_api_failures >= max_consecutive_api_failures:
+                    if streaks.get(model) >= max_consecutive_api_failures:
                         break
 
                 # Check if we need to break out of temperature loop due to model skipping
-                if consecutive_api_failures >= max_consecutive_api_failures:
+                if streaks.get(model) >= max_consecutive_api_failures:
                     break
 
             # If this model was skipped due to consecutive API failures, move on
             # to the next model instead of aborting the whole benchmark.
-            if consecutive_api_failures >= max_consecutive_api_failures:
+            if streaks.get(model) >= max_consecutive_api_failures:
                 continue
 
             logger.info(f"Completed testing {model}")
@@ -496,22 +504,44 @@ def count_reasoning_tokens(response: Any) -> int | None:
 _THINK_BLOCK = re.compile(r"<think(?:ing)?>.*?</think(?:ing)?>", re.DOTALL | re.IGNORECASE)
 
 
+class _FailureStreaks:
+    """Consecutive API failures per model, shared by the chunks of one model."""
+
+    def __init__(self) -> None:
+        self._counts: dict[str, int] = {}
+        self._lock = threading.Lock()
+
+    def get(self, model: str) -> int:
+        with self._lock:
+            return self._counts.get(model, 0)
+
+    def hit(self, model: str) -> None:
+        with self._lock:
+            self._counts[model] = self._counts.get(model, 0) + 1
+
+    def reset(self, model: str) -> None:
+        with self._lock:
+            self._counts[model] = 0
+
+
 def _score_with_checks(result: BenchmarkResult, prompt: Prompt) -> None:
-    """Run the prompt's deterministic checks and set auto/final scores."""
+    """Run the prompt's deterministic checks and (re)compute auto/final scores.
+
+    An existing ``judge_score`` is kept, so resumed records can be rescored against the
+    current prompt definition without losing their verdict. Prompts that need a judge
+    (rubric, or no checks at all) stay unscored until one has answered.
+    """
     if prompt.checks and result.success:
         checks = run_checks(prompt.checks, result.response_text)
         result.check_results = [c.as_dict() for c in checks]
         result.auto_score = auto_score(checks)
     result.final_score = final_score(
         result.auto_score,
-        None,
+        result.judge_score,
         success=result.success,
         empty=not (result.response_text or "").strip(),
+        needs_judge=bool(prompt.rubric) or not prompt.checks,
     )
-    # Open-ended prompts have no checks: their final score is set by the judge,
-    # so a successful run stays unscored (None) until judged.
-    if result.success and not prompt.checks:
-        result.final_score = None
 
 
 def _run_parallel(
@@ -540,6 +570,8 @@ def _run_parallel(
     chunks = max(1, min(4, len(prompt_list), max_concurrent))
     units = [(m, prompt_list[i::chunks]) for m in model_list for i in range(chunks)]
 
+    streaks = _FailureStreaks()  # shared by all chunks of a model
+
     def one(unit: tuple[str, list[Prompt]]) -> list[BenchmarkResult]:
         model, subset = unit
         return run_benchmarks(
@@ -554,6 +586,7 @@ def _run_parallel(
             _partial_path=partial_path,
             _save=False,
             _resume=resume or {},
+            _streaks=streaks,
         )
 
     results: list[BenchmarkResult] = []
