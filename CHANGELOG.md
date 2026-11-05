@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Generated docs and wiki.** `scripts/build_docs.py` writes a performance page, a
+  scored model table and the GitHub wiki pages from the latest benchmark; the docs site
+  (with the dashboard at `/benchmark/`) is now built and deployed to Pages by the weekly
+  workflow.
 - **Speed and reasoning metrics.** Streamed speed probe per model (time to first token,
   decode tokens/s, 0-100 speed score), reasoning-token share and cut-off rate, six more
   reasoning prompts (58 total) with a judged process rubric, and a dashboard speed view

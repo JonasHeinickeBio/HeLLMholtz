@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 506" width="860" height="506" role="img" aria-label="Benchmark leaderboard: overall score by model">
+<style>.bg{fill:#fff}.t{fill:#1f2328;font:600 15px system-ui,sans-serif}.s{fill:#59636e;font:12px system-ui,sans-serif}.l{fill:#1f2328;font:13px system-ui,sans-serif}.v{fill:#1f2328;font:600 13px system-ui,sans-serif}.b{fill:#2f6fdb}.n{fill:#d97706}.g{stroke:#d1d9e0;stroke-width:1}.ci{stroke:#1f2328;stroke-opacity:.55;stroke-width:1.5}@media (prefers-color-scheme:dark){.bg{fill:#0d1117}.t,.l,.v{fill:#e6edf3}.s{fill:#9198a1}.b{fill:#5b9cf6}.n{fill:#f0a43a}.g{stroke:#30363d}.ci{stroke:#e6edf3}}</style>
+<rect class="bg" width="860" height="506" rx="8"/>
+<text class="t" x="16" y="26">Overall benchmark score (0–100)</text>
+<text class="s" x="16" y="44">2026-11-05 · 58 prompts · checks + LLM-judge panel · bars show mean ± 95% CI</text>
+<line class="g" x1="250.0" y1="52" x2="250.0" y2="480"/>
+<text class="s" x="250.0" y="496" text-anchor="middle">0</text>
+<line class="g" x1="385.0" y1="52" x2="385.0" y2="480"/>
+<text class="s" x="385.0" y="496" text-anchor="middle">25</text>
+<line class="g" x1="520.0" y1="52" x2="520.0" y2="480"/>
+<text class="s" x="520.0" y="496" text-anchor="middle">50</text>
+<line class="g" x1="655.0" y1="52" x2="655.0" y2="480"/>
+<text class="s" x="655.0" y="496" text-anchor="middle">75</text>
+<line class="g" x1="790.0" y1="52" x2="790.0" y2="480"/>
+<text class="s" x="790.0" y="496" text-anchor="middle">100</text>
+<text class="l" x="242" y="73" text-anchor="end">1. deepseek-v4.1-flash-at-hzdr</text>
+<rect class="b" x="250" y="60" width="531.1" height="18" rx="3"/>
+<line class="ci" x1="771.7" y1="69.0" x2="790.0" y2="69.0"/>
+<text class="v" x="789.1" y="73">98.4</text>
+<text class="l" x="242" y="101" text-anchor="end">2. alias-mimo-v2.6-flash</text>
+<rect class="b" x="250" y="88" width="530.3" height="18" rx="3"/>
+<line class="ci" x1="770.9" y1="97.0" x2="789.7" y2="97.0"/>
+<text class="v" x="788.3" y="101">98.2</text>
+<text class="l" x="242" y="129" text-anchor="end">3. alias-mimo-v2.6-pro</text>
+<rect class="b" x="250" y="116" width="528.6" height="18" rx="3"/>
+<line class="ci" x1="765.9" y1="125.0" x2="790.0" y2="125.0"/>
+<text class="v" x="786.6" y="129">97.9</text>
+<text class="l" x="242" y="157" text-anchor="end">4. alias-hyperqwen</text>
+<rect class="b" x="250" y="144" width="528.2" height="18" rx="3"/>
+<line class="ci" x1="756.8" y1="153.0" x2="790.0" y2="153.0"/>
+<text class="v" x="786.2" y="157">97.8</text>
+<text class="l" x="242" y="185" text-anchor="end">5. DeepSeek-V4.1-Flash on JUWELS Boos</text>
+<rect class="b" x="250" y="172" width="527.4" height="18" rx="3"/>
+<line class="ci" x1="766.3" y1="181.0" x2="788.4" y2="181.0"/>
+<text class="v" x="785.4" y="185">97.7</text>
+<text class="l" x="242" y="213" text-anchor="end">6. alias-qwen3.8-flash-next</text>
+<rect class="b" x="250" y="200" width="526.8" height="18" rx="3"/>
+<line class="ci" x1="754.7" y1="209.0" x2="790.0" y2="209.0"/>
+<text class="v" x="784.8" y="213">97.5</text>
+<text class="l" x="242" y="241" text-anchor="end">7. alias-qwen38-quick</text>
+<rect class="b" x="250" y="228" width="525.9" height="18" rx="3"/>
+<line class="ci" x1="754.1" y1="237.0" x2="790.0" y2="237.0"/>
+<text class="v" x="783.9" y="241">97.4</text>
+<text class="l" x="242" y="269" text-anchor="end">8. alias-code</text>
+<rect class="b" x="250" y="256" width="525.3" height="18" rx="3"/>
+<line class="ci" x1="753.2" y1="265.0" x2="790.0" y2="265.0"/>
+<text class="v" x="783.3" y="269">97.3</text>
+<text class="l" x="242" y="297" text-anchor="end">9. alias-deepseek-v41-flash-booster</text>
+<rect class="b" x="250" y="284" width="524.0" height="18" rx="3"/>
+<line class="ci" x1="751.9" y1="293.0" x2="790.0" y2="293.0"/>
+<text class="v" x="782.0" y="297">97.0</text>
+<text class="l" x="242" y="325" text-anchor="end">10. alias-large</text>
+<rect class="b" x="250" y="312" width="523.8" height="18" rx="3"/>
+<line class="ci" x1="751.6" y1="321.0" x2="790.0" y2="321.0"/>
+<text class="v" x="781.8" y="325">97.0</text>
+<text class="l" x="242" y="353" text-anchor="end">11. MiMo-V2.6-Pro-RL on Juwels Booster</text>
+<rect class="b" x="250" y="340" width="523.5" height="18" rx="3"/>
+<line class="ci" x1="760.0" y1="349.0" x2="786.9" y2="349.0"/>
+<text class="v" x="781.5" y="353">96.9</text>
+<text class="l" x="242" y="381" text-anchor="end">12. alias-qwen38-27b</text>
+<rect class="b" x="250" y="368" width="523.2" height="18" rx="3"/>
+<line class="ci" x1="751.1" y1="377.0" x2="790.0" y2="377.0"/>
+<text class="v" x="781.2" y="381">96.9</text>
+<text class="l" x="242" y="409" text-anchor="end">13. Qwen3.8-27B-FP8</text>
+<rect class="b" x="250" y="396" width="522.3" height="18" rx="3"/>
+<line class="ci" x1="743.2" y1="405.0" x2="790.0" y2="405.0"/>
+<text class="v" x="780.3" y="409">96.7</text>
+<text class="l" x="242" y="437" text-anchor="end">14. Aleph Kolibri</text>
+<rect class="b" x="250" y="424" width="522.1" height="18" rx="3"/>
+<line class="ci" x1="750.0" y1="433.0" x2="790.0" y2="433.0"/>
+<text class="v" x="780.1" y="437">96.7</text>
+<text class="l" x="242" y="465" text-anchor="end">15. Qwen 3.8-Flash-Next-125B-AWQ-W4A16</text>
+<rect class="b" x="250" y="452" width="521.7" height="18" rx="3"/>
+<line class="ci" x1="742.5" y1="461.0" x2="790.0" y2="461.0"/>
+<text class="v" x="779.7" y="465">96.6</text>
+<rect class="n" x="700" y="16" width="10" height="10" rx="2"/>
+<text class="s" x="716" y="25">new this run</text>
+</svg>

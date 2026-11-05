@@ -165,6 +165,8 @@ jobs:
         mkdir -p reports
         cp "$RESULTS" reports/weekly_benchmark_results.json
         poetry run python scripts/build_dashboard.py "$RESULTS" --run-id "$RUN_ID"
+        # Performance/model pages for the docs site and the GitHub wiki
+        poetry run python scripts/build_docs.py
 
 
     - name: Build legacy reports (full runs only)
@@ -181,7 +183,7 @@ jobs:
       id: check-changes
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        if [ -n "$(git status --porcelain reports/ docs/benchmark/ README.md models_status.yaml src/hellmholtz/providers/models/)" ]; then
+        if [ -n "$(git status --porcelain reports/ docs/ wiki/ README.md models_status.yaml src/hellmholtz/providers/models/)" ]; then
           echo "changes=true" >> $GITHUB_OUTPUT
         else
           echo "changes=false" >> $GITHUB_OUTPUT
@@ -192,7 +194,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add reports/ docs/benchmark/ README.md models_status.yaml src/hellmholtz/providers/models/
+        git add reports/ docs/ wiki/ README.md models_status.yaml src/hellmholtz/providers/models/
         git commit -m "chore(benchmark): update leaderboard and model status
 
         - Generated on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -202,12 +204,35 @@ jobs:
         git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
         git push
 
-    - name: Upload dashboard for Pages
+    - name: Publish GitHub wiki
+      if: steps.check-changes.outputs.changes == 'true' && hashFiles('wiki/Home.md') != ''
+      env:
+        TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+      run: |
+        # The wiki is its own git repo and only exists once its first page was created
+        # in the GitHub UI (Wiki tab -> Create the first page). Until then skip quietly.
+        if git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" _wiki 2>/dev/null; then
+          cp wiki/*.md _wiki/
+          cd _wiki
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki already up to date"
+          else
+            git config user.email "action@github.com"
+            git config user.name "GitHub Action"
+            git commit -m "docs: update model performance pages (run ${{ github.run_id }})"
+            git push
+          fi
+        else
+          echo "::notice::Wiki repository not found; create the first wiki page once to enable publishing"
+        fi
+
+    - name: Build docs site (includes the dashboard at /benchmark/)
       if: steps.check-changes.outputs.changes == 'true' && hashFiles('docs/benchmark/index.html') != ''
       run: |
-        mkdir -p _site
-        cp -r docs/benchmark _site/benchmark
-        printf '<meta http-equiv="refresh" content="0; url=benchmark/">\n' > _site/index.html
+        pip install --quiet mkdocs-material
+        mkdocs build --quiet --site-dir _site
 
     - name: Upload Pages artifact
       if: steps.check-changes.outputs.changes == 'true' && hashFiles('docs/benchmark/index.html') != ''

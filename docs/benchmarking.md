@@ -92,6 +92,14 @@ otherwise shadow the real client. Reasoning models need a generous `--max-tokens
 they spend the budget thinking and return an empty answer. `HELLM_REQUEST_TIMEOUT` (default
 120 s) bounds each request.
 
+## Docs and wiki pages
+
+`scripts/build_docs.py` turns the dashboard data into `docs/performance.md`, the model table in
+`docs/models.md` (between the `MODELS` markers) and the GitHub wiki pages in `wiki/`. The
+weekly workflow runs it after every benchmark, commits the result and pushes `wiki/` to the
+repository wiki. The wiki repo only exists after its first page was created once in the
+GitHub UI (Wiki tab -> Create the first page); until then the step is skipped.
+
 ## How GitHub keeps it current
 
 | Workflow | When | What |
