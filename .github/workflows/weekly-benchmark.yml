@@ -117,8 +117,8 @@ jobs:
       run: |
         {
           echo "BLABLADOR_API_KEY=$BLABLADOR_API_KEY"
-          # An empty value would override the client's default endpoint.
-          if [ -n "$BLABLADOR_API_BASE" ]; then echo "BLABLADOR_API_BASE=$BLABLADOR_API_BASE"; fi
+          # Unset optional secret: fall back to the public endpoint (the chat provider has no default).
+          echo "BLABLADOR_API_BASE=${BLABLADOR_API_BASE:-https://api.helmholtz-blablador.fz-juelich.de/v1}"
         } > .env
 
     - name: Sync model registry and refresh availability

@@ -140,3 +140,33 @@ def test_python_tests_still_pass_and_fail_correctly():
     assert _run_python("def f(): return 2", "assert f() == 2", 10)[0]
     assert not _run_python("def f(): return 3", "assert f() == 2", 10)[0]
     assert not _run_python("while True: pass", "", 2)[0]
+
+
+def test_reused_results_do_not_reset_the_failure_streak(monkeypatch, tmp_path):
+    from hellmholtz.benchmark import runner
+
+    prompts = [
+        Prompt(id=f"p{i}", category="c", messages=[Message(role="user", content="q")])
+        for i in range(8)
+    ]
+    reused = BenchmarkResult(
+        model="m", prompt_id="p1", latency_seconds=1, success=True, timestamp="t", response_text="ok"
+    )
+    calls = []
+
+    def boom(**kw):
+        calls.append(1)
+        raise RuntimeError("down")
+
+    monkeypatch.setattr(runner, "chat_raw", boom)
+    monkeypatch.setattr(runner, "_retry_with_backoff", lambda fn, **kw: fn())
+    out = runner.run_benchmarks(
+        ["m"],
+        prompts,
+        results_dir=str(tmp_path),
+        _save=False,
+        _resume={("m", "p1", 0.7, 0): reused},
+        temperatures=[0.7],
+    )
+    assert len(calls) == 5  # stops at the cutoff despite the stored success in between
+    assert any(r.prompt_id == "p1" and r.success for r in out)

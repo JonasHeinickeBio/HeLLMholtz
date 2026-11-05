@@ -245,16 +245,8 @@ def run_benchmarks(  # noqa: C901
 
                 for _temp_idx, temperature in enumerate(temperatures):
                     for repl_idx in range(replications):
-                        # Check if we should skip this model due to too many API failures
-                        if streaks.get(model) >= max_consecutive_api_failures:
-                            warn_msg = (
-                                f"Skipping remaining tests for {model} due to "
-                                f"{streaks.get(model)} consecutive API failures"
-                            )
-                            logger.warning(warn_msg)
-                            stats["skipped_models"].add(model)
-                            break
-
+                        # Stored successes are kept even after the cutoff; they say nothing
+                        # about the API, so they never reset the failure streak.
                         reused = resume.get((model, prompt_id, float(temperature), repl_idx))
                         if reused is not None:
                             reused.category = prompt.category
@@ -264,7 +256,17 @@ def run_benchmarks(  # noqa: C901
                             stats["successful"] += 1
                             model_successful += 1
                             model_results += 1
-                            streaks.reset(model)
+                            pbar.update(1)
+                            continue
+
+                        # Skip the rest of this model after too many consecutive API failures
+                        if streaks.get(model) >= max_consecutive_api_failures:
+                            if model not in stats["skipped_models"]:
+                                logger.warning(
+                                    f"Skipping remaining tests for {model} due to "
+                                    f"{streaks.get(model)} consecutive API failures"
+                                )
+                            stats["skipped_models"].add(model)
                             pbar.update(1)
                             continue
 
@@ -416,14 +418,6 @@ def run_benchmarks(  # noqa: C901
 
                         model_results += 1
                         pbar.update(1)
-
-                    # Check if we need to break out of replication loop due to model skipping
-                    if streaks.get(model) >= max_consecutive_api_failures:
-                        break
-
-                # Check if we need to break out of temperature loop due to model skipping
-                if streaks.get(model) >= max_consecutive_api_failures:
-                    break
 
             # If this model was skipped due to consecutive API failures, move on
             # to the next model instead of aborting the whole benchmark.
