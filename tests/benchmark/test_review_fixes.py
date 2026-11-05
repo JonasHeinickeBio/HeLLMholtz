@@ -115,3 +115,28 @@ def test_failure_streaks_are_shared_per_model():
     assert (s.get("a"), s.get("b")) == (2, 1)
     s.reset("a")
     assert s.get("a") == 0
+
+
+def test_python_tests_cannot_read_repository_files():
+    from pathlib import Path
+
+    from hellmholtz.benchmark.checks import _run_python, sandbox_available
+
+    if not sandbox_available():
+        pytest.skip("bubblewrap not usable here")
+    secret = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    assert secret.exists()
+    code = f"import os\nassert not os.path.exists({str(secret)!r}), 'secret visible'\n"
+    ok, detail = _run_python(code, "", 10)
+    assert ok, detail
+    net = "import socket\ntry:\n    socket.create_connection(('1.1.1.1', 53), 2)\nexcept OSError:\n    pass\nelse:\n    raise SystemExit('network reachable')\n"
+    ok, detail = _run_python(net, "", 10)
+    assert ok, detail
+
+
+def test_python_tests_still_pass_and_fail_correctly():
+    from hellmholtz.benchmark.checks import _run_python
+
+    assert _run_python("def f(): return 2", "assert f() == 2", 10)[0]
+    assert not _run_python("def f(): return 3", "assert f() == 2", 10)[0]
+    assert not _run_python("while True: pass", "", 2)[0]

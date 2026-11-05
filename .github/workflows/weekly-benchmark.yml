@@ -101,6 +101,14 @@ jobs:
       run: |
         poetry install
 
+    - name: Install sandbox for model-written code (bubblewrap)
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: |
+        # python_tests checks run model code without network and without access to the
+        # checkout (.env). Ubuntu 24.04 restricts unprivileged user namespaces by default.
+        sudo apt-get install -y --no-install-recommends bubblewrap
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
     - name: Create .env file
       if: steps.check-keys.outputs.keys_available == 'true'
       env:

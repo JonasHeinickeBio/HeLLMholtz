@@ -32,15 +32,20 @@ Every spec accepts ``weight`` (default 1) and ``name`` (label for reports).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 import json
+import logging
 import os
 import re
+import shutil
 import subprocess  # nosec B404 - used to run model-written code under a hard timeout
 import sys
 import tempfile
 from typing import Any
 import unicodedata
+
+logger = logging.getLogger(__name__)
 
 _MATCH_KINDS = {"contains", "contains_any", "not_contains", "regex", "not_regex"}
 _THINK_RE = re.compile(r"<think(?:ing)?>.*?</think(?:ing)?>", re.DOTALL | re.IGNORECASE)
@@ -169,20 +174,119 @@ _TYPE_TESTS: dict[str, Any] = {
 }
 
 
+_MEMORY_LIMIT = 1024 * 1024 * 1024  # address space for model-written code
+_FILE_LIMIT = 10 * 1024 * 1024
+
+
+def _limit_resources(cpu_seconds: int) -> Callable[[], None]:
+    def apply() -> None:  # runs in the child between fork and exec
+        import resource
+
+        resource.setrlimit(resource.RLIMIT_CPU, (cpu_seconds, cpu_seconds))
+        resource.setrlimit(resource.RLIMIT_AS, (_MEMORY_LIMIT, _MEMORY_LIMIT))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (_FILE_LIMIT, _FILE_LIMIT))
+
+    return apply
+
+
+def _bwrap_command(workdir: str, script: str, python: str) -> list[str]:
+    """bubblewrap invocation: no network, no home or repository, only a scratch dir."""
+    cmd = [
+        "bwrap",
+        "--unshare-all",
+        "--die-with-parent",
+        "--clearenv",
+        "--setenv",
+        "PATH",
+        "/usr/bin:/bin",
+        "--setenv",
+        "PYTHONHASHSEED",
+        "0",
+        "--proc",
+        "/proc",
+        "--dev",
+        "/dev",
+        "--tmpfs",
+        "/tmp",  # nosec B108 - private tmpfs inside the sandbox
+        "--bind",
+        workdir,
+        "/work",
+        "--chdir",
+        "/work",
+    ]
+    mounted = {"/usr"}
+    cmd += ["--ro-bind", "/usr", "/usr"]
+    for link in ("/bin", "/lib", "/lib64", "/sbin"):
+        if os.path.islink(link):
+            cmd += ["--symlink", os.readlink(link), link]
+        elif os.path.isdir(link):
+            cmd += ["--ro-bind", link, link]
+    for root in {sys.base_prefix, os.path.dirname(os.path.dirname(python))}:
+        if root and not any(root == m or root.startswith(m + "/") for m in mounted):
+            cmd += ["--ro-bind", root, root]
+            mounted.add(root)
+    return [*cmd, python, "-I", "/work/" + os.path.basename(script)]
+
+
+_SANDBOX: dict[str, bool] = {}
+
+
+def sandbox_available() -> bool:
+    """True when bubblewrap can start an unprivileged, network-less sandbox (cached)."""
+    if "bwrap" not in _SANDBOX:
+        ok = False
+        if shutil.which("bwrap"):
+            python = os.path.realpath(sys.executable)
+            with tempfile.TemporaryDirectory(prefix="hellm-probe-") as tmp:
+                probe = os.path.join(tmp, "probe.py")
+                with open(probe, "w", encoding="utf-8") as f:
+                    f.write("pass\n")
+                try:
+                    ok = (
+                        subprocess.run(  # noqa: S603  # nosec B603
+                            _bwrap_command(tmp, probe, python),
+                            capture_output=True,
+                            timeout=20,
+                        ).returncode
+                        == 0
+                    )
+                except (OSError, subprocess.SubprocessError):
+                    ok = False
+        if not ok:
+            logger.warning(
+                "bubblewrap sandbox unavailable: python_tests run with resource limits only"
+            )
+        _SANDBOX["bwrap"] = ok
+    return _SANDBOX["bwrap"]
+
+
 def _run_python(code: str, tests: str, timeout: float) -> tuple[bool, str]:
-    """Execute code + tests in an isolated interpreter; True when it exits 0."""
+    """Execute code + tests in an isolated interpreter; True when it exits 0.
+
+    Model-written code runs inside bubblewrap when available: no network, no access to
+    the home directory, repository or ``.env`` (only a scratch directory is visible).
+    Without bubblewrap it still gets CPU, memory and file-size limits and a clean env.
+    """
     with tempfile.TemporaryDirectory(prefix="hellm-check-") as tmp:
         script = os.path.join(tmp, "solution.py")
         with open(script, "w", encoding="utf-8") as f:
             f.write(code + "\n\n" + tests + "\n")
+        python = os.path.realpath(sys.executable)
+        if sandbox_available():
+            cmd, env, cwd = _bwrap_command(tmp, script, python), None, None
+        else:
+            cmd = [python, "-I", script]
+            env = {"PATH": os.environ.get("PATH", ""), "PYTHONHASHSEED": "0"}
+            cwd = tmp
         try:
             proc = subprocess.run(  # noqa: S603  # nosec B603 - fixed interpreter, temp script
-                [sys.executable, "-I", script],
+                cmd,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                cwd=tmp,
-                env={"PATH": os.environ.get("PATH", ""), "PYTHONHASHSEED": "0"},
+                cwd=cwd,
+                env=env,
+                preexec_fn=_limit_resources(int(timeout) + 2),  # noqa: PLW1509  # nosec B603
             )
         except subprocess.TimeoutExpired:
             return False, f"timeout after {timeout}s"
