@@ -1,6 +1,7 @@
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 import logging
+import os
 from typing import Any
 
 import aisuite as ai
@@ -112,14 +113,23 @@ def chat(
     return str(content) if content is not None else ""
 
 
+DEFAULT_REQUEST_TIMEOUT = float(os.environ.get("HELLM_REQUEST_TIMEOUT", "120"))
+
+
 def chat_raw(
     model: str,
     messages: Sequence[Mapping[str, Any]],
     **kwargs: Any,
 ) -> Any:
-    """Low-level call that returns the full aisuite response."""
+    """Low-level call that returns the full aisuite response.
+
+    A per-request ``timeout`` (seconds) is applied unless the caller passes one;
+    without it a stalled server connection blocks a worker for the SDK default of
+    10 minutes. Override globally with ``HELLM_REQUEST_TIMEOUT``.
+    """
     client, effective_model = ClientManager.get_client(model)
     logger.debug(f"Raw chat request to {model}")
+    kwargs.setdefault("timeout", DEFAULT_REQUEST_TIMEOUT)
     try:
         return client.chat.completions.create(model=effective_model, messages=messages, **kwargs)
     except Exception as e:

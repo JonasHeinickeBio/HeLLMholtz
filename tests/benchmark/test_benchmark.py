@@ -584,63 +584,97 @@ class TestBenchmarkEvaluator:
             ),
         ]
 
-    @patch("hellmholtz.benchmark.evaluator.chat")
-    @patch("hellmholtz.client.check_model_availability", return_value=True)
-    def test_evaluate_responses_success(self, mock_check_model_availability: MagicMock, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
-        """Test successful evaluation of responses."""
+    @staticmethod
+    def _raw(content: str) -> MagicMock:
+        resp = MagicMock()
+        resp.choices = [MagicMock()]
+        resp.choices[0].message.content = content
+        resp.choices[0].message.reasoning_content = None
+        return resp
 
-        # Mock judge response
-        mock_chat.return_value = "RATING: 8.5\nCRITIQUE: This is a well-structured and accurate response that demonstrates good understanding."
+    VERDICT = (
+        '{"analysis": "ok", "correctness": 5, "completeness": 4, "instruction_following": 5, '
+        '"clarity": 4, "critique": "Accurate and well structured."}'
+    )
+
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_evaluate_responses_success(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        """Successful runs get a judge score, rating, critique and final score."""
+        mock_chat.return_value = self._raw(self.VERDICT)
 
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+        results = evaluate_responses(sample_results, "blablador:judge-a", sample_prompts, workers=1)
 
-        # Check that successful results got ratings and critiques
-        assert results[0].rating == 8.5
-        assert "well-structured" in results[0].critique
-        assert results[1].rating == 8.5
-        assert "well-structured" in results[1].critique
+        assert results[0].judge_score == pytest.approx(0.4 * 1 + 0.2 * 0.75 + 0.25 * 1 + 0.15 * 0.75)
+        assert results[0].rating == pytest.approx(1 + 9 * results[0].judge_score, abs=0.01)
+        assert "well structured" in results[0].critique
+        assert results[0].final_score == pytest.approx(100 * results[0].judge_score, abs=0.01)
+        assert results[1].judge_score is not None
 
-        # Failed result should not be evaluated
-        assert results[2].rating is None
-        assert results[2].critique is None
-
-        # Check that chat was called for successful results only
+        # Failed result is never judged
+        assert results[2].judge_score is None and results[2].rating is None
         assert mock_chat.call_count == 2
 
-    @patch("hellmholtz.benchmark.evaluator.chat")
-    def test_evaluate_responses_parsing_errors(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
-        """Test evaluation with malformed judge responses."""
-        # Mock judge response with missing rating
-        mock_chat.return_value = "This response is okay but lacks detail."
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_judge_never_grades_its_own_model(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        mock_chat.return_value = self._raw(self.VERDICT)
 
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts, workers=1)
 
-        # Should handle missing rating gracefully
-        assert results[0].rating is None
-        assert results[0].critique is None  # No CRITIQUE section
+        assert mock_chat.call_count == 0
+        assert results[0].judge_score is None
 
-    @patch("hellmholtz.benchmark.evaluator.chat")
-    def test_evaluate_responses_chat_error(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
-        """Test evaluation when chat call fails."""
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_panel_averages_judges_and_records_spread(self, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        low = (
+            '{"correctness": 1, "completeness": 1, "instruction_following": 1, "clarity": 1, '
+            '"critique": "bad"}'
+        )
+        high = (
+            '{"correctness": 5, "completeness": 5, "instruction_following": 5, "clarity": 5, '
+            '"critique": "good"}'
+        )
+        mock_chat.side_effect = lambda model, **_: self._raw(high if model.endswith("hi") else low)
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(
+            sample_results[:1], ["blablador:j-hi", "blablador:j-lo"], sample_prompts, workers=1
+        )
+
+        assert results[0].judge_score == pytest.approx(0.5)
+        assert results[0].judge_spread == pytest.approx(1.0)
+        assert len(results[0].judge_details) == 2
+
+    @patch("hellmholtz.benchmark.runner.time.sleep")
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_unparsable_judge_output_leaves_result_unjudged(self, mock_chat: MagicMock, _sleep: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
+        mock_chat.return_value = self._raw("This response is okay but lacks detail.")
+
+        from hellmholtz.benchmark.evaluator import evaluate_responses
+
+        results = evaluate_responses(sample_results, "blablador:judge-a", sample_prompts, workers=1)
+
+        assert results[0].judge_score is None and results[0].rating is None
+
+    @patch("hellmholtz.benchmark.runner.time.sleep")
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_evaluate_responses_chat_error(self, mock_chat: MagicMock, _sleep: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
         mock_chat.side_effect = Exception("API Error")
 
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+        results = evaluate_responses(sample_results, "blablador:judge-a", sample_prompts, workers=1)
 
-        # Results should remain unchanged on error
-        assert results[0].rating is None
+        assert results[0].judge_score is None
         assert results[0].critique is None
 
     def test_evaluate_responses_no_matching_prompt(self, sample_results: list[BenchmarkResult]) -> None:
-        """Test evaluation when prompt ID doesn't match."""
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        # Prompt with different ID
         prompts = [
             Prompt(
                 id="different-id",
@@ -649,29 +683,29 @@ class TestBenchmarkEvaluator:
             )
         ]
 
-        results = evaluate_responses(sample_results, "openai:gpt-4o", prompts)
+        results = evaluate_responses(sample_results, "blablador:judge-a", prompts)
 
-        # Should skip evaluation due to no matching prompt
-        assert results[0].rating is None
-        assert results[0].critique is None
+        assert results[0].judge_score is None
 
     def test_evaluate_responses_empty_results(self) -> None:
-        """Test evaluation with empty results list."""
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        results = evaluate_responses([], "openai:gpt-4o", [])
+        assert evaluate_responses([], "blablador:judge-a", []) == []
 
-        assert results == []
-
-    @patch("hellmholtz.benchmark.evaluator.chat")
-    @patch("hellmholtz.client.check_model_availability", return_value=True)
-    def test_evaluate_responses_partial_ratings(self, mock_check_model_availability: MagicMock, mock_chat: MagicMock, sample_results: list[BenchmarkResult], sample_prompts: list[Prompt]) -> None:
-        """Test evaluation with only rating but no critique."""
-        mock_chat.return_value = "RATING: 7"
-
+    @patch("hellmholtz.benchmark.evaluator.chat_raw")
+    def test_prompts_fully_covered_by_checks_skip_the_judge(self, mock_chat: MagicMock) -> None:
         from hellmholtz.benchmark.evaluator import evaluate_responses
 
-        results = evaluate_responses(sample_results, "openai:gpt-4o", sample_prompts)
+        prompt = Prompt(
+            id="p",
+            category="math",
+            messages=[Message(role="user", content="2+2? End with 'Final answer: <n>'")],
+            checks=[{"type": "final_number", "value": 4}],
+        )
+        result = BenchmarkResult(
+            model="m", prompt_id="p", latency_seconds=1, success=True,
+            timestamp="t", response_text="Final answer: 4",
+        )
+        evaluate_responses([result], "blablador:judge-a", [prompt], workers=1)
 
-        assert results[0].rating == 7.0
-        assert results[0].critique is None
+        assert mock_chat.call_count == 0

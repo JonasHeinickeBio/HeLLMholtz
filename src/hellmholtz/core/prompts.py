@@ -2,6 +2,7 @@
 Core prompt structures for LLM interactions.
 """
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -46,6 +47,32 @@ class Prompt(BaseModel):
     messages: list[Message] = Field(min_length=1, description="Conversation messages")
     description: str | None = Field(None, description="Optional prompt description")
     expected_output: str | None = Field(None, description="Expected output format/type")
+    reference: str | None = Field(
+        default=None,
+        description="Reference answer shown to the judge (ground truth or model solution)",
+    )
+    rubric: list[str] = Field(
+        default_factory=list,
+        description="Task-specific criteria the judge must verify, one per entry",
+    )
+    checks: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Deterministic checks (hellmholtz.benchmark.checks), scored without a judge",
+    )
+    difficulty: int = Field(default=2, ge=1, le=3, description="1 = easy, 2 = medium, 3 = hard")
+    quick: bool = Field(default=False, description="Member of the short benchmark tier")
+
+    @field_validator("checks")
+    @classmethod
+    def validate_check_weights(cls, v: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        for spec in v:
+            try:
+                weight = float(spec.get("weight", 1))
+            except (TypeError, ValueError):
+                raise ValueError(f"Check weight must be a number: {spec!r}") from None
+            if not math.isfinite(weight) or weight < 0:
+                raise ValueError(f"Check weight must be finite and non-negative: {spec!r}")
+        return v
 
     @field_validator("messages")
     @classmethod

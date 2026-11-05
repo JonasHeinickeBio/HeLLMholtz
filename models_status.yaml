@@ -7,26 +7,26 @@ models:
     configured_tokens: 32768
     available: true
     accessible: true
-    latency: 0.632
+    latency: 0.243
     category: alias
     provider: blablador
     api_id: alias-apertus
-    last_checked: 1779799029.5531998
-    last_checked_datetime: '2026-05-26 14:37:09'
+    last_checked: 1793811668.7890089
+    last_checked_datetime: '2026-11-04 18:01:08'
   Apertus-8B-Instruct-2509:
     name: Apertus-8B-Instruct-2509
     description: A new swiss model from September 2025
     tokens: 32768
     hf_tokens: null
     configured_tokens: 32768
-    available: true
+    available: false
     accessible: true
-    latency: 0.121
+    latency: null
     category: instruction_tuned
     provider: blablador
     api_id: 15 - Apertus-8B-Instruct-2509 - A new swiss model from September 2025
-    last_checked: 1779799030.9410203
-    last_checked_datetime: '2026-05-26 14:37:10'
+    last_checked: 1793811660.006526
+    last_checked_datetime: '2026-11-04 18:01:00'
   alias-eve:
     name: alias-eve
     description: Alias for EVE-Instruct models
@@ -35,40 +35,40 @@ models:
     configured_tokens: 32768
     available: true
     accessible: true
-    latency: 0.199
+    latency: 0.47
     category: alias
     provider: blablador
     api_id: alias-eve
-    last_checked: 1779799032.626031
-    last_checked_datetime: '2026-05-26 14:37:12'
+    last_checked: 1793811669.0323377
+    last_checked_datetime: '2026-11-04 18:01:09'
   EVE-Instruct:
     name: EVE-Instruct
     description: Expert Earth Observation and Earth Science (ES) domains
     tokens: 32768
     hf_tokens: null
     configured_tokens: 32768
-    available: true
+    available: false
     accessible: true
-    latency: 0.251
+    latency: null
     category: instruction_tuned
     provider: blablador
     api_id: 20 - EVE-Instruct - Expert Earth Observation and Earth Science (ES) domains
-    last_checked: 1779799034.158698
-    last_checked_datetime: '2026-05-26 14:37:14'
+    last_checked: 1793811660.0176737
+    last_checked_datetime: '2026-11-04 18:01:00'
   GPT-OSS-120b:
     name: GPT-OSS-120b
     description: an open model released by OpenAI in August 2025
     tokens: 131072
     hf_tokens: null
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: false
     latency: null
     category: base_model
     provider: blablador
     api_id: 01 - GPT-OSS-120b - an open model released by OpenAI in August 2025
-    last_checked: 1779799035.546368
-    last_checked_datetime: '2026-05-26 14:37:15'
+    last_checked: 1793811660.0177016
+    last_checked_datetime: '2026-11-04 18:01:00'
   alias-fast:
     name: alias-fast
     description: Optimized for speed - fastest available model
@@ -81,22 +81,22 @@ models:
     category: alias
     provider: blablador
     api_id: alias-fast
-    last_checked: 1779799037.0465481
-    last_checked_datetime: '2026-05-26 14:37:17'
+    last_checked: 1793811665.973499
+    last_checked_datetime: '2026-11-04 18:01:05'
   MiniMax-M2.7:
     name: MiniMax-M2.7
     description: our best model as of April, 2026
     tokens: 131072
     hf_tokens: null
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: true
-    latency: 0.152
+    latency: null
     category: other
     provider: blablador
     api_id: 01 - MiniMax-M2.7 - our best model as of April, 2026
-    last_checked: 1779799038.4583604
-    last_checked_datetime: '2026-05-26 14:37:18'
+    last_checked: 1793811660.0177145
+    last_checked_datetime: '2026-11-04 18:01:00'
   alias-huge:
     name: alias-huge
     description: Optimized for maximum capability - largest available model
@@ -105,26 +105,26 @@ models:
     configured_tokens: 131072
     available: true
     accessible: true
-    latency: 0.143
+    latency: null
     category: alias
     provider: blablador
     api_id: alias-huge
-    last_checked: 1779799040.2004478
-    last_checked_datetime: '2026-05-26 14:37:20'
+    last_checked: 1793811666.2223647
+    last_checked_datetime: '2026-11-04 18:01:06'
   Qwen3.5-122B-A10B-FP8, general purpose large model:
     name: Qwen3.5-122B-A10B-FP8, general purpose large model
     description: ''
     tokens: 32768
     hf_tokens: null
     configured_tokens: null
-    available: true
+    available: false
     accessible: false
     latency: null
     category: other
     provider: blablador
     api_id: 02 - Qwen3.5-122B-A10B-FP8, general purpose large model
-    last_checked: 1779799040.7708428
-    last_checked_datetime: '2026-05-26 14:37:20'
+    last_checked: 1793811686.1275153
+    last_checked_datetime: '2026-11-04 18:01:26'
   alias-large:
     name: alias-large
     description: Optimized for capability - most capable available model
@@ -137,8 +137,8 @@ models:
     category: alias
     provider: blablador
     api_id: alias-large
-    last_checked: 1779799042.3300998
-    last_checked_datetime: '2026-05-26 14:37:22'
+    last_checked: 1793811666.0811822
+    last_checked_datetime: '2026-11-04 18:01:06'
   alias-code:
     name: alias-code
     description: Optimized for coding tasks
@@ -147,26 +147,26 @@ models:
     configured_tokens: 131072
     available: true
     accessible: true
-    latency: 0.136
+    latency: null
     category: alias
     provider: blablador
     api_id: alias-code
-    last_checked: 1779799043.8246956
-    last_checked_datetime: '2026-05-26 14:37:23'
+    last_checked: 1793811666.8145323
+    last_checked_datetime: '2026-11-04 18:01:06'
   Qwen3-Coder-Next-FP8 from Feb 2026:
     name: Qwen3-Coder-Next-FP8 from Feb 2026
     description: ''
     tokens: 32768
     hf_tokens: null
     configured_tokens: null
-    available: true
+    available: false
     accessible: false
     latency: null
     category: other
     provider: blablador
     api_id: 09 - Qwen3-Coder-Next-FP8 from Feb 2026
-    last_checked: 1779799044.382375
-    last_checked_datetime: '2026-05-26 14:37:24'
+    last_checked: 1793811686.1275258
+    last_checked_datetime: '2026-11-04 18:01:26'
   alias-embeddings:
     name: alias-embeddings
     description: Optimized for text embeddings
@@ -179,8 +179,8 @@ models:
     category: alias
     provider: blablador
     api_id: alias-embeddings
-    last_checked: 1779799045.8686147
-    last_checked_datetime: '2026-05-26 14:37:25'
+    last_checked: 1793811669.549802
+    last_checked_datetime: '2026-11-04 18:01:09'
   gpt-3.5-turbo:
     name: gpt-3.5-turbo
     description: Legacy GPT-3.5 Turbo model
@@ -193,8 +193,8 @@ models:
     category: other
     provider: blablador
     api_id: gpt-3.5-turbo
-    last_checked: 1779799047.1679578
-    last_checked_datetime: '2026-05-26 14:37:27'
+    last_checked: 1793811669.5925882
+    last_checked_datetime: '2026-11-04 18:01:09'
   text-davinci-003:
     name: text-davinci-003
     description: Legacy text generation model
@@ -207,8 +207,8 @@ models:
     category: other
     provider: blablador
     api_id: text-davinci-003
-    last_checked: 1779799048.4811444
-    last_checked_datetime: '2026-05-26 14:37:28'
+    last_checked: 1793811669.6858094
+    last_checked_datetime: '2026-11-04 18:01:09'
   text-embedding-ada-002:
     name: text-embedding-ada-002
     description: Legacy text embedding model
@@ -221,8 +221,8 @@ models:
     category: other
     provider: blablador
     api_id: text-embedding-ada-002
-    last_checked: 1779799049.7729359
-    last_checked_datetime: '2026-05-26 14:37:29'
+    last_checked: 1793811686.0784183
+    last_checked_datetime: '2026-11-04 18:01:26'
   alias-qwen3-8b-embeddings:
     name: alias-qwen3-8b-embeddings
     description: Optimized for Qwen3 8B embeddings
@@ -235,64 +235,64 @@ models:
     category: alias
     provider: blablador
     api_id: alias-qwen3-8b-embeddings
-    last_checked: 1779799051.1853857
-    last_checked_datetime: '2026-05-26 14:37:31'
+    last_checked: 1793811669.5021267
+    last_checked_datetime: '2026-11-04 18:01:09'
   Qwen3.5-35B-A3B:
     name: Qwen3.5-35B-A3B
     description: Multimodal model from Feb 2026
     tokens: 131072
     hf_tokens: 131072
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: true
-    latency: 0.121
+    latency: null
     category: base_model
     provider: blablador
     api_id: 07 - Qwen3.5-35B-A3B - Multimodal model from Feb 2026
-    last_checked: 1779799052.2739074
-    last_checked_datetime: '2026-05-26 14:37:32'
+    last_checked: 1793811660.0177555
+    last_checked_datetime: '2026-11-04 18:01:00'
   alias-qwen35-35b-a3b:
     name: alias-qwen35-35b-a3b
     description: Alias for Qwen3.5-35B-A3B
     tokens: 131072
     hf_tokens: null
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: true
-    latency: 0.127
+    latency: null
     category: alias
     provider: blablador
     api_id: alias-qwen35-35b-a3b
-    last_checked: 1779799053.882633
-    last_checked_datetime: '2026-05-26 14:37:33'
+    last_checked: 1793811669.5497484
+    last_checked_datetime: '2026-11-04 18:01:09'
   Mis:
     name: Mis
     description: Internal miscellaneous model
     tokens: 32768
     hf_tokens: 32768
     configured_tokens: 32768
-    available: true
+    available: false
     accessible: false
     latency: null
     category: other
     provider: blablador
     api_id: 999 - Mis
-    last_checked: 1779799055.2611487
-    last_checked_datetime: '2026-05-26 14:37:35'
+    last_checked: 1793811660.0177686
+    last_checked_datetime: '2026-11-04 18:01:00'
   eve-instruct-4gpu:
     name: eve-instruct-4gpu
     description: EVE instruct deployment on 4 GPUs
     tokens: 32768
     hf_tokens: null
     configured_tokens: 32768
-    available: true
+    available: false
     accessible: true
-    latency: 0.191
+    latency: null
     category: instruction_tuned
     provider: blablador
     api_id: eve-instruct-4gpu
-    last_checked: 1779799056.8530982
-    last_checked_datetime: '2026-05-26 14:37:36'
+    last_checked: 1793811660.0177803
+    last_checked_datetime: '2026-11-04 18:01:00'
   faster-whisper-large-v3:
     name: faster-whisper-large-v3
     description: Whisper large-v3 speech model
@@ -305,50 +305,877 @@ models:
     category: other
     provider: blablador
     api_id: faster-whisper-large-v3
-    last_checked: 1779799058.1632547
-    last_checked_datetime: '2026-05-26 14:37:38'
+    last_checked: 1793811660.0177913
+    last_checked_datetime: '2026-11-04 18:01:00'
   nemotron-3-nano-omni-30b-bf16-262k-8gpu:
     name: nemotron-3-nano-omni-30b-bf16-262k-8gpu
     description: Nemotron omni 30B model
     tokens: 262144
     hf_tokens: null
     configured_tokens: 262144
-    available: true
+    available: false
     accessible: false
     latency: null
     category: other
     provider: blablador
     api_id: nemotron-3-nano-omni-30b-bf16-262k-8gpu
-    last_checked: 1779799059.7550566
-    last_checked_datetime: '2026-05-26 14:37:39'
+    last_checked: 1793811665.9734359
+    last_checked_datetime: '2026-11-04 18:01:05'
   Qwen3.6-35B-A3B-FP8:
     name: Qwen3.6-35B-A3B-FP8
     description: Multimodal model from Apr 2026
     tokens: 131072
     hf_tokens: 131072
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: false
     latency: null
     category: base_model
     provider: blablador
     api_id: 08 - Qwen3.6-35B-A3B-FP8 - Multimodal model from Apr 2026
-    last_checked: 1779799060.8705904
-    last_checked_datetime: '2026-05-26 14:37:40'
+    last_checked: 1793811665.9734843
+    last_checked_datetime: '2026-11-04 18:01:05'
   alias-qwen36-35b:
     name: alias-qwen36-35b
     description: Alias for Qwen3.6-35B-A3B-FP8
     tokens: 131072
     hf_tokens: null
     configured_tokens: 131072
-    available: true
+    available: false
     accessible: false
     latency: null
     category: alias
     provider: blablador
     api_id: alias-qwen36-35b
-    last_checked: 1779799062.4182243
-    last_checked_datetime: '2026-05-26 14:37:42'
+    last_checked: 1793811669.5497887
+    last_checked_datetime: '2026-11-04 18:01:09'
+  Qwen3.5-122B-A10B-FP8:
+    name: Qwen3.5-122B-A10B-FP8
+    description: General-purpose large multimodal model
+    tokens: 131072
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 02 - Qwen3.5-122B-A10B-FP8 - General-purpose large multimodal model
+    last_checked: 1793811660.0177262
+    last_checked_datetime: '2026-11-04 18:01:00'
+  Qwen3-Coder-Next-FP8:
+    name: Qwen3-Coder-Next-FP8
+    description: Code model from Feb 2026
+    tokens: 262144
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 09 - Qwen3-Coder-Next-FP8 - Code model from Feb 2026
+    last_checked: 1793811660.0177433
+    last_checked_datetime: '2026-11-04 18:01:00'
+  alias-function-call:
+    name: alias-function-call
+    description: Optimized for function calling tasks
+    tokens: 131072
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-function-call
+    last_checked: 1793811669.592491
+    last_checked_datetime: '2026-11-04 18:01:09'
+  alias-laya:
+    name: alias-laya
+    description: System-One decision model (Jev-compatible) served via /v1/systemone
+    tokens: 8192
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-laya
+    last_checked: 1793811669.592574
+    last_checked_datetime: '2026-11-04 18:01:09'
+  Ministral-3-14B-Instruct-2512:
+    name: Ministral-3-14B-Instruct-2512
+    description: Ministral 3 14B Instruct model from September 2025
+    tokens: 131072
+    available: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: Ministral-3-14B-Instruct-2512
+    last_checked: 1793811686.1273985
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3 235:
+    name: Qwen3 235
+    description: Qwen3 235B model
+    tokens: 131072
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: Qwen3 235
+    last_checked: 1793811686.127436
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Phi-4-multimodal-instruct:
+    name: Phi-4-multimodal-instruct
+    description: Phi-4 multimodal instruct model
+    tokens: 16384
+    available: false
+    latency: null
+    category: instruction_tuned
+    provider: blablador
+    api_id: Phi-4-multimodal-instruct
+    last_checked: 1793811686.1274486
+    last_checked_datetime: '2026-11-04 18:01:26'
+  MiniMax-M2.1:
+    name: MiniMax-M2.1
+    description: MiniMax M2.1 model
+    tokens: 131072
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: MiniMax-M2.1
+    last_checked: 1793811686.1274586
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3-Coder-30B-A3B-Instruct:
+    name: Qwen3-Coder-30B-A3B-Instruct
+    description: Qwen3 Coder 30B A3B Instruct model
+    tokens: 131072
+    available: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: Qwen3-Coder-30B-A3B-Instruct
+    last_checked: 1793811686.127468
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Devstral-Small-2-24B-Instruct-2512:
+    name: Devstral-Small-2-24B-Instruct-2512
+    description: Devstral Small 2 24B Instruct model from September 2025
+    tokens: 131072
+    available: false
+    latency: null
+    category: instruction_tuned
+    provider: blablador
+    api_id: Devstral-Small-2-24B-Instruct-2512
+    last_checked: 1793811686.1274774
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3-Next:
+    name: Qwen3-Next
+    description: Qwen3 Next generation model
+    tokens: 131072
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: Qwen3-Next
+    last_checked: 1793811686.1274858
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3-VL-32B-Instruct-FP8:
+    name: Qwen3-VL-32B-Instruct-FP8
+    description: Qwen3 VL 32B Instruct FP8 multimodal model
+    tokens: 131072
+    available: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: Qwen3-VL-32B-Instruct-FP8
+    last_checked: 1793811686.1274939
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Tongyi-DeepResearch-30B-A3B:
+    name: Tongyi-DeepResearch-30B-A3B
+    description: Tongyi DeepResearch 30B A3B model
+    tokens: 131072
+    available: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: Tongyi-DeepResearch-30B-A3B
+    last_checked: 1793811686.127502
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Muse Glimmer 30b:
+    name: Muse Glimmer 30b
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 10 - Muse Glimmer 30b - the newest META model as of August 11, 2026
+    last_checked: 1793811686.127559
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3.5-397B-A17B:
+    name: Qwen3.5-397B-A17B
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: 10 - Qwen3.5-397B-A17B
+    last_checked: 1793811686.12757
+    last_checked_datetime: '2026-11-04 18:01:26'
+  MiniMax-M3-AWQ-INT4 (strube1-booster):
+    name: MiniMax-M3-AWQ-INT4 (strube1-booster)
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 90 - MiniMax-M3-AWQ-INT4 (strube1-booster)
+    last_checked: 1793811686.1275787
+    last_checked_datetime: '2026-11-04 18:01:26'
+  GLM-5.2-AWQ-INT4:
+    name: GLM-5.2-AWQ-INT4
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 99 - GLM-5.2-AWQ-INT4
+    last_checked: 1793811686.1275873
+    last_checked_datetime: '2026-11-04 18:01:26'
+  DeepSeek-V4-Flash-0731:
+    name: DeepSeek-V4-Flash-0731
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: DeepSeek-V4-Flash-0731 - DeepSeek-V4-Flash-0731 - Model from Blablador
+      API
+    last_checked: 1793811686.1275964
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-deepseek-v4-flash-0731:
+    name: alias-deepseek-v4-flash-0731
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-deepseek-v4-flash-0731 - alias-deepseek-v4-flash-0731 - Model from
+      Blablador API
+    last_checked: 1793811686.1276047
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-glm-huge:
+    name: alias-glm-huge
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-glm-huge - alias-glm-huge - Model from Blablador API
+    last_checked: 1793811686.1276128
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-minimax-m3-awq-int4:
+    name: alias-minimax-m3-awq-int4
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-minimax-m3-awq-int4 - alias-minimax-m3-awq-int4 - Model from Blablador
+      API
+    last_checked: 1793811686.127622
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-muse:
+    name: alias-muse
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-muse - alias-muse - Model from Blablador API
+    last_checked: 1793811686.1276312
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-qwen-huge:
+    name: alias-qwen-huge
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen-huge - alias-qwen-huge - Model from Blablador API
+    last_checked: 1793811686.12764
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Kimi-K3-1M:
+    name: Kimi-K3-1M
+    description: Model from Blablador API
+    tokens: 32768
+    available: false
+    latency: null
+    category: other
+    provider: blablador
+    api_id: Kimi-K3-1M - Kimi-K3-1M - Model from Blablador API
+    last_checked: 1793811686.1276488
+    last_checked_datetime: '2026-11-04 18:01:26'
+  alias-kimi-k3-1m:
+    name: alias-kimi-k3-1m
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: 2.197
+    category: alias
+    provider: blablador
+    api_id: alias-kimi-k3-1m - alias-kimi-k3-1m - Model from Blablador API
+    last_checked: 1793811686.1276574
+    last_checked_datetime: '2026-11-04 18:01:26'
+  Qwen3.8-Flash-Next-NVFP4, general purpose large model:
+    name: Qwen3.8-Flash-Next-NVFP4, general purpose large model
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 02 - Qwen3.8-Flash-Next-NVFP4, general purpose large model
+    last_checked: 1793811688.3244739
+    last_checked_datetime: '2026-11-04 18:01:28'
+  alias-qwen3.8-flash-next:
+    name: alias-qwen3.8-flash-next
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3.8-flash-next - alias-qwen3.8-flash-next - Model from Blablador
+      API
+    last_checked: 1793811688.4604216
+    last_checked_datetime: '2026-11-04 18:01:28'
+  Qwen3.8-27B-FP8:
+    name: Qwen3.8-27B-FP8
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: 07 - Qwen3.8-27B-FP8 - Multimodal model from Aug 2026
+    last_checked: 1793811688.5988758
+    last_checked_datetime: '2026-11-04 18:01:28'
+  alias-qwen38-27b:
+    name: alias-qwen38-27b
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen38-27b - alias-qwen38-27b - Model from Blablador API
+    last_checked: 1793811688.9778435
+    last_checked_datetime: '2026-11-04 18:01:28'
+  alias-default:
+    name: alias-default
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-default - alias-default - Model from Blablador API
+    last_checked: 1793811689.3692653
+    last_checked_datetime: '2026-11-04 18:01:29'
+  Aleph Kolibri:
+    name: Aleph Kolibri
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 00 - Aleph Kolibri
+    last_checked: 1793811689.5519023
+    last_checked_datetime: '2026-11-04 18:01:29'
+  A good european model:
+    name: A good european model
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 10 - A good european model - Mistral 4 Large
+    last_checked: 1793811689.7022562
+    last_checked_datetime: '2026-11-04 18:01:29'
+  DeepSeek-V4.1-Flash on JUWELS Booster:
+    name: DeepSeek-V4.1-Flash on JUWELS Booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 15 - DeepSeek-V4.1-Flash on JUWELS Booster
+    last_checked: 1793811690.0950654
+    last_checked_datetime: '2026-11-04 18:01:30'
+  MedGemma:
+    name: MedGemma
+    description: Model from Blablador API
+    tokens: 131072
+    available: true
+    latency: 1.481
+    category: other
+    provider: blablador
+    api_id: 20 - MedGemma - A model for medical text and image comprehension to accelerate
+      building healthcare-based AI applications
+    last_checked: 1793811690.5780327
+    last_checked_datetime: '2026-11-04 18:01:30'
+  'Swiss AI: Apertus-v1.5-70B':
+    name: 'Swiss AI: Apertus-v1.5-70B'
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: 0.525
+    category: base_model
+    provider: blablador
+    api_id: '30 - Swiss AI: Apertus-v1.5-70B'
+    last_checked: 1793811692.0588486
+    last_checked_datetime: '2026-11-04 18:01:32'
+  MiMo-V2.6-Flash-RL on Juwels Booster:
+    name: MiMo-V2.6-Flash-RL on Juwels Booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 80 - MiMo-V2.6-Flash-RL on Juwels Booster
+    last_checked: 1793811692.5841558
+    last_checked_datetime: '2026-11-04 18:01:32'
+  MiMo-V2.6-Pro-RL on Juwels Booster:
+    name: MiMo-V2.6-Pro-RL on Juwels Booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 80 - MiMo-V2.6-Pro-RL on Juwels Booster
+    last_checked: 1793811692.7896428
+    last_checked_datetime: '2026-11-04 18:01:32'
+  Glm-5.3-Flash on Juwels Booster:
+    name: Glm-5.3-Flash on Juwels Booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 90 - Glm-5.3-Flash on Juwels Booster
+    last_checked: 1793811693.3638866
+    last_checked_datetime: '2026-11-04 18:01:33'
+  Kimi-K3 1M on Juwels Booster:
+    name: Kimi-K3 1M on Juwels Booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: 1.054
+    category: other
+    provider: blablador
+    api_id: 90 - Kimi-K3 1M on Juwels Booster
+    last_checked: 1793811693.8087018
+    last_checked_datetime: '2026-11-04 18:01:33'
+  Qwen 3.8-27B on Juwels Booster:
+    name: Qwen 3.8-27B on Juwels Booster
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: 90 - Qwen 3.8-27B on Juwels Booster
+    last_checked: 1793811694.8626592
+    last_checked_datetime: '2026-11-04 18:01:34'
+  Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster:
+    name: Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster
+    description: Model from Blablador API
+    tokens: 940000
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 90 - Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster - An excellent
+      model from September 2026
+    last_checked: 1793811695.1385024
+    last_checked_datetime: '2026-11-04 18:01:35'
+  FLUX.2-dev:
+    name: FLUX.2-dev
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 999 - FLUX.2-dev - An image generator (Black Forest Labs)
+    last_checked: 1793811710.0773122
+    last_checked_datetime: '2026-11-04 18:01:50'
+  Qwen-Image-2.1 on JUWELS Booster (generation + editing):
+    name: Qwen-Image-2.1 on JUWELS Booster (generation + editing)
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: 999 - Qwen-Image-2.1 on JUWELS Booster (generation + editing)
+    last_checked: 1793811759.9794781
+    last_checked_datetime: '2026-11-04 18:02:39'
+  'Anonymizer: M-size ShinrAI PII 1.3':
+    name: 'Anonymizer: M-size ShinrAI PII 1.3'
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: 16.599
+    category: other
+    provider: blablador
+    api_id: 'Anonymizer: M-size ShinrAI PII 1.3'
+    last_checked: 1793811818.8586502
+    last_checked_datetime: '2026-11-04 18:03:38'
+  Built with Muse Spark Open:
+    name: Built with Muse Spark Open
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: Muse-Spark-Open-816B-A42B - Built with Muse Spark Open
+    last_checked: 1793811835.458135
+    last_checked_datetime: '2026-11-04 18:03:55'
+  Swift-Qwen3.8-27b:
+    name: Swift-Qwen3.8-27b
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: base_model
+    provider: blablador
+    api_id: Swift-Qwen3.8-27b - Swift-Qwen3.8-27b - Model from Blablador API
+    last_checked: 1793811835.8926039
+    last_checked_datetime: '2026-11-04 18:03:55'
+  alias-aleph-kolibri-1:
+    name: alias-aleph-kolibri-1
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-aleph-kolibri-1 - alias-aleph-kolibri-1 - Model from Blablador API
+    last_checked: 1793811836.1304536
+    last_checked_datetime: '2026-11-04 18:03:56'
+  alias-anonymizer:
+    name: alias-anonymizer
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: 0.085
+    category: alias
+    provider: blablador
+    api_id: alias-anonymizer - alias-anonymizer - Model from Blablador API
+    last_checked: 1793811836.270326
+    last_checked_datetime: '2026-11-04 18:03:56'
+  alias-apertus-70b:
+    name: alias-apertus-70b
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: 0.239
+    category: alias
+    provider: blablador
+    api_id: alias-apertus-70b - alias-apertus-70b - Model from Blablador API
+    last_checked: 1793811836.355347
+    last_checked_datetime: '2026-11-04 18:03:56'
+  alias-clef:
+    name: alias-clef
+    description: Model from Blablador API
+    tokens: 16384
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-clef - alias-clef - Model from Blablador API
+    last_checked: 1793811836.59471
+    last_checked_datetime: '2026-11-04 18:03:56'
+  alias-deepseek-v41-flash-booster:
+    name: alias-deepseek-v41-flash-booster
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-deepseek-v41-flash-booster - alias-deepseek-v41-flash-booster -
+      Model from Blablador API
+    last_checked: 1793811836.6367083
+    last_checked_datetime: '2026-11-04 18:03:56'
+  alias-flux2:
+    name: alias-flux2
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-flux2 - alias-flux2 - Model from Blablador API
+    last_checked: 1793811837.245713
+    last_checked_datetime: '2026-11-04 18:03:57'
+  alias-glm-5.3-flash:
+    name: alias-glm-5.3-flash
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-glm-5.3-flash - alias-glm-5.3-flash - Model from Blablador API
+    last_checked: 1793811885.6956825
+    last_checked_datetime: '2026-11-04 18:04:45'
+  alias-hyperqwen:
+    name: alias-hyperqwen
+    description: Model from Blablador API
+    tokens: 150000
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-hyperqwen - alias-hyperqwen - Model from Blablador API
+    last_checked: 1793811896.7111378
+    last_checked_datetime: '2026-11-04 18:04:56'
+  alias-hyperqwen-27b:
+    name: alias-hyperqwen-27b
+    description: Model from Blablador API
+    tokens: 150000
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-hyperqwen-27b - alias-hyperqwen-27b - Model from Blablador API
+    last_checked: 1793811896.9395247
+    last_checked_datetime: '2026-11-04 18:04:56'
+  alias-image:
+    name: alias-image
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-image - alias-image - Model from Blablador API
+    last_checked: 1793811897.1706042
+    last_checked_datetime: '2026-11-04 18:04:57'
+  alias-medgemma:
+    name: alias-medgemma
+    description: Model from Blablador API
+    tokens: 131072
+    available: true
+    latency: 16.059
+    category: alias
+    provider: blablador
+    api_id: alias-medgemma - alias-medgemma - Model from Blablador API
+    last_checked: 1793811948.4338253
+    last_checked_datetime: '2026-11-04 18:05:48'
+  alias-mimo-v2.6-flash:
+    name: alias-mimo-v2.6-flash
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-mimo-v2.6-flash - alias-mimo-v2.6-flash - Model from Blablador API
+    last_checked: 1793811964.4925168
+    last_checked_datetime: '2026-11-04 18:06:04'
+  alias-mimo-v2.6-pro:
+    name: alias-mimo-v2.6-pro
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-mimo-v2.6-pro - alias-mimo-v2.6-pro - Model from Blablador API
+    last_checked: 1793811964.93721
+    last_checked_datetime: '2026-11-04 18:06:04'
+  alias-mistral-large:
+    name: alias-mistral-large
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-mistral-large - alias-mistral-large - Model from Blablador API
+    last_checked: 1793811965.5301046
+    last_checked_datetime: '2026-11-04 18:06:05'
+  alias-muse-spark:
+    name: alias-muse-spark
+    description: Model from Blablador API
+    tokens: 1048576
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-muse-spark - alias-muse-spark - Model from Blablador API
+    last_checked: 1793811966.1469555
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-ocr:
+    name: alias-ocr
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: 0.287
+    category: alias
+    provider: blablador
+    api_id: alias-ocr - alias-ocr - Model from Blablador API
+    last_checked: 1793811966.5775785
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-qwen3-4b-embeddings:
+    name: alias-qwen3-4b-embeddings
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3-4b-embeddings - alias-qwen3-4b-embeddings - Model from Blablador
+      API
+    last_checked: 1793811966.8650854
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-qwen3-4b-reranker:
+    name: alias-qwen3-4b-reranker
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3-4b-reranker - alias-qwen3-4b-reranker - Model from Blablador
+      API
+    last_checked: 1793811966.9088945
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-qwen3-4b-reranking:
+    name: alias-qwen3-4b-reranking
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3-4b-reranking - alias-qwen3-4b-reranking - Model from Blablador
+      API
+    last_checked: 1793811966.951526
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-qwen3-8b-reranking:
+    name: alias-qwen3-8b-reranking
+    description: Model from Blablador API
+    tokens: 131072
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3-8b-reranking - alias-qwen3-8b-reranking - Model from Blablador
+      API
+    last_checked: 1793811966.9945254
+    last_checked_datetime: '2026-11-04 18:06:06'
+  alias-qwen3.8-27b:
+    name: alias-qwen3.8-27b
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen3.8-27b - alias-qwen3.8-27b - Model from Blablador API
+    last_checked: 1793811967.0359979
+    last_checked_datetime: '2026-11-04 18:06:07'
+  alias-qwen38-quick:
+    name: alias-qwen38-quick
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-qwen38-quick - alias-qwen38-quick - Model from Blablador API
+    last_checked: 1793811967.2779832
+    last_checked_datetime: '2026-11-04 18:06:07'
+  alias-video:
+    name: alias-video
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-video - alias-video - Model from Blablador API
+    last_checked: 1793811967.6115897
+    last_checked_datetime: '2026-11-04 18:06:07'
+  alias-voice-drama3:
+    name: alias-voice-drama3
+    description: Model from Blablador API
+    tokens: 262144
+    available: true
+    latency: null
+    category: alias
+    provider: blablador
+    api_id: alias-voice-drama3 - alias-voice-drama3 - Model from Blablador API
+    last_checked: 1793811967.6540956
+    last_checked_datetime: '2026-11-04 18:06:07'
+  deepseek-v4.1-flash-at-hzdr:
+    name: deepseek-v4.1-flash-at-hzdr
+    description: Model from Blablador API
+    tokens: 32768
+    available: true
+    latency: null
+    category: other
+    provider: blablador
+    api_id: deepseek-v4.1-flash-at-hzdr - deepseek-v4.1-flash-at-hzdr - Model from
+      Blablador API
+    last_checked: 1793811967.7785807
+    last_checked_datetime: '2026-11-04 18:06:07'
+  trustllm-v2-8b-sft:
+    name: trustllm-v2-8b-sft
+    description: Model from Blablador API
+    tokens: 4096
+    available: true
+    latency: 0.49
+    category: other
+    provider: blablador
+    api_id: trustllm-v2-8b-sft - trustllm-v2-8b-sft - Model from Blablador API
+    last_checked: 1793811967.9898298
+    last_checked_datetime: '2026-11-04 18:06:07'
+  trustllm-v2-8b-sft-8k:
+    name: trustllm-v2-8b-sft-8k
+    description: Model from Blablador API
+    tokens: 8192
+    available: true
+    latency: 0.517
+    category: other
+    provider: blablador
+    api_id: trustllm-v2-8b-sft-8k - trustllm-v2-8b-sft-8k - Model from Blablador API
+    last_checked: 1793811968.4802957
+    last_checked_datetime: '2026-11-04 18:06:08'
+  trustllm-v2-8b-sft-mixb2-exp:
+    name: trustllm-v2-8b-sft-mixb2-exp
+    description: Model from Blablador API
+    tokens: 8192
+    available: true
+    latency: 0.558
+    category: other
+    provider: blablador
+    api_id: trustllm-v2-8b-sft-mixb2-exp - trustllm-v2-8b-sft-mixb2-exp - Model from
+      Blablador API
+    last_checked: 1793811968.997116
+    last_checked_datetime: '2026-11-04 18:06:08'
 Ministral-3-14B-Instruct-2512:
   name: Ministral-3-14B-Instruct-2512
   description: The latest Ministral from Dec.2.2025
@@ -580,7 +1407,7 @@ text-embedding-ada-002:
   api_id: text-embedding-ada-002
   last_checked: 1770054414.3435717
 '# This file is automatically updated by the model availability checker': null
-'# Last updated': '2026-05-26'
-'# Total models': 25
-'# Working': 25
-'# Broken': 0
+'# Last updated': '2026-11-04'
+'# Total models': 99
+'# Working': 62
+'# Broken': 37

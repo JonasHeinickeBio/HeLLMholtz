@@ -2,33 +2,94 @@ name: Weekly Benchmark Report
 
 on:
   schedule:
-    # Run weekly on Sunday at 00:00 UTC
+    # Sundays 00:00 UTC: quick tier (20 prompts)
     - cron: '0 0 * * 0'
+    # 1st of the month 00:00 UTC: full suite (58 prompts)
+    - cron: '0 0 1 * *'
   workflow_dispatch: # Allow manual trigger
+    inputs:
+      mode:
+        description: "quick = 20 representative prompts, full = whole suite"
+        type: choice
+        options: [quick, full]
+        default: quick
+      only_new:
+        description: "Benchmark only models that became available since the last model-status commit"
+        type: boolean
+        default: false
+      models:
+        description: "Optional comma-separated model names (without the blablador: prefix) to restrict the run"
+        type: string
+        default: ""
+  workflow_call:
+    inputs:
+      mode:
+        type: string
+        default: full
+      only_new:
+        type: boolean
+        default: true
+      models:
+        type: string
+        default: ""
+    secrets:
+      BLABLADOR_API_KEY:
+        required: false
+      BLABLADOR_API_BASE:
+        required: false
+
+# One benchmark at a time; a newer run waits instead of racing on the report commit.
+concurrency:
+  group: benchmark
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   benchmark:
     runs-on: ubuntu-latest
+    timeout-minutes: 340
+    outputs:
+      changed: ${{ steps.check-changes.outputs.changes }}
+      keys: ${{ steps.check-keys.outputs.keys_available }}
+      pages: ${{ steps.pages-upload-flag.outputs.uploaded }}
 
     steps:
+    - name: Check for API keys
+      id: check-keys
+      env:
+        BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+      run: |
+        if [ -n "$BLABLADOR_API_KEY" ]; then
+          echo "keys_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "keys_available=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Checkout repository
+      if: steps.check-keys.outputs.keys_available == 'true'
       uses: actions/checkout@v4
       with:
-        # Fetch full history for proper diff checking
+        # Full history: --new-since compares models_status.yaml against an older commit
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      if: steps.check-keys.outputs.keys_available == 'true'
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
     - name: Install Poetry
+      if: steps.check-keys.outputs.keys_available == 'true'
       uses: snok/install-poetry@v1
       with:
         version: latest
 
     - name: Cache Poetry dependencies
-      uses: actions/cache@v3
+      if: steps.check-keys.outputs.keys_available == 'true'
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pypoetry
         key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -36,181 +97,112 @@ jobs:
           poetry-${{ runner.os }}-
 
     - name: Install dependencies
+      if: steps.check-keys.outputs.keys_available == 'true'
       run: |
         poetry install
 
-    - name: Check for API keys
-      id: check-keys
+    - name: Install sandbox for model-written code (bubblewrap)
+      if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ]; then
-          echo "keys_available=true" >> $GITHUB_OUTPUT
-        else
-          echo "keys_available=false" >> $GITHUB_OUTPUT
-        fi
+        # python_tests checks run model code without network and without access to the
+        # checkout (.env). Ubuntu 24.04 restricts unprivileged user namespaces by default.
+        sudo apt-get install -y --no-install-recommends bubblewrap
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
 
     - name: Create .env file
       if: steps.check-keys.outputs.keys_available == 'true'
+      env:
+        BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+        BLABLADOR_API_BASE: ${{ secrets.BLABLADOR_API_BASE }}
       run: |
-        echo "BLABLADOR_API_KEY=${{ secrets.BLABLADOR_API_KEY }}" > .env
-        echo "BLABLADOR_API_BASE=${{ secrets.BLABLADOR_API_BASE }}" >> .env
+        {
+          echo "BLABLADOR_API_KEY=$BLABLADOR_API_KEY"
+          # Unset optional secret: fall back to the public endpoint (the chat provider has no default).
+          echo "BLABLADOR_API_BASE=${BLABLADOR_API_BASE:-https://api.helmholtz-blablador.fz-juelich.de/v1}"
+        } > .env
 
-    - name: Check model availability and update status
+    - name: Sync model registry and refresh availability
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        # Refresh models_status.yaml: availability, latency, last-checked for every
-        # registered model. The weekly report's "which models are available" section
-        # is driven by this file.
-        poetry run python -c "
-        from src.hellmholtz.monitoring import ModelAvailabilityMonitor
-        monitor = ModelAvailabilityMonitor()
-        monitor.check_all_models_automatically()
+        # -P keeps the repo root (which holds a test stub of `aisuite`) off sys.path,
+        # otherwise the stub shadows the real client and every request fails.
+        poetry run hellm models sync || echo "model sync failed; continuing with the checked-in registry"
+        poetry run python -P -c "
+        from hellmholtz.monitoring import ModelAvailabilityMonitor
+        ModelAvailabilityMonitor().check_all_models_automatically()
         print('Model status updated')
         "
 
-    - name: Run benchmarks on all available chat models
+    - name: Select models
+      id: select
       if: steps.check-keys.outputs.keys_available == 'true'
+      env:
+        ONLY_NEW: ${{ inputs.only_new }}
+        MODELS: ${{ inputs.models }}
       run: |
-        # Build the model list: models marked available in models_status.yaml,
-        # minus non-chat endpoints (embedding / transcription) which cannot serve
-        # chat completions and would always fail the benchmark.
-        AVAILABLE_MODELS=$(python3 -c "
-        import re
-        import yaml
-        with open('models_status.yaml') as f:
-            data = yaml.safe_load(f) or {}
-        models = data.get('models', {})
-        non_chat = re.compile(r'embed|whisper|audio', re.IGNORECASE)
-        names = [
-            k for k, v in models.items()
-            if isinstance(v, dict) and v.get('available', False) and not non_chat.search(k)
-        ]
-        print(','.join(f'blablador:{m}' for m in names))
-        ")
-
-        if [ -n "$AVAILABLE_MODELS" ]; then
-          echo "Running benchmarks for available models: $AVAILABLE_MODELS"
-          # 2048-token budget: some models (e.g. blablador:code) spend most of the
-          # completion budget on hidden reasoning/thinking output and return an
-          # empty visible completion truncated with finish_reason="length" at 512.
-          poetry run hellm bench --models "$AVAILABLE_MODELS" --all-prompts --replications 1 --max-tokens 2048
-        else
-          echo "No available chat models found, skipping benchmarks"
+        ARGS=()
+        if [ "$ONLY_NEW" = "true" ]; then
+          # Newly available relative to the previously committed status file.
+          ARGS+=(--new-since HEAD)
         fi
+        if [ -n "$MODELS" ]; then
+          ARGS+=(--models "$MODELS")
+        fi
+        SELECTED=$(poetry run python -P scripts/select_models.py "${ARGS[@]}")
+        echo "selected=$SELECTED" >> $GITHUB_OUTPUT
+        if [ -n "$SELECTED" ]; then echo "has_models=true" >> $GITHUB_OUTPUT; else echo "has_models=false" >> $GITHUB_OUTPUT; fi
 
-    - name: Generate comprehensive reports
-      if: steps.check-keys.outputs.keys_available == 'true'
+    - name: Run benchmark (checks + LLM-judge panel)
+      id: bench
+      if: steps.select.outputs.has_models == 'true'
+      env:
+        SELECTED: ${{ steps.select.outputs.selected }}
+        MODE: ${{ inputs.mode || (github.event.schedule == '0 0 1 * *' && 'full' || 'quick') }}
+      run: |
+        # Quick runs refresh only the quick prompts; the rest of each model's results stay
+        # from the last full run (merged per model and prompt by build_dashboard.py).
+        PROMPT_FLAG="--all-prompts"
+        if [ "$MODE" = "quick" ]; then PROMPT_FLAG="--quick"; fi
+        # 4096 tokens: reasoning models spend most of a smaller budget on hidden thinking
+        # and return an empty, truncated answer. 6 models in parallel stays below the
+        # API rate limit; a single temperature keeps the run to one request per prompt.
+        poetry run hellm bench --models "$SELECTED" $PROMPT_FLAG --temperatures 0.2 \
+          --replications 1 --max-tokens 4096 --concurrency 6 --evaluate-with default
+
+        NEWEST=$(ls -t results/benchmark_*_evaluated.json | head -n 1)
+        echo "results=$NEWEST" >> $GITHUB_OUTPUT
+
+    - name: Build dashboard, leaderboard and history
+      if: steps.bench.outcome == 'success'
+      env:
+        RESULTS: ${{ steps.bench.outputs.results }}
+        RUN_ID: ${{ github.run_id }}
       run: |
         mkdir -p reports
+        cp "$RESULTS" reports/weekly_benchmark_results.json
+        poetry run python scripts/build_dashboard.py "$RESULTS" --run-id "$RUN_ID"
+        # Performance/model pages for the docs site and the GitHub wiki
+        poetry run python scripts/build_docs.py
 
-        # Pick the freshest result set: prefer the newest non-empty
-        # results/benchmark_*.json, fall back to the newest incremental
-        # .partial.jsonl (written live by the runner, survives crashes/timeouts).
-        python3 - <<'PYEOF'
-        import json
-        from pathlib import Path
 
-        def newest(pattern):
-            files = sorted(Path("results").glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
-            return files[0] if files else None
-
-        chosen = None
-        latest_json = newest("benchmark_*.json")
-        if latest_json:
-            try:
-                if len(json.loads(latest_json.read_text())) >= 1:
-                    chosen = latest_json
-            except (json.JSONDecodeError, OSError):
-                chosen = None
-
-        if chosen is None:
-            latest_partial = newest("*.partial.jsonl")
-            if latest_partial is None:
-                raise SystemExit("No benchmark results found in results/")
-            records = [json.loads(line) for line in latest_partial.read_text().splitlines() if line.strip()]
-            chosen = latest_json or latest_partial
-            latest_json = Path("results/benchmark_from_partial.json")
-            latest_json.write_text(json.dumps(records))
-            chosen = latest_json
-
-        Path("reports/weekly_benchmark_results.json").write_text(Path(chosen).read_text())
-        print(f"Using results file: {chosen} -> reports/weekly_benchmark_results.json")
-        PYEOF
-
-        # 1) Availability + per-task performance report (md + html)
+    - name: Build legacy reports (full runs only)
+      if: steps.bench.outcome == 'success' && inputs.only_new != true && inputs.models == '' && (inputs.mode == 'full' || github.event.schedule == '0 0 1 * *')
+      run: |
+        # Availability + per-task tables, markdown/HTML/PNG
         poetry run python scripts/generate_comprehensive_report.py reports/weekly_benchmark_results.json
-
-        # 2) Standard benchmark report (response-level detail)
         poetry run hellm report reports/weekly_benchmark_results.json --format markdown --output reports/weekly_benchmark_report.md
         poetry run hellm report reports/weekly_benchmark_results.json --format html-detailed --output reports/weekly_benchmark_report.html
-
-        # 3) Performance chart
         poetry run hellm chart reports/weekly_benchmark_results.json --output reports/weekly_benchmark_chart.png
 
-    - name: Create fallback reports (no API keys)
-      if: steps.check-keys.outputs.keys_available == 'false'
-      run: |
-        mkdir -p reports
-        REPORT_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-
-        # Create a placeholder report when no API keys are available
-        cat > reports/weekly_benchmark_report.md << EOF
-        # Weekly Benchmark Report
-
-        **Note:** This report was generated without API access. To enable full benchmarking:
-
-        1. Set the following secret in your GitHub repository:
-           - \`BLABLADOR_API_KEY\`: Your Blablador API key
-           - \`BLABLADOR_API_BASE\`: Blablador API base URL (optional)
-
-        2. The workflow will automatically run weekly benchmarks and update this report.
-
-        ## Last Updated
-        ${REPORT_DATE}
-
-        ## Status
-        ⏳ Waiting for BLABLADOR API credentials to be configured
-        EOF
-
-        # Copy placeholder HTML
-        cat > reports/weekly_benchmark_report.html << EOF
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Weekly Benchmark Report</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                .note { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; }
-            </style>
-        </head>
-        <body>
-            <h1>Weekly Benchmark Report</h1>
-            <div class="note">
-                <h3>Note</h3>
-                <p>This report was generated without API access. To enable full benchmarking:</p>
-                <ol>
-                    <li>Set the following secret in your GitHub repository:
-                        <ul>
-                            <li><code>BLABLADOR_API_KEY</code>: Your Blablador API key</li>
-                            <li><code>BLABLADOR_API_BASE</code>: Blablador API base URL (optional)</li>
-                        </ul>
-                    </li>
-                    <li>The workflow will automatically run weekly benchmarks and update this report.</li>
-                </ol>
-            </div>
-            <p><strong>Last Updated:</strong> ${REPORT_DATE}</p>
-            <p><strong>Status:</strong> ⏳ Waiting for BLABLADOR API credentials to be configured</p>
-        </body>
-        </html>
-        EOF
 
     - name: Check for changes
       id: check-changes
+      if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        if git diff --quiet reports/ models_status.yaml && \
-           [ -z "$(git ls-files --others --exclude-standard reports/)" ]; then
-          echo "changes=false" >> $GITHUB_OUTPUT
-        else
+        if [ -n "$(git status --porcelain reports/ docs/ wiki/ README.md models_status.yaml src/hellmholtz/providers/models/)" ]; then
           echo "changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "changes=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Commit and push changes
@@ -218,13 +210,62 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add reports/ models_status.yaml
-        git commit -m "Update weekly benchmark report and model status
+        git add reports/ docs/ wiki/ README.md models_status.yaml src/hellmholtz/providers/models/
+        git commit -m "chore(benchmark): update leaderboard and model status
 
         - Generated on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
         - Workflow run: ${{ github.run_id }}
         - Commit: ${{ github.sha }}"
+        # The default branch may have moved during a long run.
+        git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
         git push
+
+    - name: Publish GitHub wiki
+      if: steps.check-changes.outputs.changes == 'true' && hashFiles('wiki/Home.md') != ''
+      env:
+        TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+      run: |
+        # The wiki is its own git repo and only exists once its first page was created
+        # in the GitHub UI (Wiki tab -> Create the first page). Until then skip quietly.
+        if git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" _wiki 2>_wiki_clone.log; then
+          cp wiki/*.md _wiki/
+          cd _wiki
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki already up to date"
+          else
+            git config user.email "action@github.com"
+            git config user.name "GitHub Action"
+            git commit -m "docs: update model performance pages (run ${{ github.run_id }})"
+            git push
+          fi
+        else
+          cat _wiki_clone.log
+          if grep -qi "not found" _wiki_clone.log; then
+            echo "::notice::Wiki repository not found; create the first wiki page once to enable publishing"
+          else
+            echo "::warning::Wiki clone failed (see the log above); wiki pages were not published"
+          fi
+        fi
+
+    - name: Build docs site (includes the dashboard at /benchmark/)
+      if: steps.check-changes.outputs.changes == 'true' && hashFiles('docs/benchmark/index.html') != ''
+      run: |
+        pip install --quiet mkdocs-material
+        mkdocs build --quiet --site-dir _site
+
+    - name: Upload Pages artifact
+      id: pages-upload
+      if: steps.check-changes.outputs.changes == 'true' && hashFiles('docs/benchmark/index.html') != ''
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: _site
+
+    - name: Record that the Pages artifact exists
+      id: pages-upload-flag
+      if: steps.pages-upload.outcome == 'success'
+      run: echo "uploaded=true" >> "$GITHUB_OUTPUT"
 
     - name: Create issue on failure
       if: failure()
@@ -238,3 +279,20 @@ jobs:
             body: `The weekly benchmark workflow failed on ${{ github.ref }}.\n\n**Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n**Error:** The benchmark process encountered an error. Please check the logs for details.`,
             labels: ['bug', 'automated']
           })
+
+  deploy:
+    # Publishes the dashboard at https://<owner>.github.io/<repo>/benchmark/
+    # One-time setup: Settings -> Pages -> Source: "GitHub Actions".
+    needs: benchmark
+    if: needs.benchmark.outputs.pages == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

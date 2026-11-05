@@ -202,3 +202,4 @@ PMC3258128.xml
 
 # Config converter output (may contain API keys)
 src/config_converter/opencode.yaml
+!scripts/dashboard_template.html

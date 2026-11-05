@@ -9,12 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Generated docs and wiki.** `scripts/build_docs.py` writes a performance page, a
+  scored model table and the GitHub wiki pages from the latest benchmark; the docs site
+  (with the dashboard at `/benchmark/`) is now built and deployed to Pages by the weekly
+  workflow.
+- **Speed and reasoning metrics.** Streamed speed probe per model (time to first token,
+  decode tokens/s, 0-100 speed score), reasoning-token share and cut-off rate, six more
+  reasoning prompts (58 total) with a judged process rubric, and a dashboard speed view
+  (TTFT / latency / throughput vs. quality).
+- **Benchmark v2.** 58 prompts across 11 categories, each with deterministic `checks`
+  (exact answers, executed unit tests, JSON/format/length rules) and/or a `reference` +
+  `rubric` for the judge. `Prompt` gained `reference`, `rubric`, `checks`, `difficulty`.
+- **Combined scoring** (`benchmark.scoring`): 0-100 per run from checks and judge, failed runs
+  count as 0, macro-averaged category leaderboard with 95% CI.
+- **LLM-as-a-Judge rewrite**: blind, rubric- and reference-aware JSON verdicts, judge panel
+  (`--evaluate-with default` or a comma list), no self-judging, disagreement stored as
+  `judge_spread`. Fully check-covered prompts skip the judge.
+- `hellm bench --concurrency N` runs (model, prompt-chunk) units in parallel.
+- Interactive dashboard (`scripts/build_dashboard.py`): leaderboard, quality-vs-speed Pareto
+  chart, category heatmap, radar compare, trend lines, per-model drill-down, prompt difficulty.
+  Also writes `reports/leaderboard.svg`/`.md` and rewrites the README leaderboard section.
+- `scripts/select_models.py` (chat-model selection, `--new-since`), `docs/benchmarking.md`.
+- GitHub Actions: the weekly benchmark judges, merges, rebuilds the dashboard and deploys it to
+  Pages; the daily check only syncs the model registry and sends one tiny request per model to
+  record availability (scored benchmarks of new models run in the weekly workflow).
+- New Blablador models: Mistral Large 4, DeepSeek-V4.1-Flash (Booster and HZDR), MedGemma,
+  HyperQwen, plus the rest of the current registry.
 - Ollama fallback: `chat_with_fallback` / `chat_with_fallback_detailed` retry a failed chat
   against a configurable chain (`HELLM_FALLBACK_MODELS`, default local Ollama), raising
   `FallbackError` with per-model errors when everything fails. `ollama_chat` and
   `hellmholtz.providers.ollama` (`is_available`, `list_models`, `resolve_model`) wrap local
   models; `OLLAMA_API_URL` and `HELLM_OLLAMA_MODEL` configure the server and preferred model.
 - `hellm ollama status|models|chat` and `hellm chat --fallback/-f`.
+
+### Fixed
+
+- `hellm models sync` produced an unimportable module (duplicate `available=False`),
+  mis-indexed its edits, ignored `max_model_len`, wrote alias ids that never matched the API,
+  and never re-enabled models that came back.
+- `chat_raw` had no request timeout, so one stalled connection could block a worker for 10 min;
+  default is now 120 s (`HELLM_REQUEST_TIMEOUT`). HTTP 429 now backs off 8-60 s instead of 1 s.
+- Check matching is robust to LaTeX, sub/superscripts and curly quotes.
+- CI ran `python -c` from the repo root, where the test stub of `aisuite` shadowed the real
+  client; workflows now use `python -P`.
 
 ### Changed
 

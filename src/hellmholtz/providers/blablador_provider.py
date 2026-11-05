@@ -105,6 +105,26 @@ class BlabladorProvider(Provider):
             logger.debug(f"Model {model} availability check failed: {e}")
             return False
 
+    def stream_chat(self, model: str, messages: list[dict[str, Any]], **kwargs: Any) -> Any:
+        """Open a streamed chat completion (used by the benchmark speed probe).
+
+        aisuite's wrapper does not expose streaming, so this resolves the model name
+        like :meth:`chat_completions_create` and returns the OpenAI client's stream.
+        """
+        resolved = model
+        for m in KNOWN_MODELS:
+            if m.id == model or m.name == model or m.alias == model:
+                if m.model_kind == "systemone":
+                    raise LLMError(
+                        f"Model '{model}' is a System-One typed-decision model and does not "
+                        f"support chat completions. Use `hellm systemone route` instead."
+                    )
+                resolved = m.api_id
+                break
+        return self.client.chat.completions.create(
+            model=resolved, messages=messages, stream=True, **kwargs
+        )
+
     def chat_completions_create(  # noqa: C901
         self, model: str, messages: list[dict[str, Any]], **kwargs: Any
     ) -> object:

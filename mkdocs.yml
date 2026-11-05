@@ -11,8 +11,10 @@ nav:
   - Usage: usage.md
   - Connect Your Client: connect-your-client.md
   - Claude Code: claude-code.md
+  - Performance: performance.md
   - Available Models: models.md
   - Model Monitoring: monitoring.md
+  - Benchmarking: benchmarking.md
   - Publishing: publishing.md
 
 theme:

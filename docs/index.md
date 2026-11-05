@@ -8,6 +8,7 @@
 - **Centralized Configuration**: Manage settings and API keys via environment variables.
 - **Advanced Benchmarking**: Compare model performance across temperatures, replications, and prompt categories.
 - **LLM-as-a-Judge Evaluation**: Automated evaluation with comprehensive statistical analysis.
+- **Live Model Performance**: [leaderboard, speed ranking and best model per job](performance.md), refreshed after every benchmark, plus the [interactive dashboard](benchmark/index.html).
 - **Interactive Reports**: HTML reports with Chart.js visualizations and Markdown summaries.
 - **Model Monitoring**: Track Blablador model availability and configuration consistency.
 - **Throughput Testing**: Measure tokens per second for performance analysis.

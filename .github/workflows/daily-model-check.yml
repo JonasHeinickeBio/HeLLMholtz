@@ -1,33 +1,59 @@
 name: Daily Model Availability Check
 
+# Deliberately small: sync the model registry with the API and send one tiny request
+# (max_tokens=5) per listed model to see which are really up. Benchmarks run in
+# weekly-benchmark.yml.
+
 on:
   schedule:
     # Run daily at 2 AM UTC (night time)
     - cron: '0 2 * * *'
   workflow_dispatch: # Allow manual trigger
 
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-model-check
+  cancel-in-progress: false
+
 jobs:
   check-models:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
+    - name: Check for API keys
+      id: check-keys
+      env:
+        BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+      run: |
+        if [ -n "$BLABLADOR_API_KEY" ]; then
+          echo "keys_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "keys_available=false" >> $GITHUB_OUTPUT
+          echo "::warning::BLABLADOR_API_KEY not configured; skipping the check"
+        fi
+
     - name: Checkout repository
+      if: steps.check-keys.outputs.keys_available == 'true'
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      if: steps.check-keys.outputs.keys_available == 'true'
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
     - name: Install Poetry
+      if: steps.check-keys.outputs.keys_available == 'true'
       uses: snok/install-poetry@v1
       with:
         version: latest
 
     - name: Cache Poetry dependencies
-      uses: actions/cache@v3
+      if: steps.check-keys.outputs.keys_available == 'true'
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pypoetry
         key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
@@ -35,128 +61,52 @@ jobs:
           poetry-${{ runner.os }}-
 
     - name: Install dependencies
-      run: |
-        poetry install
-
-    - name: Check for API keys
-      id: check-keys
-      run: |
-        if [ -n "${{ secrets.BLABLADOR_API_KEY }}" ]; then
-          echo "keys_available=true" >> $GITHUB_OUTPUT
-        else
-          echo "keys_available=false" >> $GITHUB_OUTPUT
-        fi
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: poetry install
 
     - name: Create .env file
       if: steps.check-keys.outputs.keys_available == 'true'
+      env:
+        BLABLADOR_API_KEY: ${{ secrets.BLABLADOR_API_KEY }}
+        BLABLADOR_API_BASE: ${{ secrets.BLABLADOR_API_BASE }}
       run: |
-        echo "BLABLADOR_API_KEY=${{ secrets.BLABLADOR_API_KEY }}" > .env
-        echo "BLABLADOR_API_BASE=${{ secrets.BLABLADOR_API_BASE }}" >> .env
+        {
+          echo "BLABLADOR_API_KEY=$BLABLADOR_API_KEY"
+          # Unset optional secret: fall back to the public endpoint (the chat provider has no default).
+          echo "BLABLADOR_API_BASE=${BLABLADOR_API_BASE:-https://api.helmholtz-blablador.fz-juelich.de/v1}"
+        } > .env
 
-    - name: Check model availability
+    - name: Sync model registry with the API
+      if: steps.check-keys.outputs.keys_available == 'true'
+      run: poetry run hellm models sync
+
+    - name: Test which models are up (one 5-token request each)
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        poetry run python -c "
-        from src.hellmholtz.monitoring import ModelAvailabilityMonitor
+        # -P keeps the repo root (which holds a test stub of `aisuite`) off sys.path,
+        # otherwise the stub shadows the real client and every request fails.
+        poetry run python -P -c "
+        from hellmholtz.monitoring import ModelAvailabilityMonitor
+        ModelAvailabilityMonitor().check_all_models_automatically()
         import yaml
-        from datetime import datetime
-
-        monitor = ModelAvailabilityMonitor()
-        monitor.check_all_models_automatically()
-
-        # Load and display status
-        with open('models_status.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-
-        print('\n=== Model Availability Report ===')
-        print(f'Checked at: {datetime.now().isoformat()}')
-        print('\nAvailable Models:')
-        for model, info in data.get('models', {}).items():
-            status = '✓' if info.get('available', False) else '✗'
-            print(f'  {status} {model}: {info.get(\"status\", \"unknown\")}')
-
-        print(f'\nTotal: {len([m for m, v in data.get(\"models\", {}).items() if v.get(\"available\")])} available')
-        print(f'Updated: {data.get(\"last_checked\", \"N/A\")}')
+        models = yaml.safe_load(open('models_status.yaml'))['models']
+        up = [m for m, v in models.items() if v.get('available')]
+        print(f'{len(up)}/{len(models)} models listed by the API')
         "
 
-    - name: Generate availability report
+    - name: Commit and push changes
       if: steps.check-keys.outputs.keys_available == 'true'
       run: |
-        cat > /tmp/gen_report.py << 'SCRIPT_EOF'
-        import yaml
-        from datetime import datetime
-
-        with open('models_status.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-
-        available = [m for m, v in data.get('models', {}).items() if v.get('available')]
-        unavailable = [m for m, v in data.get('models', {}).items() if not v.get('available')]
-
-        available_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'OK')}" for m in sorted(available)]) if available else '- None'
-        unavailable_list = '\n'.join([f"- **{m}**: {data['models'][m].get('status', 'Unavailable')}" for m in sorted(unavailable)]) if unavailable else '- None'
-
-        yaml_dump = yaml.dump(data, default_flow_style=False)
-
-        report = f"""# Daily Model Availability Report
-
-        **Generated:** {datetime.now().isoformat()}
-
-        ## Summary
-        - **Available:** {len(available)}/{len(data.get('models', {}))}
-        - **Unavailable:** {len(unavailable)}/{len(data.get('models', {}))}
-
-        ## Available Models ✓
-        {available_list}
-
-        ## Unavailable Models ✗
-        {unavailable_list}
-
-        ## Last Check Details
-        ```yaml
-        {yaml_dump}
-        ```
-        """
-
-        with open('reports/model_availability_report.md', 'w') as f:
-            f.write(report)
-
-        print('Availability report generated: reports/model_availability_report.md')
-        SCRIPT_EOF
-
-        poetry run python /tmp/gen_report.py
-
-    - name: Check for changes
-      id: check-changes
-      run: |
-        if git diff --quiet models_status.yaml reports/model_availability_report.md 2>/dev/null || \
-           (! git ls-files --error-unmatch reports/model_availability_report.md 2>/dev/null); then
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-        else
-          echo "changes=true" >> $GITHUB_OUTPUT
+        git add models_status.yaml src/hellmholtz/providers/models/
+        if git diff --cached --quiet; then
+          echo "No changes"
+          exit 0
         fi
-
-    - name: Commit and push changes
-      if: steps.check-changes.outputs.changes == 'true' && steps.check-keys.outputs.keys_available == 'true'
-      run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add models_status.yaml reports/model_availability_report.md
-        git commit -m "Daily model availability check
+        git commit -m "chore(models): daily registry sync and availability check
 
         - Checked at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        - Workflow run: ${{ github.run_id }}
-        - Branch: ${{ github.ref }}"
+        - Workflow run: ${{ github.run_id }}"
+        git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
         git push
-
-    - name: Workflow status notification
-      if: always()
-      run: |
-        if [ "${{ steps.check-keys.outputs.keys_available }}" == "true" ]; then
-          echo "✓ Model availability check completed successfully"
-        else
-          echo "⚠ Skipped: BLABLADOR_API_KEY not configured"
-        fi
