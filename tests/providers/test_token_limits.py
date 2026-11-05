@@ -35,7 +35,7 @@ class TestBlabladorModelTokenLimits:
         """Test that token limits fall within reasonable ranges."""
         for model in KNOWN_MODELS:
             # Token limits should be between 4k and 1M tokens
-            assert 4096 <= model.max_context_tokens <= 1_000_000, (
+            assert 4096 <= model.max_context_tokens <= 2_000_000, (
                 f"Model {model.name} has unreasonable token limit: {model.max_context_tokens}"
             )
 

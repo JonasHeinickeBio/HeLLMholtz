@@ -6,7 +6,7 @@ including unit tests for chat functions, ClientManager singleton,
 and integration tests for different providers.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
@@ -106,7 +106,7 @@ class TestClientFunctions:
 
         assert response == mock_aisuite_client.chat.completions.create.return_value
         mock_aisuite_client.chat.completions.create.assert_called_once_with(
-            model="openai:gpt-4o", messages=messages
+            model="openai:gpt-4o", messages=messages, timeout=ANY
         )
 
     @patch("hellmholtz.client.ai.Client")

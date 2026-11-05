@@ -29,6 +29,10 @@ logger = logging.getLogger(__name__)
 OUTPUT_CHART_OPTION = typer.Option(
     None, help="Output path for the chart image (default: auto-generated)"
 )
+RESUME_OPTION = typer.Option(
+    None,
+    help="Resume an interrupted run from its .partial.jsonl (successful runs are reused)",
+)
 
 
 def register_benchmark_commands(app: typer.Typer) -> None:
@@ -54,7 +58,23 @@ def register_benchmark_commands(app: typer.Typer) -> None:
             3, help="Number of replications per configuration for statistical significance"
         ),
         evaluate_with: str | None = typer.Option(
-            None, help="Model to use for evaluation (LLM-as-a-Judge)"
+            None,
+            help=(
+                "Judge model(s) for LLM-as-a-Judge scoring: one model, a comma-separated "
+                "panel, or 'default' for the built-in panel. A judge never grades its own model."
+            ),
+        ),
+        quick: bool = typer.Option(
+            False,
+            "--quick",
+            help="Short tier: 18 representative prompts instead of the full suite",
+        ),
+        judge_workers: int = typer.Option(
+            6, help="Parallel judge requests (lower it if the API answers 429)"
+        ),
+        resume: Path | None = RESUME_OPTION,
+        concurrency: int = typer.Option(
+            1, help="Parallel workers; work is split into (model, prompt-chunk) units"
         ),
         system_prompt: str | None = typer.Option(
             None, help="System prompt to prepend to all messages"
@@ -72,6 +92,10 @@ def register_benchmark_commands(app: typer.Typer) -> None:
             evaluate_with,
             system_prompt,
             tasks=tasks,
+            concurrency=concurrency,
+            resume=resume,
+            judge_workers=judge_workers,
+            quick=quick,
         )
 
     @app.command()
@@ -124,13 +148,16 @@ def _bench_impl(  # noqa: C901
     evaluate_with: str | None,
     system_prompt: str | None,
     tasks: str | None = None,
+    concurrency: int = 1,
+    resume: Path | None = None,
+    judge_workers: int = 6,
+    quick: bool = False,
 ) -> None:
     """Implementation for bench command."""
     from hellmholtz.benchmark import run_benchmarks
     from hellmholtz.benchmark.prompts import get_all_prompts, get_prompts_by_category
     from hellmholtz.benchmark.runner import save_results
     from hellmholtz.cli.common import load_prompts_from_file, parse_tasks
-    from hellmholtz.client import check_model_availability
 
     try:
         # Parse input
@@ -150,6 +177,11 @@ def _bench_impl(  # noqa: C901
                     "Category validation failed",
                 )
             typer.echo(f"Using {len(prompts)} prompts from category '{prompts_category}'")
+        elif quick:
+            from hellmholtz.benchmark.prompts import get_quick_prompts
+
+            prompts = get_quick_prompts()
+            typer.echo(f"Using the quick tier: {len(prompts)} prompts")
         elif all_prompts:
             prompts = get_all_prompts()
             typer.echo(f"Using all {len(prompts)} available prompts")
@@ -190,31 +222,36 @@ def _bench_impl(  # noqa: C901
             max_tokens=max_tokens,
             replications=replications,
             system_prompt=system_prompt,
+            max_concurrent=concurrency,
+            resume_from=resume,
         )
 
         # Evaluate if requested
+        timestamp = datetime.now().isoformat()
+        results_path = Path("results")
         if evaluate_with:
-            typer.echo(f"\nEvaluating results with {evaluate_with}...")
-            if not check_model_availability(evaluate_with):
-                typer.echo(
-                    f"⚠️  Judge model '{evaluate_with}' is not available. "
-                    f"Skipping evaluation and saving results without ratings.",
-                    err=True,
-                )
-                timestamp = datetime.now().isoformat()
-                results_path = Path("results")
+            from hellmholtz.benchmark.evaluator import DEFAULT_JUDGES, evaluate_responses
+
+            judges = (
+                DEFAULT_JUDGES
+                if evaluate_with.strip().lower() == "default"
+                else [j.strip() for j in evaluate_with.split(",") if j.strip()]
+            )
+            from hellmholtz.client import check_model_availability
+
+            usable = [j for j in judges if check_model_availability(j)]
+            for j in set(judges) - set(usable):
+                typer.echo(f"⚠️  Judge model '{j}' is not available; dropping it.", err=True)
+            if not usable:
+                typer.echo("⚠️  No judge available. Saving results without judge scores.", err=True)
                 save_results(results, results_path, timestamp)
             else:
-                from hellmholtz.benchmark.evaluator import evaluate_responses
-
-                results = evaluate_responses(results, evaluate_with, prompts)
-                typer.echo("✅ Evaluation completed successfully")
-                timestamp = datetime.now().isoformat()
-                results_path = Path("results")
+                typer.echo(f"\nJudging results with panel: {', '.join(usable)}")
+                results = evaluate_responses(results, usable, prompts, workers=judge_workers)
+                judged = sum(r.judge_score is not None for r in results)
+                typer.echo(f"✅ Evaluation completed: {judged} responses judged")
                 save_results(results, results_path, f"{timestamp}_evaluated")
         else:
-            timestamp = datetime.now().isoformat()
-            results_path = Path("results")
             save_results(results, results_path, timestamp)
 
         typer.echo("\nBenchmarks completed! Results saved to results/ directory")

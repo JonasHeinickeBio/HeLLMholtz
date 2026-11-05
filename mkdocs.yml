@@ -13,6 +13,7 @@ nav:
   - Claude Code: claude-code.md
   - Available Models: models.md
   - Model Monitoring: monitoring.md
+  - Benchmarking: benchmarking.md
   - Publishing: publishing.md
 
 theme:

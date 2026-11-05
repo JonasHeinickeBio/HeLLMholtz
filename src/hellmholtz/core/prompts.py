@@ -46,6 +46,20 @@ class Prompt(BaseModel):
     messages: list[Message] = Field(min_length=1, description="Conversation messages")
     description: str | None = Field(None, description="Optional prompt description")
     expected_output: str | None = Field(None, description="Expected output format/type")
+    reference: str | None = Field(
+        default=None,
+        description="Reference answer shown to the judge (ground truth or model solution)",
+    )
+    rubric: list[str] = Field(
+        default_factory=list,
+        description="Task-specific criteria the judge must verify, one per entry",
+    )
+    checks: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Deterministic checks (hellmholtz.benchmark.checks), scored without a judge",
+    )
+    difficulty: int = Field(default=2, ge=1, le=3, description="1 = easy, 2 = medium, 3 = hard")
+    quick: bool = Field(default=False, description="Member of the short benchmark tier")
 
     @field_validator("messages")
     @classmethod

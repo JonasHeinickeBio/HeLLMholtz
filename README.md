@@ -36,6 +36,41 @@ A comprehensive Python package for unified LLM access, benchmarking, evaluation,
 - **Throughput Testing**: Performance benchmarking for high-throughput scenarios
 - **Model Discovery**: Dynamic model listing and availability checking (19+ BLABLADOR models currently available)
 
+## Model Leaderboard
+
+<!-- LEADERBOARD:START -->
+[![Benchmark leaderboard](reports/leaderboard.svg)](https://jonasheinickebio.github.io/HeLLMholtz/benchmark/)
+
+_Updated 2026-11-05 · 41 models · 52 prompts · judges: alias-deepseek-v41-flash-booster, alias-huge_
+
+| # | Model | Score | Coding | Creative | Extraction | Instruction | Knowledge | Longcontext | Math | Medical | Multilingual | Reasoning | Safety | Reliab. | Latency |
+|--:|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 🥇 | `deepseek-v4.1-flash-at-hzdr` | **98.4** | 100 | 98 | 100 | 96 | 96 | 100 | 100 | 97 | 100 | 95 | 100 | 100% | 1.0s |
+| 🥈 | `alias-mimo-v2.6-flash` | **98.2** | 100 | 97 | 100 | 96 | 96 | 100 | 100 | 97 | 100 | 95 | 100 | 100% | 3.3s |
+| 🥉 | `alias-mimo-v2.6-pro` | **97.9** | 100 | 98 | 100 | 96 | 92 | 100 | 100 | 97 | 100 | 95 | 99 | 100% | 16.1s |
+| 4 | `alias-hyperqwen` | **97.8** | 89 | 98 | 100 | 96 | 95 | 100 | 100 | 98 | 100 | 100 | 100 | 98% | 12.1s |
+| 5 | `DeepSeek-V4.1-Flash on JUWELS Booster` | **97.7** | 100 | 100 | 100 | 96 | 96 | 90 | 100 | 98 | 100 | 95 | 100 | 100% | 17.4s |
+| 6 | `alias-qwen3.8-flash-next` | **97.5** | 89 | 100 | 100 | 96 | 96 | 100 | 100 | 98 | 100 | 95 | 100 | 98% | 3.3s |
+| 7 | `alias-qwen38-quick` | **97.4** | 89 | 100 | 100 | 96 | 92 | 100 | 100 | 97 | 100 | 100 | 97 | 98% | 12.2s |
+| 8 | `alias-code` | **97.3** | 89 | 100 | 100 | 96 | 96 | 100 | 100 | 98 | 100 | 95 | 97 | 98% | 68.0s |
+| 9 | `alias-deepseek-v41-flash-booster` | **97.0** | 100 | 100 | 100 | 96 | 79 | 100 | 100 | 97 | 100 | 95 | 100 | 100% | 7.8s |
+| 10 | `alias-large` | **97.0** | 89 | 98 | 100 | 96 | 93 | 100 | 100 | 96 | 100 | 95 | 100 | 98% | 14.1s |
+| 11 | `MiMo-V2.6-Pro-RL on Juwels Booster` | **96.9** | 100 | 98 | 100 | 96 | 96 | 83 | 100 | 99 | 100 | 95 | 99 | 100% | 7.5s |
+| 12 | `alias-qwen38-27b` | **96.9** | 89 | 99 | 100 | 95 | 95 | 100 | 100 | 96 | 100 | 95 | 97 | 98% | 19.9s |
+| 13 | `Qwen3.8-27B-FP8` | **96.7** | 78 | 100 | 100 | 96 | 96 | 100 | 100 | 97 | 100 | 100 | 97 | 96% | 14.5s |
+| 14 | `Aleph Kolibri` | **96.7** | 89 | 97 | 100 | 96 | 95 | 100 | 100 | 93 | 100 | 95 | 99 | 98% | 20.0s |
+| 15 | `Qwen 3.8-Flash-Next-125B-AWQ-W4A16 on Juwels Booster` | **96.6** | 78 | 98 | 100 | 96 | 100 | 100 | 100 | 96 | 100 | 95 | 100 | 96% | 3.3s |
+| 16 | `Qwen 3.8-27B on Juwels Booster` | **96.4** | 78 | 97 | 100 | 96 | 95 | 100 | 100 | 96 | 100 | 100 | 99 | 98% | 6.5s |
+| 17 | `alias-huge` | **96.2** | 100 | 96 | 100 | 96 | 96 | 83 | 100 | 89 | 100 | 100 | 99 | 100% | 59.1s |
+| 18 | `alias-hyperqwen-27b` | **96.1** | 78 | 95 | 100 | 96 | 96 | 100 | 100 | 96 | 100 | 97 | 100 | 96% | 9.7s |
+| 19 | `alias-qwen3.8-27b` | **96.0** | 78 | 98 | 100 | 96 | 95 | 100 | 100 | 96 | 100 | 95 | 99 | 98% | 16.0s |
+| 20 | `MiMo-V2.6-Flash-RL on Juwels Booster` | **95.9** | 100 | 98 | 100 | 96 | 96 | 90 | 100 | 97 | 83 | 95 | 100 | 100% | 12.2s |
+
+_Showing top 20 of 41. See the full dashboard for all models._
+
+[Open the interactive dashboard →](https://jonasheinickebio.github.io/HeLLMholtz/benchmark/)
+<!-- LEADERBOARD:END -->
+
 ## System-One (Laya) CLI
 
 The new `hellm systemone` command lets you route a state with custom questions and run a benchmark across clinical scenarios.

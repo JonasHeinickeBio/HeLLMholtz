@@ -300,7 +300,9 @@ def _update_config_file(
             description = model_data.get("description", "")
 
             # Determine context length
-            context_length = model_data.get("context_length")
+            # Blablador's /v1/models reports the window as ``max_model_len``;
+            # ``context_length`` is kept for OpenAI-compatible variants.
+            context_length = model_data.get("max_model_len") or model_data.get("context_length")
             default_context = DEFAULT_TOKEN_LIMIT
             if context_length and isinstance(context_length, int):
                 default_context = context_length
@@ -457,7 +459,9 @@ def _update_models_file(
             description = model_data.get("description", "")
 
             # Determine context length
-            context_length = model_data.get("context_length")
+            # Blablador's /v1/models reports the window as ``max_model_len``;
+            # ``context_length`` is kept for OpenAI-compatible variants.
+            context_length = model_data.get("max_model_len") or model_data.get("context_length")
             default_context = DEFAULT_TOKEN_LIMIT
             if context_length and isinstance(context_length, int):
                 default_context = context_length
@@ -470,8 +474,11 @@ def _update_models_file(
             description = description.replace('"', '\\"')
 
             # Create model entry
+            # Bare ids (aliases, ``deepseek-...``) have no "NN - Name" prefix; like the
+            # hand-written alias entries they use ``id=""`` so ``api_id`` resolves to the name.
+            entry_id = model_id if " - " in model_id else ""
             new_models_lines.append("    BlabladorModel(")
-            new_models_lines.append(f'        id="{model_id}",')
+            new_models_lines.append(f'        id="{entry_id}",')
             new_models_lines.append(f'        name="{model_name}",')
             new_models_lines.append(f'        description="{description}",')
             new_models_lines.append(f"        max_context_tokens={default_context},")
@@ -479,21 +486,36 @@ def _update_models_file(
 
         # Process removed models - mark them as unavailable
         removed_models_marked = set()
-        for model_name in removed_models:
-            if model_name in existing_models_by_name:
-                start_line, end_line, lines = existing_models_by_name[model_name]
-                # Check if already marked as unavailable
-                has_available_false = any("available=False" in line for line in lines)
-                if not has_available_false:
-                    # Add available=False to the model definition
-                    # Find the last field before closing )
-                    for i in range(end_line, start_line - 1, -1):
-                        if "max_context_tokens=" in existing_lines[i]:
-                            # Insert available=False after max_context_tokens
-                            indent = len(existing_lines[i]) - len(existing_lines[i].lstrip())
-                            existing_lines.insert(i + 1, " " * indent + "available=False,")
-                            removed_models_marked.add(model_name)
-                            break
+        # Insert bottom-up: each insertion shifts every later line, so the
+        # (start, end) indexes captured above are only valid for models that
+        # sit above all previous insertions.
+        reenabled = set(updated_models)
+        removals = sorted(
+            (
+                (existing_models_by_name[name], name)
+                for name in {*removed_models, *reenabled}
+                if name in existing_models_by_name
+            ),
+            key=lambda item: item[0][0],
+            reverse=True,
+        )
+        for (start_line, end_line, _lines), model_name in removals:
+            block = existing_lines[start_line : end_line + 1]
+            if model_name in reenabled and model_name not in removed_models:
+                # Back in the API: drop a stale ``available=False`` marker.
+                for i in range(end_line, start_line - 1, -1):
+                    if existing_lines[i].strip() == "available=False,":
+                        del existing_lines[i]
+                        removed_models_marked.add(model_name)
+                continue
+            if any("available=False" in line for line in block):
+                continue
+            for i in range(end_line, start_line - 1, -1):
+                if "max_context_tokens=" in existing_lines[i]:
+                    indent = len(existing_lines[i]) - len(existing_lines[i].lstrip())
+                    existing_lines.insert(i + 1, " " * indent + "available=False,")
+                    removed_models_marked.add(model_name)
+                    break
 
         # Remove duplicates from new_models_lines
         seen = set()
